@@ -1,0 +1,919 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>山情</title>
+	<atom:link href="https://github.com/appi77/myblog/feed/" rel="self" type="application/rss+xml" />
+	<link>http://github.com/appi77/myblog/</link>
+	<description>산정의 블로그</description>
+	<lastBuildDate>Thu, 28 Nov 2019 02:35:10 +0000</lastBuildDate>
+	<language>ko-KR</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=5.3.2</generator>
+
+<image>
+	<url>https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/07/cropped-20160505_122002-32x32.jpg</url>
+	<title>山情</title>
+	<link>http://github.com/appi77/myblog/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Jmeter</title>
+		<link>https://github.com/appi77/myblog/si-technology/%ec%84%b1%eb%8a%a5/jmeter/</link>
+				<pubDate>Wed, 27 Nov 2019 22:34:25 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[성능]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=1582</guid>
+				<description><![CDATA[https://jmeter-plugins.org/install/Install/ 에서 plugins-manager.jar 을 다운로드 받아 lib/ext 폴더에 넣는다. option-&#62;plugin manager 에서 Custom Thread Groups , Basic Graphs 을 추가 &#160;   jp@gc &#8211; Stepping Thread Group (deprecated) 생성 Max 200 Thread 생성  30초후에 10개씩&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>https://jmeter-plugins.org/install/Install/ 에서</p>
+<p><a href="https://jmeter-plugins.org/get/">plugins-manager.jar</a> 을 다운로드 받아 <tt>lib/ext 폴더에 넣는다.</tt></p>
+<p>option-&gt;plugin manager 에서</p>
+<p>Custom Thread Groups , Basic Graphs 을 추가</p>
+<p>&nbsp;</p>
+<p><strong>  jp@gc &#8211; Stepping Thread Group (deprecated) 생성</strong></p>
+<p style="padding-left: 40px;">Max 200 Thread 생성  30초후에 10개씩 Thread 생성 최대 Thread로 600초간 유지이후에 1초 간격으로 5개씩 Thread Stop</p>
+<p style="padding-left: 80px;">This group will start 는 총 몇개의 Thread를 발생할것인가.</p>
+<p style="padding-left: 80px;">Next, add는 몇개씩 더해질것인가</p>
+<p style="padding-left: 80px;">threads every 몇초후에 더해질것인가</p>
+<p style="padding-left: 80px;">using ramp-up는 Next add되는 데 걸리는 시간</p>
+<p style="padding-left: 80px;">Then hold load for는 몇초동안 최대 Thread를 유지할것인가</p>
+<p style="padding-left: 80px;">Final stop 몇개씩 Thread를 줄일것인가</p>
+<p style="padding-left: 80px;">threads every 는 몇초간격으로 줄일것인가.</p>
+<p><strong>결과보기</strong></p>
+<ul>
+<li>jp@gc &#8211; Response Times Over Time 생성 : 테스트 시간에 따른 응답 시간</li>
+<li> jp@gc &#8211; Transactions per Second 생성 : 초당 처리량 확인</li>
+<li>jp@gc &#8211; Response Times vs Threads : Thread 변화에 따른 응답 속도</li>
+<li style="text-align: left;">jp@gc &#8211; Composite Graph : 종합 적인 그래프를 함께 보여준다.</li>
+</ul>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>윈도우10 OneDrive 삭제 방법</title>
+		<link>https://github.com/appi77/myblog/project/pc%ed%99%98%ea%b2%bd-%ec%88%98%ec%a0%95/%ec%9c%88%eb%8f%84%ec%9a%b010-onedrive-%ec%82%ad%ec%a0%9c-%eb%b0%a9%eb%b2%95/</link>
+				<pubDate>Tue, 19 Nov 2019 12:19:29 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[PC환경 수정]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=1578</guid>
+				<description><![CDATA[set x86=&#8221;%SYSTEMROOT%\System32\OneDriveSetup.exe&#8221; set x64=&#8221;%SYSTEMROOT%\SysWOW64\OneDriveSetup.exe&#8221; echo Closing the OneDrive process. echo. taskkill /f /im OneDrive.exe &#62; NUL 2&#62;&#38;1 ping 127.0.0.1 -n 5 &#62; NUL 2&#62;&#38;1 echo Uninstalling OneDrive&#8230; echo. if exist %x64% ( %x64% /uninstall&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>set x86=&#8221;%SYSTEMROOT%\System32\OneDriveSetup.exe&#8221;<br />
+set x64=&#8221;%SYSTEMROOT%\SysWOW64\OneDriveSetup.exe&#8221;</p>
+<p>echo Closing the OneDrive process.<br />
+echo.<br />
+taskkill /f /im OneDrive.exe &gt; NUL 2&gt;&amp;1<br />
+ping 127.0.0.1 -n 5 &gt; NUL 2&gt;&amp;1</p>
+<p>echo Uninstalling OneDrive&#8230;<br />
+echo.<br />
+if exist %x64% (<br />
+%x64% /uninstall<br />
+) else (<br />
+%x86% /uninstall<br />
+)<br />
+ping 127.0.0.1 -n 5 &gt; NUL 2&gt;&amp;1</p>
+<p>echo Removing OneDrive leftovers&#8230;<br />
+echo.<br />
+rd &#8220;%USERPROFILE%\OneDrive&#8221; /Q /S &gt; NUL 2&gt;&amp;1<br />
+rd &#8220;C:\OneDriveTemp&#8221; /Q /S &gt; NUL 2&gt;&amp;1<br />
+rd &#8220;%LOCALAPPDATA%\Microsoft\OneDrive&#8221; /Q /S &gt; NUL 2&gt;&amp;1<br />
+rd &#8220;%PROGRAMDATA%\Microsoft OneDrive&#8221; /Q /S &gt; NUL 2&gt;&amp;1</p>
+<p>echo Removing OneDrive from the Windows Explorer Side Panel&#8230;<br />
+echo.<br />
+REG DELETE &#8220;HKEY_CLASSES_ROOT\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}&#8221; /f &gt; NUL 2&gt;&amp;1<br />
+REG DELETE &#8220;HKEY_CLASSES_ROOT\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}&#8221; /f &gt; NUL 2&gt;&amp;1</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>파일 탐색기의 내 PC에 있는 기본 데이터 폴더 숨기기/보이기 &#8211; Windows 10</title>
+		<link>https://github.com/appi77/myblog/project/pc%ed%99%98%ea%b2%bd-%ec%88%98%ec%a0%95/%ed%8c%8c%ec%9d%bc-%ed%83%90%ec%83%89%ea%b8%b0%ec%9d%98-%eb%82%b4-pc%ec%97%90-%ec%9e%88%eb%8a%94-%ea%b8%b0%eb%b3%b8-%eb%8d%b0%ec%9d%b4%ed%84%b0-%ed%8f%b4%eb%8d%94-%ec%88%a8%ea%b8%b0%ea%b8%b0-%eb%b3%b4/</link>
+				<pubDate>Tue, 19 Nov 2019 12:07:52 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[PC환경 수정]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=1576</guid>
+				<description><![CDATA[보이기 명령어 reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>보이기 명령어<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f</p>
+<p>숨기기 명령어</p>
+<p>reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f</p>
+<p>3D 객체 삭제<br />
+reg.exe delete &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}&#8221; /f<br />
+reg.exe delete &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A&#8221; /f</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>Memory Dump Analysis Anthology, Volume 1</title>
+		<link>https://github.com/appi77/myblog/si-technology/debug/memory-dump-analysis-anthology-volume-1/</link>
+				<pubDate>Mon, 18 Nov 2019 14:14:08 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[DEBUG]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=1574</guid>
+				<description><![CDATA[https://doc.lagout.org/science/0_Computer%20Science/9_Others/9_Misc/Memory%20Dump%20Analysis%20Anthology%2C%20Volume%201.pdf]]></description>
+								<content:encoded><![CDATA[<p><a href="https://doc.lagout.org/science/0_Computer%20Science/9_Others/9_Misc/Memory%20Dump%20Analysis%20Anthology%2C%20Volume%201.pdf">https://doc.lagout.org/science/0_Computer%20Science/9_Others/9_Misc/Memory%20Dump%20Analysis%20Anthology%2C%20Volume%201.pdf</a></p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>Samba4 Active Directory 설치</title>
+		<link>https://github.com/appi77/myblog/si-technology/linux/samba4-active-directory-%ec%84%a4%ec%b9%98/</link>
+				<pubDate>Mon, 14 Oct 2019 02:43:18 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Linux]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=1554</guid>
+				<description><![CDATA[[참고] https://www.tecmint.com/install-samba4-active-directory-ubuntu/ https://helia.ee/koolitus/linuxi-materjalid/debian/create-active-directory-infrastructure-samba4-ubuntu/ 설정 후 DNS를 자동 업데이트 하기 위해서는 vi /etc/samba/smb.conf nsupdate command = nsupdate allow dns updates = nonsecure 추가해야 함 sudo systemctl restart samba-ad-dc.service samba_dnsupdate &#8211;verbose &#8211;all-names 오류가 없어야 함 수정&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>[참고] <a href="https://www.tecmint.com/install-samba4-active-directory-ubuntu/" target="_blank" rel="nofollow noopener noreferrer">https://www.tecmint.com/install-samba4-active-directory-ubuntu/</a></p>
+<p><a href="https://helia.ee/koolitus/linuxi-materjalid/debian/create-active-directory-infrastructure-samba4-ubuntu/" target="_blank" rel="nofollow noopener noreferrer">https://helia.ee/koolitus/linuxi-materjalid/debian/create-active-directory-infrastructure-samba4-ubuntu/</a></p>
+<p>설정 후<br />
+DNS를 자동 업데이트 하기 위해서는<br />
+vi /etc/samba/smb.conf<br />
+nsupdate command = nsupdate<br />
+allow dns updates = nonsecure<br />
+추가해야 함<br />
+sudo systemctl restart samba-ad-dc.service<br />
+samba_dnsupdate &#8211;verbose &#8211;all-names 오류가 없어야 함</p>
+<p>수정 및 재시작<br />
+[samba]<br />
+vi /etc/samba/smb.conf<br />
+sudo systemctl restart samba-ad-dc.service<br />
+[ip address]<br />
+vi /etc/network/interfaces<br />
+vi /etc/resolv.conf<br />
+sudo systemctl restart networking.service<br />
+[dhcp]<br />
+vi /etc/dhcp/dhcpd.conf<br />
+sudo systemctl restart isc-dhcp-server.service</p>
+<p>cat /etc/samba/smb.conf<br />
+# Global parameters<br />
+[global]<br />
+workgroup = ECMDEV<br />
+realm = ECMDEV.LO<br />
+netbios name = ADC<br />
+log level = 3<br />
+server role = active directory domain controller<br />
+dns forwarder = 192.168.137.1<br />
+nsupdate command = nsupdate<br />
+allow dns updates = nonsecure<br />
+idmap_ldb:use rfc2307 = yes</p>
+<p>template shell = /bin/bash<br />
+winbind use default domain = true<br />
+winbind offline logon = false<br />
+winbind nss info = rfc2307</p>
+<p>winbind enum users = yes<br />
+winbind enum groups = yes</p>
+<p>[netlogon]<br />
+path = /var/lib/samba/sysvol/ecmdev.lo/scripts<br />
+read only = No</p>
+<p>[sysvol]<br />
+path = /var/lib/samba/sysvol<br />
+read only = No</p>
+<p>[nas]<br />
+path = /nas<br />
+read only = No</p>
+<p>[nas_test]<br />
+path = /nas_test<br />
+read only = No</p>
+<p>&nbsp;</p>
+<p>test@adc:~$ cat /etc/resolv.conf<br />
+# Dynamic resolv.conf(5) file for glibc resolver(3) generated by resolvconf(8)<br />
+# DO NOT EDIT THIS FILE BY HAND &#8212; YOUR CHANGES WILL BE OVERWRITTEN<br />
+nameserver 192.168.137.2<br />
+nameserver 192.168.137.1<br />
+search ecmdev.lo</p>
+<p>ls -l /dev/disk/by-uuid</p>
+<p>test@adc:~$ cat /etc/fstab<br />
+# /etc/fstab: static file system information.<br />
+#<br />
+# Use &#8216;blkid&#8217; to print the universally unique identifier for a<br />
+# device; this may be used with UUID= as a more robust way to name devices<br />
+# that works even if disks are added and removed. See fstab(5).<br />
+#<br />
+# &lt;file system&gt; &lt;mount point&gt; &lt;type&gt; &lt;options&gt; &lt;dump&gt; &lt;pass&gt;<br />
+# / was on /dev/sda1 during installation<br />
+UUID=28e34a5f-f6c5-4afb-87ab-ddcf902489ab / ext4 user_xattr,acl,barrier=1,errors=remount-ro 0 1<br />
+# swap was on /dev/sda5 during installation<br />
+UUID=ae4b223b-a328-48d4-a46d-f59dea75d3ec none swap sw 0 0<br />
+UUID=71597a02-390a-4ae3-a5b7-9fb2e60bd834 /nas ext4 defaults 00<br />
+UUID=2ec2cd01-4aaf-4d2a-ad9e-b20e5110dd0c /nas_test ext4 defaults 00</p>
+<p>test@adc:~$ cat /etc/network/interfaces<br />
+# This file describes the network interfaces available on your system<br />
+# and how to activate them. For more information, see interfaces(5).</p>
+<p>source /etc/network/interfaces.d/*</p>
+<p># The loopback network interface<br />
+auto lo<br />
+iface lo inet loopback</p>
+<p># The primary network interface<br />
+auto ens33<br />
+#iface ens33 inet dhcp<br />
+iface ens33 inet static<br />
+address 192.168.137.2<br />
+netmask 255.255.255.0<br />
+gateway 192.168.137.1<br />
+dns-nameservers 192.168.137.2 192.168.137.1<br />
+#dns-nameservers 192.168.137.2<br />
+dns-search ecmdev.lo</p>
+<p>test@adc:~$ cat /etc/dhcp/dhcpd.conf</p>
+<p>ddns-update-style none;</p>
+<p>option domain-name &#8220;ecmdev.lo&#8221;;<br />
+option domain-name-servers adc.ecmdev.lo;</p>
+<p>default-lease-time 600;<br />
+max-lease-time 7200;</p>
+<p>authoritative;</p>
+<p>log-facility local7;</p>
+<p>subnet 192.168.137.0 netmask 255.255.255.0 {<br />
+range 192.168.137.20 192.168.137.90;<br />
+option domain-name-servers adc.ecmdev.lo,192.168.137.1;<br />
+option domain-name &#8220;ecmdev.lo&#8221;;<br />
+option routers 192.168.137.1;<br />
+option broadcast-address 192.168.137.255;<br />
+default-lease-time 600;<br />
+max-lease-time 7200;<br />
+}</p>
+<p>host sysmgr-w7 {<br />
+hardware ethernet 00:0C:29:0F:74:8D;<br />
+fixed-address 192.168.137.25;<br />
+}<br />
+host pc-ctrl {<br />
+hardware ethernet 00:0C:29:9D:2C:A7;<br />
+fixed-address 192.168.137.102;<br />
+}<br />
+host ecm_dev {<br />
+hardware ethernet 00:0C:29:69:09:D7;<br />
+fixed-address 192.168.137.101;<br />
+}</p>
+<p>&nbsp;</p>
+<p>test@adc:~$ sudo samba-tool domain passwordsettings show<br />
+# sudo samba-tool domain passwordsettings -h<br />
+penta@adc:~$ sudo samba-tool domain passwordsettings set &#8211;complexity=off<br />
+penta@adc:~$ sudo samba-tool domain passwordsettings set &#8211;history-length=0<br />
+penta@adc:~$ sudo samba-tool domain passwordsettings set &#8211;min-pwd-length=4<br />
+penta@adc:~$ sudo samba-tool domain passwordsettings set &#8211;min-pwd-age=0<br />
+penta@adc:~$ sudo samba-tool domain passwordsettings set &#8211;max-pwd-age=0</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>필수 영화</title>
+		<link>https://github.com/appi77/myblog/daily-life/%ec%8b%a0%ec%95%99%ec%83%9d%ed%99%9c/%ed%95%84%ec%88%98-%ec%98%81%ed%99%94/</link>
+				<pubDate>Mon, 15 Apr 2019 06:06:19 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[신앙생활]]></category>
+
+		<guid isPermaLink="false">http://apps.ipdisk.co.kr/apps/wordpress/?p=119</guid>
+				<description><![CDATA[크리스챤이 꼭 봐야 할 영화 ​패션오브크라이스트 마태복음 왕중왕 몬트리올예수 벤허 미션 쿼바디스 도미네 루터이야기]]></description>
+								<content:encoded><![CDATA[<p>크리스챤이 꼭 봐야 할 영화<br />
+​패션오브크라이스트<br />
+마태복음<br />
+왕중왕<br />
+몬트리올예수<br />
+벤허<br />
+미션<br />
+쿼바디스 도미네<br />
+루터이야기</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>문제 있는 쿼리 찾기</title>
+		<link>https://github.com/appi77/myblog/si-technology/rdbms/%eb%ac%b8%ec%a0%9c-%ec%9e%88%eb%8a%94-%ec%bf%bc%eb%a6%ac-%ec%b0%be%ea%b8%b0/</link>
+				<pubDate>Mon, 01 Apr 2019 05:49:35 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[RDBMS]]></category>
+		<category><![CDATA[oralce]]></category>
+		<category><![CDATA[sql]]></category>
+		<category><![CDATA[tunning]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=611</guid>
+				<description><![CDATA[SELECT q.cpu_x, q.execs, t.sql_text, q.* FROM ( SELECT q.dbid, q.instance_number, q.sql_id, MAX(q.optimizer_mode) optmode, MAX(q.module) module, MAX(q.action) action, MAX(q.force_matching_signature) force_matching_signature, MAX(q.parsing_schema_name) parse_schema, SUM(q.executions_delta) execs, SUM(q.disk_reads_delta) dreads, SUM(q.buffer_gets_delta) bgets, SUM(q.rows_processed_delta) rows_processed, SUM(q.cpu_time_delta) cpu, SUM(q.elapsed_time_delta) elapsed, SUM(q.iowait_delta)&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>SELECT<br />
+q.cpu_x,<br />
+q.execs,<br />
+t.sql_text,<br />
+q.*<br />
+FROM ( SELECT<br />
+q.dbid,<br />
+q.instance_number,<br />
+q.sql_id,<br />
+MAX(q.optimizer_mode) optmode,<br />
+MAX(q.module) module,<br />
+MAX(q.action) action,<br />
+MAX(q.force_matching_signature) force_matching_signature,<br />
+MAX(q.parsing_schema_name) parse_schema,<br />
+SUM(q.executions_delta) execs,<br />
+SUM(q.disk_reads_delta) dreads,<br />
+SUM(q.buffer_gets_delta) bgets,<br />
+SUM(q.rows_processed_delta) rows_processed,<br />
+SUM(q.cpu_time_delta) cpu,<br />
+SUM(q.elapsed_time_delta) elapsed,<br />
+SUM(q.iowait_delta) iowait,<br />
+SUM(q.clwait_delta) clwait,<br />
+SUM(q.apwait_delta) apwait,<br />
+SUM(q.ccwait_delta) ccwait,<br />
+SUM(q.direct_writes_delta) direct_writes,<br />
+SUM(q.plsexec_time_delta) plsexec_time,<br />
+SUM(q.javexec_time_delta) javaexec_time,<br />
+SUM(q.disk_reads_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) dreads_x,<br />
+SUM(q.buffer_gets_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) bgets_x,<br />
+SUM(q.rows_processed_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) rows_x,<br />
+( SUM(q.cpu_time_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 cpu_x,<br />
+( SUM(q.elapsed_time_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 elapsed_x,<br />
+( SUM(q.iowait_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 iowait_x,<br />
+( SUM(q.clwait_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 clwait_x,<br />
+( SUM(q.apwait_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 apwait_x,<br />
+( SUM(q.ccwait_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 ccwait_x,<br />
+SUM(q.direct_writes_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) direct_writes_x,<br />
+( SUM(q.plsexec_time_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 plsexec_time_x,<br />
+( SUM(q.javexec_time_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 javaexec_time_x<br />
+FROM<br />
+dba_hist_snapshot s,<br />
+dba_hist_sqlstat q<br />
+WHERE<br />
+s.dbid = q.dbid<br />
+AND s.instance_number = q.instance_number<br />
+AND s.snap_id = q.snap_id<br />
+AND TO_CHAR( s.begin_interval_time,&#8217;yyyy/mm/dd HH24:MI:SS&#8217;) BETWEEN &#8216;2019/03/26 20:00:00&#8217; AND &#8216;2019/04/01 23:59:59&#8217;<br />
+GROUP BY Q.DBID, Q.INSTANCE_NUMBER, Q.SQL_ID</p>
+<p>) Q, DBA_HIST_SQLTEXT T<br />
+WHERE Q.DBID = T.DBID<br />
+AND Q.SQL_ID = T.SQL_ID<br />
+AND Q.CPU_X &gt; 2<br />
+AND Q.EXECS &gt; 1<br />
+&#8211;and T.SQL_TEXT like &#8216;select all df1.r_object_id%&#8217;<br />
+and module in ( &#8216;documentum.exe&#8217;, &#8216;jdbc thin client&#8217; ) order by q.execs desc</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>SQL_PROFILE을 통한 비효율SQL 문장 plan fix</title>
+		<link>https://github.com/appi77/myblog/si-technology/rdbms/sql_profile%ec%9d%84-%ed%86%b5%ed%95%9c-%eb%b9%84%ed%9a%a8%ec%9c%a8sql-%eb%ac%b8%ec%9e%a5-plan-fix/</link>
+				<pubDate>Thu, 28 Mar 2019 06:02:38 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[RDBMS]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=599</guid>
+				<description><![CDATA[&#8212; 문제된 SQL 확인 &#8212; SQL_ID 및 FULL_TEXT 확인 SELECT SQL_ID, SQL_TEXT, SQL_FULLTEXT FROM V$SQL WHERE SQL_TEXT LIKE &#8216;%DEPT D%&#8217; ; &#8212; 튜닝된 SQL 실행 SELECT /*+FIRST_ROWS*/ * FROM DUAL WHERE ROWNUM &#60;= 101&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>&#8212; 문제된 SQL 확인<br />
+&#8212; SQL_ID 및 FULL_TEXT 확인<br />
+SELECT SQL_ID,</p>
+<p>SQL_TEXT,</p>
+<p>SQL_FULLTEXT</p>
+<p>FROM V$SQL</p>
+<p>WHERE SQL_TEXT LIKE &#8216;%DEPT D%&#8217;<br />
+;</p>
+<p>&#8212; 튜닝된 SQL 실행<br />
+SELECT<br />
+/*+FIRST_ROWS*/ *<br />
+FROM DUAL<br />
+WHERE<br />
+ROWNUM &lt;= 101<br />
+;<br />
+&#8212; Outline Data 추출<br />
+SELECT PLAN_TABLE_OUTPUT FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(NULL, NULL, &#8216;OUTLINE&#8217;));</p>
+<p>&#8211;Outline Data<br />
+&#8212;&#8212;&#8212;&#8212;-</p>
+<p>/*+<br />
+BEGIN_OUTLINE_DATA<br />
+IGNORE_OPTIM_EMBEDDED_HINTS<br />
+OPTIMIZER_FEATURES_ENABLE(&#8216;11.2.0.4&#8217;)<br />
+DB_VERSION(&#8216;11.2.0.4&#8217;)<br />
+OPT_PARAM(&#8216;_b_tree_bitmap_plans&#8217; &#8216;false&#8217;)<br />
+OPT_PARAM(&#8216;_complex_view_merging&#8217; &#8216;false&#8217;)<br />
+OPT_PARAM(&#8216;_optim_peek_user_binds&#8217; &#8216;false&#8217;)<br />
+OPT_PARAM(&#8216;_optimizer_push_pred_cost_based&#8217; &#8216;false&#8217;)<br />
+OPT_PARAM(&#8216;_optimizer_null_aware_antijoin&#8217; &#8216;false&#8217;)<br />
+OPT_PARAM(&#8216;_bloom_filter_enabled&#8217; &#8216;false&#8217;)<br />
+OPT_PARAM(&#8216;_optimizer_extended_cursor_sharing&#8217; &#8216;none&#8217;)<br />
+OPT_PARAM(&#8216;_optimizer_connect_by_cost_based&#8217; &#8216;false&#8217;)<br />
+OPT_PARAM(&#8216;_optimizer_extended_cursor_sharing_rel&#8217; &#8216;none&#8217;)<br />
+OPT_PARAM(&#8216;_optimizer_adaptive_cursor_sharing&#8217; &#8216;false&#8217;)<br />
+OPT_PARAM(&#8216;_optimizer_use_feedback&#8217; &#8216;false&#8217;)<br />
+OPT_PARAM(&#8216;star_transformation_enabled&#8217; &#8216;true&#8217;)<br />
+FIRST_ROWS<br />
+OUTLINE_LEAF(@&#8221;SEL$335DD26A&#8221;)<br />
+MERGE(@&#8221;SEL$3&#8243;)<br />
+OUTLINE_LEAF(@&#8221;SEL$1&#8243;)<br />
+OUTLINE(@&#8221;SEL$2&#8243;)<br />
+OUTLINE(@&#8221;SEL$3&#8243;)<br />
+NO_ACCESS(@&#8221;SEL$1&#8243; &#8220;from$_subquery$_001&#8243;@&#8221;SEL$1&#8243;)<br />
+INDEX_RS_ASC(@&#8221;SEL$335DD26A&#8221; &#8220;BH_&#8221;@&#8221;SEL$3&#8221; (&#8220;DM_SYSOBJECT_S&#8221;.&#8221;I_CABINET_ID&#8221; &#8220;DM_SYSOBJECT_S&#8221;.&#8221;R_CREATION_DATE&#8221;<br />
+&#8220;DM_SYSOBJECT_S&#8221;.&#8221;OWNER_NAME&#8221; &#8220;DM_SYSOBJECT_S&#8221;.&#8221;GROUP_NAME&#8221; &#8220;DM_SYSOBJECT_S&#8221;.&#8221;TITLE&#8221;))<br />
+INDEX(@&#8221;SEL$335DD26A&#8221; &#8220;TT_&#8221;@&#8221;SEL$3&#8221; (&#8220;UD_DOCUMENT_S&#8221;.&#8221;R_OBJECT_ID&#8221;))<br />
+LEADING(@&#8221;SEL$335DD26A&#8221; &#8220;BH_&#8221;@&#8221;SEL$3&#8221; &#8220;TT_&#8221;@&#8221;SEL$3&#8243;)<br />
+USE_NL(@&#8221;SEL$335DD26A&#8221; &#8220;TT_&#8221;@&#8221;SEL$3&#8243;)<br />
+NLJ_BATCHING(@&#8221;SEL$335DD26A&#8221; &#8220;TT_&#8221;@&#8221;SEL$3&#8221;)<br />
+END_OUTLINE_DATA<br />
+*/</p>
+<p>&#8211;SQL_PROFILE 등록<br />
+DECLARE<br />
+V_SQL_TEXT CLOB;<br />
+BEGIN<br />
+SELECT SQL_FULLTEXT<br />
+INTO V_SQL_TEXT<br />
+FROM V$SQL<br />
+WHERE SQL_ID = &#8216;f76yur0mc5qrz&#8217;<br />
+AND ROWNUM=1;</p>
+<p>DBMS_SQLTUNE.IMPORT_SQL_PROFILE(<br />
+NAME =&gt; &#8216;MY_PROFILE_1&#8217;,<br />
+DESCRIPTION =&gt; &#8216;MY_PROFILE_1&#8217;,<br />
+CATEGORY =&gt; &#8216;MY_PROFILE_1&#8217;,<br />
+SQL_TEXT =&gt; V_SQL_TEXT,<br />
+PROFILE =&gt; SQLPROF_ATTR(&#8216;FIRST_ROWS&#8217;<br />
+),<br />
+REPLACE =&gt; TRUE,<br />
+FORCE_MATCH =&gt; TRUE &#8212; CURSOR_SHARING 기능 사용<br />
+);<br />
+END;<br />
+/</p>
+<p>&#8212; SQL_PROFILE 확인<br />
+select * from DBA_SQL_PROFILES;<br />
+&#8211;기존 SQL_PROFILE 삭제<br />
+EXEC DBMS_SQLTUNE.DROP_SQL_PROFILE(NAME =&gt;&#8217;MY_PROFILE_1&#8242;);<br />
+&#8211;SQL_PROFILE DISABLE<br />
+EXEC DBMS_SQLTUNE.ALTER_SQL_PROFILE (NAME =&gt;&#8217;MY_PROFILE_1&#8242;,ATTRIBUTE_NAME=&gt;&#8217;STATUS&#8217;,VALUE=&gt;&#8217;DISABLED&#8217;);<br />
+&#8212; SQL_PROFILE 활성화<br />
+ALTER SESSION SET SQLTUNE_CATEGORY = MY_PROFILE_1 ;<br />
+&#8212; 비활성화<br />
+ALTER SESSION SET SQLTUNE_CATEGORY = FALSE;</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>[DEBUG사례] BSOD / nt!ObpCaptureHandleInformation</title>
+		<link>https://github.com/appi77/myblog/si-technology/debug/debug%ec%82%ac%eb%a1%80-bsod-ntobpcapturehandleinformation/</link>
+				<comments>https://github.com/appi77/myblog/si-technology/debug/debug%ec%82%ac%eb%a1%80-bsod-ntobpcapturehandleinformation/#comments</comments>
+				<pubDate>Mon, 25 Feb 2019 02:48:33 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[DEBUG]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=576</guid>
+				<description><![CDATA[▶ 실제 사례 1: kd&#62; vertarget Windows 7 Kernel Version 7601 (Service Pack 1) MP (4 procs) Free x64 Product: WinNt, suite: TerminalServer SingleUserTS Built by: 7601.24231.amd64fre.win7sp1_ldr.180810-0600 Machine Name:&#8221;VMOA2024974-01&#8243; Kernel base = 0xfffff800`01a1f000 PsLoadedModuleList =&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<h4 align="left"><span lang="EN-US"><img src="https://s.w.org/images/core/emoji/12.0.0-1/72x72/25b6.png" alt="▶" class="wp-smiley" style="height: 1em; max-height: 1em;" /> </span><span lang="EN-US">실제 사례</span></h4>
+<p>1: kd&gt; vertarget<br />
+Windows 7 Kernel Version 7601 (Service Pack 1) MP (4 procs) Free x64<br />
+Product: WinNt, suite: TerminalServer SingleUserTS<br />
+Built by: 7601.24231.amd64fre.win7sp1_ldr.180810-0600<br />
+Machine Name:&#8221;VMOA2024974-01&#8243;<br />
+Kernel base = 0xfffff800`01a1f000 PsLoadedModuleList = 0xfffff800`01c59c90<br />
+Debug session time: Thu Jan 17 10:58:58.567 2019 (UTC + 9:00)<br />
+System Uptime: 3 days 0:32:26.132</p>
+<p>1: kd&gt; !sysinfo machineid<br />
+Machine ID Information [From Smbios 2.7, DMIVersion 0, Size=10220]<br />
+BiosMajorRelease = 4<br />
+BiosMinorRelease = 6<br />
+FirmwareMajorRelease = 0<br />
+FirmwareMinorRelease = 0<br />
+BiosVendor = Phoenix Technologies LTD<br />
+BiosVersion = 6.00<br />
+BiosReleaseDate = 04/05/2016<br />
+SystemManufacturer = VMware, Inc.<br />
+SystemProductName = VMware Virtual Platform<br />
+SystemVersion = None<br />
+BaseBoardManufacturer = Intel Corporation<br />
+BaseBoardProduct = 440BX Desktop Reference Platform<br />
+BaseBoardVersion = None</p>
+<p>1: kd&gt; !cpuinfo<br />
+CP F/M/S Manufacturer MHz PRCB Signature MSR 8B Signature Features<br />
+0 6,79,1 GenuineIntel 2594 0b00002100000000 31193ffe<br />
+1 6,79,1 GenuineIntel 2594 0b00002100000000 31193ffe<br />
+2 6,79,1 GenuineIntel 2593 0b00002100000000 31193ffe<br />
+3 6,79,1 GenuineIntel 2594 0b00002100000000 31193ffe<br />
+Cached Update Signature 0b00002100000000<br />
+Initial Update Signature 0b00002100000000</p>
+<p>1: kd&gt; !vm<br />
+*** Virtual Memory Usage ***<br />
+Physical Memory: 2097038 ( 8388152 Kb)<br />
+Page File: \??\C:\pagefile.sys<br />
+Current: 8695352 Kb Free Space: 5968068 Kb<br />
+Minimum: 8695352 Kb Maximum: 25164456 Kb<br />
+Unimplemented error for MiSystemVaTypeCount<br />
+Available Pages: 791288 ( 3165152 Kb)<br />
+ResAvail Pages: 1965535 ( 7862140 Kb)<br />
+Locked IO Pages: 0 ( 0 Kb)<br />
+Free System PTEs: 33564273 ( 134257092 Kb)<br />
+Modified Pages: 12771 ( 51084 Kb)<br />
+Modified PF Pages: 12753 ( 51012 Kb)<br />
+NonPagedPool Usage: 29559056 ( 118236224 Kb)<br />
+NonPagedPoolNx Usage: 32908 ( 131632 Kb)<br />
+NonPagedPool Max: 1561080 ( 6244320 Kb)<br />
+********** Excessive NonPaged Pool Usage *****<br />
+PagedPool 0 Usage: 58975 ( 235900 Kb)<br />
+PagedPool 1 Usage: 12996 ( 51984 Kb)<br />
+PagedPool 2 Usage: 4998 ( 19992 Kb)<br />
+PagedPool 3 Usage: 4917 ( 19668 Kb)<br />
+PagedPool 4 Usage: 5068 ( 20272 Kb)<br />
+PagedPool Usage: 86954 ( 347816 Kb)<br />
+PagedPool Maximum: 33554432 ( 134217728 Kb)<br />
+Session Commit: 25872 ( 103488 Kb)<br />
+Shared Commit: 604170 ( 2416680 Kb)<br />
+Special Pool: 0 ( 0 Kb)<br />
+Shared Process: 22548 ( 90192 Kb)<br />
+PagedPool Commit: 87018 ( 348072 Kb)<br />
+Driver Commit: 23265 ( 93060 Kb)<br />
+Committed pages: 2062764 ( 8251056 Kb)<br />
+Commit limit: 4270402 ( 17081608 Kb)</p>
+<p>1: kd&gt; !analyze -v<br />
+*******************************************************************************<br />
+* *<br />
+* Bugcheck Analysis *<br />
+* *<br />
+*******************************************************************************</p>
+<p>SYSTEM_SERVICE_EXCEPTION (3b)<br />
+An exception happened while executing a system service routine.<br />
+Arguments:<br />
+Arg1: 00000000c0000005, Exception code that caused the bugcheck<br />
+Arg2: fffff80001dc87b8, Address of the instruction which caused the bugcheck<br />
+Arg3: fffff8801b90cc20, Address of the context record for the exception that caused the bugcheck<br />
+Arg4: 0000000000000000, zero.</p>
+<p>Debugging Details:<br />
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p>EXCEPTION_CODE: (NTSTATUS) 0xc0000005 &#8211; 0x%08lx</p>
+<p>FAULTING_IP:<br />
+nt!ObpCaptureHandleInformation+68<br />
+fffff800`01dc87b8 8a4128 mov al,byte ptr [rcx+28h]</p>
+<p>CONTEXT: fffff8801b90cc20 &#8212; (.cxr 0xfffff8801b90cc20)<br />
+rax=000000000000002d rbx=00000000000004cc rcx=0000000000000000<br />
+rdx=fffff88016992fb0 rsi=fffff8a00ebb0330 rdi=0000000000237578<br />
+rip=fffff80001dc87b8 rsp=fffff8801b90d5f8 rbp=0000000000000000<br />
+r8=fffff8a00ebb0330 r9=fffffa80085e8a50 r10=00000000000d0f88<br />
+r11=fffff8801b90d688 r12=fffff8a00f2fd320 r13=000000000359abd0<br />
+r14=fffff880168c2040 r15=fffff8801b90d6b8<br />
+iopl=0 nv up ei pl zr na po nc<br />
+cs=0010 ss=0018 ds=002b es=002b fs=0053 gs=002b efl=00010246<br />
+nt!ObpCaptureHandleInformation+0x68:<br />
+fffff800`01dc87b8 8a4128 mov al,byte ptr [rcx+28h] ds:002b:00000000`00000028=??<br />
+Resetting default scope</p>
+<p>DEFAULT_BUCKET_ID: VISTA_DRIVER_FAULT</p>
+<p>BUGCHECK_STR: 0x3B</p>
+<p>PROCESS_NAME: MiniCtrl.exe</p>
+<p>CURRENT_IRQL: 0</p>
+<p>LAST_CONTROL_TRANSFER: from fffff80001e53b8d to fffff80001dc87b8</p>
+<p>STACK_TEXT:<br />
+fffff880`1b90d5f8 fffff800`01e53b8d : 00000000`000004cc fffffa80`0c6d61f0 00000000`00000001 00000000`00000238 : nt!ObpCaptureHandleInformation+0x68<br />
+fffff880`1b90d600 fffff800`01e54267 : fffff880`1b90d730 fffff880`16992fb0 00000000`00237578 00000000`00000001 : nt!ExSnapShotHandleTables+0x10d<br />
+fffff880`1b90d680 fffff800`01edfaf5 : fffff880`1b90d730 00000000`000d0f88 00000000`00237578 00000000`00237578 : nt!ObGetHandleInformation+0x37<br />
+fffff880`1b90d6b0 fffff800`01ef4e5b : 00000000`00000000 fffffa80`0d9a9f00 fffff880`168c2040 fffffa80`0c6d5000 : nt!ExpGetHandleInformation+0x55<br />
+fffff880`1b90d6f0 fffff800`01d6aa25 : 00000000`03970040 00000000`00237578 00000000`03970040 00000000`00023758 : nt!ExpQuerySystemInformation+0x17eb<br />
+fffff880`1b90daa0 fffff800`01ac09d3 : 00000000`00000001 00000000`03970038 00000000`00000001 00000000`00000000 : nt!NtQuerySystemInformation+0x4d<br />
+fffff880`1b90dae0 00000000`77899bea : 00000001`4005708d 00000000`c0000004 00000000`0415c920 00000000`00010000 : nt!KiSystemServiceCopyEnd+0x13<br />
+00000000`0359ab88 00000001`4005708d : 00000000`c0000004 00000000`0415c920 00000000`00010000 00000000`00237578 : ntdll!ZwQuerySystemInformation+0xa<br />
+00000000`0359ab90 00000001`400579f0 : 00000000`00237578 00000000`00000001 00000000`0037f980 00000000`00000000 : MiniCtrl+0x5708d<br />
+00000000`0359abd0 00000001`4003a1c1 : ffffffff`00000fb4 00000000`637b0fe2 00000000`0359f9c8 00000000`00000028 : MiniCtrl+0x579f0<br />
+00000000`0359b0f0 00000001`400264ec : 00000000`0037f980 00000000`0359b1d0 00000000`00000001 00000000`00000000 : MiniCtrl+0x3a1c1<br />
+00000000`0359b130 00000000`00000000 : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : MiniCtrl+0x264ec</p>
+<p>FOLLOWUP_IP:<br />
+nt!ObpCaptureHandleInformation+68<br />
+fffff800`01dc87b8 8a4128 mov al,byte ptr [rcx+28h]</p>
+<p>SYMBOL_STACK_INDEX: 0</p>
+<p>SYMBOL_NAME: nt!ObpCaptureHandleInformation+68</p>
+<p>FOLLOWUP_NAME: MachineOwner</p>
+<p>MODULE_NAME: nt</p>
+<p>IMAGE_NAME: ntkrnlmp.exe</p>
+<p>DEBUG_FLR_IMAGE_TIMESTAMP: 5b6dabb8</p>
+<p>STACK_COMMAND: .cxr 0xfffff8801b90cc20 ; kb</p>
+<p>FAILURE_BUCKET_ID: X64_0x3B_nt!ObpCaptureHandleInformation+68</p>
+<p>BUCKET_ID: X64_0x3B_nt!ObpCaptureHandleInformation+68</p>
+<p>Followup: MachineOwner</p>
+<p>1: kd&gt; !ready<br />
+No ready threads found.</p>
+<p>1: kd&gt; !standby<br />
+Process PID Thread Id Pri Base Pri Affinity Next CPU Ideal CPU CSwitches User Kernel State Time Reason<br />
+================ ==== ================ === === ======== ======== ======== ========= ========= ==== ====== ======= ==== =======<br />
+iexplore.exe *32 1d78 fffffa800b1bab50 8a4 12 8 15 3 1 2623 78ms 94ms Standby 15ms WrQueue</p>
+<p>1: kd&gt; !mex.t fffffa800b1bab50<br />
+Process Thread CID TEB UserTime KernelTime ContextSwitches Wait Reason Time State<br />
+iexplore.exe *32 (fffffa800d848060) fffffa800b1bab50 (E|K|W|R|V) 1d78.8a4 000000007ef5e000 78ms 94ms 2623 WrQueue 15ms Standby on processor 3</p>
+<p>1: kd&gt; !tl fffffa800b1bab50<br />
+Warning! Zombie process(es) detected (not displayed). Count: 87 [zombie report]</p>
+<p>1: kd&gt; !mex.tl -z -r<br />
+Count Name Ses Thd Obj Handles Obj Pointers<br />
+===== ========================== === === =========== ============<br />
+1 BizRCSvr.exe 1 0 1 2<br />
+1 CubeU.exe 2 0 0 1<br />
+1 CubeU.exe 3 0 0 1<br />
+1 DSH_Inj64.exe 1 0 1 1<br />
+1 DSU_LiveUpdate64.exe 1 0 1 2<br />
+1 EXCEL.EXE 1 0 2 2<br />
+1 EXCEL.EXE 1 0 3 3<br />
+1 notepad.exe 1 0 1 1<br />
+1 notepad.exe 1 0 3 3<br />
+1 notepad.exe 1 0 9 9<br />
+1 POWERPNT.EXE 1 0 2 2<br />
+1 software_reporter_tool.exe 1 0 0 1<br />
+1 SWClient.exe 1 0 2 4<br />
+1 syscfgdy.exe 1 0 1 2<br />
+1 TDepend.exe 1 0 1 2<br />
+2 CubeU.exe 4 0 0 1<br />
+2 POWERPNT.EXE 1 0 3 3<br />
+2 SWClient.exe 1 0 1 2<br />
+2 V3Exec.exe 1 0 1 1<br />
+3 CubeU.exe 1 0 0 1<br />
+3 iexplore.exe 1 0 1 1<br />
+3 TDepend64.exe 1 0 1 2<br />
+4 CARC.exe 1 0 1 1<br />
+4 CARCHMx32.exe 1 0 1 1<br />
+4 CARCHMx64.exe 1 0 1 1<br />
+4 syscfg64.exe 1 0 1 1<br />
+5 EXCEL.EXE 1 0 1 1<br />
+7 SWClient.exe 1 0 2 3<br />
+27 POWERPNT.EXE 1 0 1 1<br />
+===== ========================== === === =========== ============<br />
+Count Name Ses Thd Obj Handles Obj Pointers<br />
+87</p>
+<p>1: kd&gt; !mex.tasklist -z<br />
+PID Address Name Ses Thd Obj Handles Obj Pointers<br />
+============== ================ ========================== === === =========== ============<br />
+0x4ec 0n1260 fffffa800be8f110 SWClient.exe 1 0 2 3<br />
+0xb04 0n2820 fffffa8006d9d350 CubeU.exe 1 0 0 1<br />
+0x9d4 0n2516 fffffa800befd710 SWClient.exe 1 0 2 3<br />
+0xbe8 0n3048 fffffa800be99890 SWClient.exe 1 0 2 3<br />
+0x91c 0n2332 fffffa800bf07b00 SWClient.exe 1 0 2 3<br />
+0xc34 0n3124 fffffa800a2736f0 SWClient.exe 1 0 1 2<br />
+0x1640 0n5696 fffffa800719fb00 SWClient.exe 1 0 1 2<br />
+0x1a8c 0n6796 fffffa80070fbb00 SWClient.exe 1 0 2 3<br />
+0x428 0n1064 fffffa8007f508f0 CARC.exe 1 0 1 1<br />
+0x1af8 0n6904 fffffa8007371b00 CARCHMx64.exe 1 0 1 1<br />
+0x1c84 0n7300 fffffa8007082b00 CARCHMx32.exe 1 0 1 1<br />
+0x1ca0 0n7328 fffffa800752f060 DSH_Inj64.exe 1 0 1 1<br />
+0x1d00 0n7424 fffffa8007dd3b00 syscfg64.exe 1 0 1 1<br />
+0x20f0 0n8432 fffffa8008d93720 BizRCSvr.exe 1 0 1 2<br />
+0xcc8 0n3272 fffffa80073d2060 DSU_LiveUpdate64.exe 1 0 1 2<br />
+0x2588 0n9608 fffffa800d3c46a0 notepad.exe 1 0 9 9<br />
+0x2780 0n10112 fffffa800e1e3060 notepad.exe 1 0 3 3<br />
+0x28dc 0n10460 fffffa8008380060 POWERPNT.EXE 1 0 1 1<br />
+0x1f84 0n8068 fffffa800e2c0060 POWERPNT.EXE 1 0 1 1<br />
+0xac8 0n2760 fffffa800e376060 POWERPNT.EXE 1 0 2 2<br />
+0x29a8 0n10664 fffffa800da15b00 EXCEL.EXE 1 0 1 1<br />
+0x2490 0n9360 fffffa800734bb00 EXCEL.EXE 1 0 1 1<br />
+0x26b4 0n9908 fffffa800e212800 POWERPNT.EXE 1 0 1 1<br />
+0x5ac 0n1452 fffffa800e3e3060 EXCEL.EXE 1 0 2 2<br />
+0x23c0 0n9152 fffffa800e499060 EXCEL.EXE 1 0 3 3<br />
+0x2884 0n10372 fffffa800eab5060 SWClient.exe 1 0 2 3<br />
+0x28f8 0n10488 fffffa800cc5fb00 CubeU.exe 2 0 0 1<br />
+0x1b7c 0n7036 fffffa800a1d4680 CARC.exe 1 0 1 1<br />
+0x284c 0n10316 fffffa800abe6b00 CARCHMx64.exe 1 0 1 1<br />
+0x2624 0n9764 fffffa8007120340 CARCHMx32.exe 1 0 1 1<br />
+0x24e0 0n9440 fffffa800cc31350 syscfg64.exe 1 0 1 1<br />
+0x134 0n308 fffffa80083d0460 SWClient.exe 1 0 2 3<br />
+0x2398 0n9112 fffffa800de6b890 CubeU.exe 1 0 0 1<br />
+0x17ac 0n6060 fffffa800975a060 CARC.exe 1 0 1 1<br />
+0x26f0 0n9968 fffffa800ec62060 CARCHMx64.exe 1 0 1 1<br />
+0x900 0n2304 fffffa800a2cd5b0 CARCHMx32.exe 1 0 1 1<br />
+0x27e0 0n10208 fffffa8007019b00 syscfg64.exe 1 0 1 1<br />
+0x2a28 0n10792 fffffa800e518870 EXCEL.EXE 1 0 1 1<br />
+0xe48 0n3656 fffffa800cc07060 POWERPNT.EXE 1 0 1 1<br />
+0x1a74 0n6772 fffffa800e448b00 POWERPNT.EXE 1 0 1 1<br />
+0xfd4 0n4052 fffffa800cf0aa50 POWERPNT.EXE 1 0 1 1<br />
+0x2bd8 0n11224 fffffa800d7e6960 POWERPNT.EXE 1 0 1 1<br />
+0x2a9c 0n10908 fffffa800ce45b00 POWERPNT.EXE 1 0 1 1<br />
+0x16a8 0n5800 fffffa800dd7b700 POWERPNT.EXE 1 0 3 3<br />
+0x2904 0n10500 fffffa800d905b00 POWERPNT.EXE 1 0 1 1<br />
+0x2d58 0n11608 fffffa800747b490 POWERPNT.EXE 1 0 1 1<br />
+0x2a18 0n10776 fffffa8009d93b00 CubeU.exe 3 0 0 1<br />
+0x2ff8 0n12280 fffffa800714c370 SWClient.exe 1 0 2 4<br />
+0x27dc 0n10204 fffffa80080c3b00 CubeU.exe 1 0 0 1<br />
+0x17e8 0n6120 fffffa800db68b00 CARC.exe 1 0 1 1<br />
+0xa48 0n2632 fffffa800cf726b0 CARCHMx64.exe 1 0 1 1<br />
+0xf74 0n3956 fffffa80075d82d0 CARCHMx32.exe 1 0 1 1<br />
+0x1870 0n6256 fffffa800a0dd480 syscfg64.exe 1 0 1 1<br />
+0x884 0n2180 fffffa800824c060 TDepend.exe 1 0 1 2<br />
+0x1b1c 0n6940 fffffa800d386aa0 TDepend64.exe 1 0 1 2<br />
+0x2308 0n8968 fffffa800c4cdb00 TDepend64.exe 1 0 1 2<br />
+0x2440 0n9280 fffffa800e3b5b00 TDepend64.exe 1 0 1 2<br />
+0x2170 0n8560 fffffa8007e9b900 EXCEL.EXE 1 0 1 1<br />
+0x27b0 0n10160 fffffa800d6fab00 notepad.exe 1 0 1 1<br />
+0x2808 0n10248 fffffa800832e060 POWERPNT.EXE 1 0 1 1<br />
+0x31b0 0n12720 fffffa80082645f0 iexplore.exe 1 0 1 1<br />
+0x860 0n2144 fffffa800db47510 POWERPNT.EXE 1 0 1 1<br />
+0x16b4 0n5812 fffffa800a079ad0 POWERPNT.EXE 1 0 1 1<br />
+0x1970 0n6512 fffffa800e158b00 POWERPNT.EXE 1 0 1 1<br />
+0x33b4 0n13236 fffffa800e213b00 POWERPNT.EXE 1 0 1 1<br />
+0x33cc 0n13260 fffffa800ea2c060 POWERPNT.EXE 1 0 1 1<br />
+0x242c 0n9260 fffffa800ad7f060 POWERPNT.EXE 1 0 1 1<br />
+0x2d74 0n11636 fffffa800d2a1940 POWERPNT.EXE 1 0 1 1<br />
+0x147c 0n5244 fffffa800ebd7480 EXCEL.EXE 1 0 1 1<br />
+0x3230 0n12848 fffffa800d8b41b0 POWERPNT.EXE 1 0 1 1<br />
+0x3228 0n12840 fffffa800e4d9b00 POWERPNT.EXE 1 0 1 1<br />
+0x2450 0n9296 fffffa800abd45b0 POWERPNT.EXE 1 0 1 1<br />
+0x1bbc 0n7100 fffffa800b55c9d0 CubeU.exe 4 0 0 1<br />
+0x2f60 0n12128 fffffa800d7c68f0 CubeU.exe 4 0 0 1<br />
+0x100 0n256 fffffa800e5ccb00 syscfgdy.exe 1 0 1 2<br />
+0x3240 0n12864 fffffa800a319720 iexplore.exe 1 0 1 1<br />
+0x2b7c 0n11132 fffffa800e29fb00 iexplore.exe 1 0 1 1<br />
+0x1f10 0n7952 fffffa800e9cdb00 POWERPNT.EXE 1 0 3 3<br />
+0x2fbc 0n12220 fffffa8009d4fb00 POWERPNT.EXE 1 0 1 1<br />
+0x1ec0 0n7872 fffffa800c66b060 POWERPNT.EXE 1 0 1 1<br />
+0x1be4 0n7140 fffffa8007db0b00 POWERPNT.EXE 1 0 1 1<br />
+0xaf4 0n2804 fffffa800ea73b00 POWERPNT.EXE 1 0 1 1<br />
+0x1a58 0n6744 fffffa800df86b00 POWERPNT.EXE 1 0 1 1<br />
+0x23c8 0n9160 fffffa800d6c26f0 POWERPNT.EXE 1 0 1 1<br />
+0x3130 0n12592 fffffa800d910300 software_reporter_tool.exe 1 0 0 1<br />
+0x2698 0n9880 fffffa800c652060 V3Exec.exe 1 0 1 1<br />
+0x3774 0n14196 fffffa8008164190 V3Exec.exe 1 0 1 1<br />
+============== ================ ========================== === === =========== ============<br />
+PID Address Name Ses Thd Obj Handles Obj Pointers</p>
+<p>Priority:<br />
+Current Base Decrement ForegroundBoost IO Page<br />
+12 8 0 2 0 5</p>
+<p># Child-SP Return Call Site<br />
+0 fffff880147ff6c0 fffff80001a57f32 nt!KiSwapContext+0x7a<br />
+1 fffff880147ff800 fffff80001a592b3 nt!KiCommitThreadWait+0x1d2<br />
+2 fffff880147ff890 fffff80001d0b6bc nt!KeRemoveQueueEx+0x323<br />
+3 fffff880147ff950 fffff80001a5d3c5 nt!IoRemoveIoCompletion+0x5c<br />
+4 fffff880147ff9e0 fffff80001ac09d3 nt!NtWaitForWorkViaWorkerFactory+0x285<br />
+5 fffff880147ffae0 000000007789b18a nt!KiSystemServiceCopyEnd+0x13<br />
+0 000000001015fd98 0000000077a3fa9e ntdll_779f0000!ZwWaitForWorkViaWorkerFactory+0x12<br />
+1 000000001015fda0 00000000774a343d ntdll_779f0000!TppWorkerThread+0x209<br />
+2 000000001015fef0 0000000077a29802 kernel32!BaseThreadInitThunk+0xe<br />
+3 000000001015fefc 0000000077a297d5 ntdll_779f0000!__RtlUserThreadStart+0x70<br />
+4 000000001015ff3c 0000000000000000 ntdll_779f0000!_RtlUserThreadStart+0x1b</p>
+<p>1: kd&gt; !cpu<br />
+Process PID Thread Id Pri Base Pri Next CPU CSwitches User Kernel State Time Reason<br />
+================ ==== ================ ==== === ======== ======== ========= ============ =============== ======= =============== =============<br />
+Idle 0 fffff80001c141c0 0 16 0 0 553290675 0 2d.09:23:53.324 Running 3d.00:32:26.126 Executive<br />
+MiniCtrl.exe 2924 fffffa800d9a9b50 1474 9 8 1 155 0 31ms Running 0 WrDispatchInt<br />
+iexplore.exe *32 1d78 fffffa800da30b50 27ac 11 8 2 70840493 2h:38:23.643 37m:26.789 Running 0 WrUserRequest<br />
+Idle 0 fffff8800210b140 0 16 0 3 539279526 0 2d.14:19:12.729 Running 3d.00:32:26.126 Executive</p>
+<p>1: kd&gt; !mex.t fffffa800d9a9b50<br />
+Process Thread CID TEB UserTime KernelTime ContextSwitches Wait Reason Time State<br />
+MiniCtrl.exe (fffffa80095ed060) fffffa800d9a9b50 (E|K|W|R|V) 2924.1474 000007fffff7e000 0 31ms 155 WrDispatchInt 0 Running on processor 1</p>
+<p>Priority:<br />
+Current Base Decrement ForegroundBoost IO Page<br />
+9 8 0 0 0 5</p>
+<p># Child-SP Return Call Site<br />
+0 fffff8801b90c358 fffff80001ac0d69 nt!KeBugCheckEx<br />
+1 fffff8801b90c360 fffff80001ac047c nt!KiBugCheckDispatch+0x69<br />
+2 fffff8801b90c4a0 fffff80001ab9cdd nt!KiSystemServiceHandler+0x7c<br />
+3 fffff8801b90c4e0 fffff80001a3b445 nt!RtlpExecuteHandlerForException+0xd<br />
+4 fffff8801b90c510 fffff80001b9984e nt!RtlDispatchException+0x415<br />
+5 fffff8801b90cbf0 fffff80001ac0e42 nt!KiDispatchException+0x17e<br />
+6 fffff8801b90d280 fffff80001abeb62 nt!KiExceptionDispatch+0xc2<br />
+7 fffff8801b90d460 fffff80001dc87b8 nt!KiPageFault+0x422<br />
+8 fffff8801b90d5f8 fffff80001e53b8d nt!ObpCaptureHandleInformation+0x68<br />
+9 fffff8801b90d600 fffff80001e54267 nt!ExSnapShotHandleTables+0x10d<br />
+a fffff8801b90d680 fffff80001edfaf5 nt!ObGetHandleInformation+0x37<br />
+b fffff8801b90d6b0 fffff80001ef4e5b nt!ExpGetHandleInformation+0x55<br />
+c fffff8801b90d6f0 fffff80001d6aa25 nt!ExpQuerySystemInformation+0x17eb<br />
+d fffff8801b90daa0 fffff80001ac09d3 nt!NtQuerySystemInformation+0x4d<br />
+e fffff8801b90dae0 0000000077899bea nt!KiSystemServiceCopyEnd+0x13<br />
+f 000000000359ab88 000000014005708d ntdll!ZwQuerySystemInformation+0xa<br />
+10 000000000359ab90 00000001400579f0 MiniCtrl+0x5708d<br />
+11 000000000359abd0 000000014003a1c1 MiniCtrl+0x579f0<br />
+12 000000000359b0f0 00000001400264ec MiniCtrl+0x3a1c1<br />
+13 000000000359b130 0000000000000000 MiniCtrl+0x264ec</p>
+<p>1: kd&gt; !mex.p 0xfffffa80095ed060<br />
+Name Address Ses PID Parent PEB Create Time Mods Handle Thrd User Name<br />
+============ ======================== === ============== ============== ================ ========================== ==== ====== ==== ===============<br />
+MiniCtrl.exe fffffa80095ed060 (E|K|O) 1 2924 (0n10532) 2d90 (0n11664) 000007fffffd4000 01-15-2019 07:10:47.095 오후 81 277 24 HYNIXAD\2024974</p>
+<p>Command Line: &#8220;C:\Windows\system32\MiniCtrl.exe&#8221; /L</p>
+<p>Memory Details:</p>
+<p>VM Peak Work Set Commit Size<br />
+========= ========= ======== ===========<br />
+145.35 MB 172.57 MB 34.88 MB 17.6 MB</p>
+<p>0: kd&gt; lmvm minictrl<br />
+start end module name<br />
+00000001`40000000 00000001`405ec000 MiniCtrl (no symbols)<br />
+Loaded symbol image file: MiniCtrl.exe<br />
+Image path: C:\Windows\system32\MiniCtrl.exe<br />
+Image name: MiniCtrl.exe<br />
+Timestamp: Thu Dec 06 10:40:45 2018 (5C087E1D)<br />
+CheckSum: 000EDA25<br />
+ImageSize: 005EC000<br />
+File version: 1.2.0.87<br />
+Product version: 1.2.0.87<br />
+File flags: 0 (Mask 3F)<br />
+File OS: 4 Unknown Win32<br />
+File type: 1.0 App<br />
+File date: 00000000.00000000<br />
+Translations: 0409.04b0<br />
+CompanyName: ITM System<br />
+ProductName: MiniCtrl Application<br />
+InternalName: MiniCtrl<br />
+OriginalFilename: MiniCtrl.EXE<br />
+ProductVersion: 1.2.0.87<br />
+FileVersion: 1.2.0.87<br />
+FileDescription: MiniCtrl MFC Application<br />
+LegalCopyright: Copyright (C) 2011 ITM Syste</p>
+]]></content:encoded>
+							<wfw:commentRss>https://github.com/appi77/myblog/si-technology/debug/debug%ec%82%ac%eb%a1%80-bsod-ntobpcapturehandleinformation/feed/</wfw:commentRss>
+		<slash:comments>1</slash:comments>
+							</item>
+		<item>
+		<title>[DEBUG사례] ntdll_771d0000!RtlEnterCriticalSection</title>
+		<link>https://github.com/appi77/myblog/si-technology/debug/debug%ec%82%ac%eb%a1%80-ntdll_771d0000rtlentercriticalsection/</link>
+				<pubDate>Mon, 25 Feb 2019 01:37:38 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[DEBUG]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=570</guid>
+				<description><![CDATA[▶ 실제 사례 &#62; !dml_proc DbgId PID Image file name 0 cbd4 C:\Program Files (x86)\Notepad++\notepad++.exe &#62; !runaway User Mode Time Thread Time 0:c628 0 days 0:00:00.374 10:c994 0 days 0:00:00.015 11:c470 0 days 0:00:00.000 9:c8dc&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<h4 align="left"><span lang="EN-US"><img src="https://s.w.org/images/core/emoji/12.0.0-1/72x72/25b6.png" alt="▶" class="wp-smiley" style="height: 1em; max-height: 1em;" /> </span><span lang="EN-US">실제 사례</span></h4>
+<p>&gt; !dml_proc<br />
+DbgId PID Image file name<br />
+0 cbd4 <span style="color: #0000ff;"><em>C:\Program Files (x86)\Notepad++\notepad++.exe</em></span></p>
+<p>&gt; !runaway<br />
+User Mode Time<br />
+Thread Time<br />
+0:c628 0 days 0:00:00.374<br />
+10:c994 0 days 0:00:00.015<br />
+11:c470 0 days 0:00:00.000<br />
+9:c8dc 0 days 0:00:00.000<br />
+8:c4b0 0 days 0:00:00.000<br />
+7:c888 0 days 0:00:00.000<br />
+6:ca84 0 days 0:00:00.000<br />
+5:ca60 0 days 0:00:00.000<br />
+4:c130 0 days 0:00:00.000<br />
+3:ca64 0 days 0:00:00.000<br />
+2:c16c 0 days 0:00:00.000<br />
+1:cbd0 0 days 0:00:00.000</p>
+<p>&gt; !analyze -v -hang<br />
+STACK_COMMAND: ~14s ; kb<br />
+BUCKET_ID: X64_HANG<br />
+FAILURE_BUCKET_ID: APPLICATION_HANG_cfffffff_Unknown_Image!Unknown</p>
+<p>&gt; ~14s ; kb<br />
+00000000`74792bf1 : 00000000`75f372b9 00000000`ffff0023 00000000`00000246 00000000`07cf7f1c : <span style="color: #0000ff;">wow64cpu!CpupSyscallStub</span>+0x9<br />
+00000000`7480d286 : 00000000`00000000 00000000`74791904 00000000`00000000 00000000`7480d286 : <span style="color: #0000ff;">wow64cpu!Thunk0ArgReloadState</span>+0x23<br />
+&#8230;..</p>
+<p>&gt; !wow64exts.sw<br />
+Switched to 32bit mode</p>
+<p>0:014:x86&gt; kb<br />
+ChildEBP RetAddr Args to Child<br />
+07cf7068 7721ebf6 000010c0 00000000 00000000 ntdll_771d0000!ZwWaitForSingleObject+0x15<br />
+07cf70cc 7721eada 00000000 00000000 07cf8eec ntdll_771d0000!RtlpWaitOnCriticalSection+0x13e<br />
+07cf70f4 10062647 <span style="color: #ff0000;"><strong>100d0078</strong></span> 7d9a68e8 000c1b60 ntdll_771d0000!<span style="color: #ff0000;"><strong>RtlEnterCriticalSection</strong></span>+0x150<br />
+WARNING: Stack unwind information not available. Following frames may be wrong.<br />
+07cf7b44 10065a66 7d9a6c28 000c1b60 07cf8eec SPF!ExitThreadHook+0x46507<br />
+07cf7f84 10037629 07cf8eec 100891ec 07cf8eec SPF!ExitThreadHook+0x49926<br />
+07cf83d8 100378f2 000c1b60 0e132748 07cf8eec SPF!ExitThreadHook+0x1b4e9<br />
+07cf83f8 10029f0b 000c1b60 0000004b 0000003b SPF!ExitThreadHook+0x1b7b2<br />
+07cfa7b0 1002c4cc 002516ec 00000016 07cfc21c SPF!ExitThreadHook+0xddcb<br />
+07cfc1f0 1001b111 07cfc21c 00000000 100ce940 SPF!ExitThreadHook+0x1038c<br />
+07cfc870 75f47451 00000000 00000001 07cfc934 SPF!CheckAttachType+0xd31<br />
+07cfc88c 75f380a9 00030000 00000001 07cfc934 user32!DispatchHookW+0x38<br />
+07cfc8cc 75f38ba1 07cfc924 07cfc934 07cfc950 user32!CallHookWithSEH+0x21<br />
+07cfc90c 771e013a 07cfc924 00000000 07cfca1c user32!__fnHkINLPMSG+0x75<br />
+07cfc954 64921430 07cfc9d8 00000000 00000000 ntdll_771d0000!KiUserCallbackDispatcher+0x2e<br />
+07cfc990 649214e9 07cfc9d8 00000000 00000000 duser!CoreSC::xwProcessNL+0xfb<br />
+07cfc9b8 75f7fd3b 07cfc9d8 00000000 00000000 duser!MphProcessMessage+0x5e<br />
+07cfca0c 771e013a 07cfca24 00000000 07cfe854 user32!__ClientGetMessageMPH+0x34<br />
+07cfca38 75f40703 07cfcab4 00000000 00000000 ntdll_771d0000!KiUserCallbackDispatcher+0x2e<br />
+07cfca60 75f40769 07cfcab4 00000000 00000000 user32!_PeekMessage+0x88<br />
+07cfca8c 75f5d7ee 07cfcab4 00000000 00000000 user32!PeekMessageW+0x108<br />
+07cfcadc 75f5da5c 002516ec 001f19ba 00000008 user32!DialogBox2+0xfc<br />
+07cfcb08 75f5d98a 75b80000 0dff0b58 001f19ba user32!InternalDialogBox+0xe5<br />
+07cfcb28 75f5d70e 75b80000 0dff0b58 001f19ba user32!DialogBoxIndirectParamAorW+0x37<br />
+07cfcb48 75b8597b 75b80000 0dff0b58 001f19ba user32!DialogBoxIndirectParamW+0x1b<br />
+07cfcb94 6de7011a 0dff0b58 001f19ba 6495e610 comdlg32!CFileOpenSave::Show+0x181<br />
+07cfcbbc 531d56dc 54c93509 04363758 07cfe918 mfc90u!CFileDialog::DoModal+0xc5<br />
+07cfcc40 746d3c1b 06730000 00000000 746d3c3a JECM+0x56dc<br />
+07cfcc8c 6de4b325 04354e78 04356204 6de43b6b msvcr90!free+0xcd<br />
+07cfcc98 6de43b6b 04354e78 64959275 54c93352 mfc90u!CMemFile::Free+0xe<br />
+07cfccac 64959296 0673ebf0 07cfcca4 00750051 mfc90u!ATL::CStringData::Release+0x17<br />
+07cfccb0 0673ebf0 07cfcca4 00750051 6ddfee64 duser!JLog::Printf+0x166<br />
+07cfccb4 07cfcca4 00750051 6ddfee64 00000002 0x673ebf0<br />
+07cfccb8 00750051 6ddfee64 00000002 00000000 0x7cfcca4<br />
+07cfccbc 6ddfee64 00000002 00000000 00000000 0x750051<br />
+07cfccc0 00000000 00000000 00000000 00000000 mfc90u!CFileDialog::`vftable&#8217;</p>
+<p>0:014:x86&gt; !cs <strong><span style="color: #ff0000;">100d0078</span></strong><br />
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;<br />
+Critical section = 0x00000000100d0078 (<span style="color: #ff0000;">SPF!ExitThreadHook+0xB3F38</span>)<br />
+DebugInfo = 0x000000000726d640<br />
+LOCKED<br />
+LockCount = 0xFFFFFFFF<br />
+WaiterWoken = Yes<br />
+OwningThread = 0x00000000000010c0<br />
+RecursionCount = 0x3004<br />
+LockSemaphore = 0x0<br />
+SpinCount = 0x0000000000000000</p>
+]]></content:encoded>
+										</item>
+	</channel>
+</rss>

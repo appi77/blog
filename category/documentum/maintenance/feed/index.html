@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Maintenance &#8211; 山情</title>
+	<atom:link href="https://github.com/appi77/myblog/category/documentum/maintenance/feed/" rel="self" type="application/rss+xml" />
+	<link>http://github.com/appi77/myblog/</link>
+	<description>산정의 블로그</description>
+	<lastBuildDate>Fri, 01 Jul 2016 10:05:47 +0000</lastBuildDate>
+	<language>ko-KR</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=5.3.2</generator>
+
+<image>
+	<url>https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/07/cropped-20160505_122002-32x32.jpg</url>
+	<title>Maintenance &#8211; 山情</title>
+	<link>http://github.com/appi77/myblog/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>audit</title>
+		<link>https://github.com/appi77/myblog/documentum/maintenance/audit/</link>
+				<pubDate>Thu, 30 Jun 2016 11:22:54 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Maintenance]]></category>
+
+		<guid isPermaLink="false">http://apps.ipdisk.co.kr/apps/wordpress/?p=59</guid>
+				<description><![CDATA[▣ purge_audit [검증된 방식] EXECUTE purge_audit WITH DELETE_MODE=&#8217;PREDICATE&#8217; , dql_predicate=&#8217;dm_audittrail WHERE time_stamp &#60; &#8221;2016/06/01 00:00:00&#8221; AND event_source=&#8221;System Unspecific&#8221;&#8217; , purge_non_archived=TRUE,commit_size=5000 [매뉴얼 있지만 안되는 방식] EXECUTE purge_audit WITH DELETE_MODE=&#8217;DATE_RANGE&#8217; , DATE_START=&#8217;01/01/2003 00:00:00 AM&#8217;, DATE_END=&#8217;06/01/2016 00:00:00 AM&#8217;&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>▣ purge_audit</p>
+<p>[검증된 방식]</p>
+<p>EXECUTE purge_audit WITH DELETE_MODE=&#8217;PREDICATE&#8217;<br />
+, dql_predicate=&#8217;dm_audittrail WHERE time_stamp &lt; &#8221;2016/06/01 00:00:00&#8221; AND event_source=&#8221;System Unspecific&#8221;&#8217;<br />
+, purge_non_archived=TRUE,commit_size=5000</p>
+<p>[매뉴얼 있지만 안되는 방식]</p>
+<p>EXECUTE purge_audit WITH DELETE_MODE=&#8217;DATE_RANGE&#8217;<br />
+, DATE_START=&#8217;01/01/2003 00:00:00 AM&#8217;, DATE_END=&#8217;06/01/2016 00:00:00 AM&#8217;<br />
+, purge_non_archived=TRUE,commit_size=5000<br />
+EXECUTE purge_audit WITH DELETE_MODE=&#8217;ALL_VERSIONS&#8217;<br />
+, object_id=&#8217;5f1876a980000100&#8242;<br />
+, purge_non_archived=TRUE,commit_size=5000</p>
+<p>&nbsp;</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>관리를 위해 자주쓰는 DQL</title>
+		<link>https://github.com/appi77/myblog/documentum/maintenance/%ea%b4%80%eb%a6%ac%eb%a5%bc-%ec%9c%84%ed%95%b4-%ec%9e%90%ec%a3%bc%ec%93%b0%eb%8a%94-dql/</link>
+				<pubDate>Thu, 30 Jun 2016 11:06:39 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Maintenance]]></category>
+
+		<guid isPermaLink="false">http://apps.ipdisk.co.kr/apps/wordpress/?p=36</guid>
+				<description><![CDATA[DEFAULT STORAGE변경 : alter type &#8220;dm_document&#8221; set default storage &#8216;filestore_01&#8217; Find Filestore path : SELECT file_system_path FROM dm_location WHERE object_name IN (SELECT root FROM dm_filestore WHERE name IN (SELECT a_storage_type FROM dm_document WHERE r_object_id&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>DEFAULT STORAGE변경 :<br />
+alter type &#8220;dm_document&#8221; set default storage &#8216;filestore_01&#8217;</p>
+<p>Find Filestore path :<br />
+SELECT file_system_path FROM dm_location WHERE object_name IN<br />
+(SELECT root FROM dm_filestore WHERE name IN<br />
+(SELECT a_storage_type FROM dm_document WHERE r_object_id = &#8216;&lt;r_object_id&gt;&#8217;)<br />
+)</p>
+<p>Index 추가 :<br />
+EXECUTE make_index WITH type_name=&#8217;ud_document&#8217;,<br />
+attribute=&#8217;c_creation_date&#8217;,<br />
+attribute=&#8217;c_group_name&#8217;,<br />
+index_name=&#8217;UD_WF_EVENT_NAME_IX&#8217;<br />
+INDEX_SPACE=&#8217;DM_PILOT&#8217; &#8211;Repository Configuration Properties / Index Store 확인<br />
+&#8211;use_id_col=true 를 넣으면 r_object_id가 자동으로 들어가는데 멀티 컬럼 인덱스인 경우 맨 앞으로만 들어감</p>
+<p>EXECUTE make_index WITH type_name=&#8217;dm_sysobject&#8217;,<br />
+attribute=&#8217;r_creation_date&#8217;,<br />
+attribute=&#8217;group_name&#8217;</p>
+<p>Index 삭제 :<br />
+EXECUTE drop_index for &#8216;1f1eb06580000d08&#8242;;</p>
+<p>Index 추가 예 :<br />
+EXECUTE make_index WITH type_name=&#8217;dm_sysobject&#8217;,<br />
+attribute=&#8217;a_status&#8217;,<br />
+attribute=&#8217;r_creation_date&#8217;,<br />
+attribute=&#8217;owner_name&#8217;,<br />
+attribute=&#8217;group_name&#8217;,<br />
+attribute=&#8217;title&#8217;,INDEX_SPACE=&#8217;DM_PILOT&#8217;</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>ASPECT 사용법</title>
+		<link>https://github.com/appi77/myblog/documentum/maintenance/aspect-%ec%82%ac%ec%9a%a9%eb%b2%95/</link>
+				<pubDate>Thu, 30 Jun 2016 11:06:02 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Maintenance]]></category>
+
+		<guid isPermaLink="false">http://apps.ipdisk.co.kr/apps/wordpress/?p=34</guid>
+				<description><![CDATA[ASPECT TYPE 설치와 별개로 DQL과 API에서 사용하기 위한 DQL 및 API ASPECT 속성추가 : ALTER ASPECT dm_document_aspect add years_to_retain int, level_of_security String(2) OPTIMIZEFETCH ASPECT 속성 제거 : ALTER ASPECT dm_document_aspect drop level_of_security TYPE에 ASPECT&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>ASPECT TYPE 설치와 별개로 DQL과 API에서 사용하기 위한 DQL 및 API</p>
+<p>ASPECT 속성추가 :<br />
+ALTER ASPECT dm_document_aspect add years_to_retain int, level_of_security String(2) OPTIMIZEFETCH</p>
+<p>ASPECT 속성 제거 :<br />
+ALTER ASPECT dm_document_aspect drop level_of_security</p>
+<p>TYPE에 ASPECT add :<br />
+ALTER TYPE dm_document add DEFAULT ASPECTS dm_document_aspect</p>
+<p>ASPECT 속성 테스트 :<br />
+SELECT r_object_id, dm_document_aspect.years_to_retain, dm_document_aspect.level_of_security<br />
+FROM dm_document WHERE dm_document_aspect.years_to_retain = 10</p>
+<p>TYPE에 ASPECT remove :<br />
+ALTER TYPE dm_document REMOVE DEFAULT ASPECTS dm_document_aspect;</p>
+<p>ASPECT 삭제 :<br />
+ALTER ASPECT dm_document_aspect DROP ALL</p>
+<p>iapi에서 ASPECT 사용예 :<br />
+create,c,dm_document<br />
+set,c,l,a_content_type<br />
+text<br />
+set,c,l,object_name<br />
+test test3<br />
+setfile,c,l,d:\temp\a.txt<br />
+link,c,l,/Temp<br />
+set,c,l,dm_document_aspect.level_of_security<br />
+A<br />
+set,c,l,dm_document_aspect.years_to_retain<br />
+1<br />
+save,c,l</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>dump &#038; load</title>
+		<link>https://github.com/appi77/myblog/documentum/maintenance/dump-load/</link>
+				<pubDate>Thu, 30 Jun 2016 11:05:29 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Maintenance]]></category>
+
+		<guid isPermaLink="false">http://apps.ipdisk.co.kr/apps/wordpress/?p=32</guid>
+				<description><![CDATA[iapi dump 예 : # create,c,dm_dump_record set,c,l,file_name c:\dump\dumpfile.txt set,c,l,include_content T append,c,l,type dm_sysobject append,c,l,predicate folder(&#8216;/WebPublisher Configuration/Common&#8217;) append,c,l,type dm_user append,c,l,predicate 1 = 1 save,c,l getmessage,c iapi load 예 : trace,c,10 create,c,dm_load_record set,c,l,file_name c:\temp\dumpfile.txt set,c,l,relocate T dump,c,l&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>iapi dump 예 :<br />
+#<br />
+create,c,dm_dump_record<br />
+set,c,l,file_name<br />
+c:\dump\dumpfile.txt<br />
+set,c,l,include_content<br />
+T<br />
+append,c,l,type<br />
+dm_sysobject<br />
+append,c,l,predicate<br />
+folder(&#8216;/WebPublisher Configuration/Common&#8217;)<br />
+append,c,l,type<br />
+dm_user<br />
+append,c,l,predicate<br />
+1 = 1<br />
+save,c,l<br />
+getmessage,c<br />
+iapi load 예 :<br />
+trace,c,10<br />
+create,c,dm_load_record<br />
+set,c,l,file_name<br />
+c:\temp\dumpfile.txt<br />
+set,c,l,relocate<br />
+T<br />
+dump,c,l<br />
+save,c,l<br />
+dump,c,l<br />
+getmessage,c,1 (note-this is a one)<br />
+destroy,c,l<br />
+exit</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>template dump file for dumping</title>
+		<link>https://github.com/appi77/myblog/documentum/maintenance/template-dump-file-for-dumping/</link>
+				<pubDate>Thu, 30 Jun 2016 11:04:43 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Maintenance]]></category>
+
+		<guid isPermaLink="false">http://apps.ipdisk.co.kr/apps/wordpress/?p=30</guid>
+				<description><![CDATA[iapi 툴에서 Object를 덤프하는 방법 # # This is a generic template dump file for dumping a x.x docbase. # # The following types are dumped: # # dm_sysobject # dm_assembly # dm_format #&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>iapi 툴에서 Object를 덤프하는 방법<br />
+#<br />
+# This is a generic template dump file for dumping a x.x docbase.<br />
+#<br />
+# The following types are dumped:<br />
+#<br />
+# dm_sysobject<br />
+# dm_assembly<br />
+# dm_format<br />
+# dm_user<br />
+# dm_group<br />
+# dm_relation<br />
+# dm_relation_type<br />
+# dmi_queue_item<br />
+# dmi_registry<br />
+# dmr_containment<br />
+# dmr_content<br />
+#<br />
+# If you have added any new types that do not inherit from documentum<br />
+# base types, you must add them into the script.<br />
+#<br />
+# NOTE: If you have altered any system types: (ie sysobject, user,&#8230;)<br />
+# Make sure that you perform the alter types on any target docbase<br />
+# before loading the dump file created by this script.<br />
+#<br />
+create,c,dm_dump_record<br />
+set,c,l,file_name<br />
+d:\dump\dumpfile.txt<br />
+#<br />
+# NOTE: specify a path to a dump file.<br />
+# This path must be recognizable on the server machine<br />
+#<br />
+set,c,l,include_content<br />
+T<br />
+append,c,l,type<br />
+dm_sysobject<br />
+append,c,l,predicate<br />
+1 = 1<br />
+append,c,l,type<br />
+dm_assembly<br />
+append,c,l,predicate<br />
+1 = 1<br />
+append,c,l,type<br />
+dm_format<br />
+append,c,l,predicate<br />
+1 = 1<br />
+append,c,l,type<br />
+dm_user<br />
+append,c,l,predicate<br />
+1 = 1<br />
+append,c,l,type<br />
+dm_group<br />
+append,c,l,predicate<br />
+1 = 1<br />
+append,c,l,type<br />
+dm_relation<br />
+append,c,l,predicate<br />
+1 = 1<br />
+append,c,l,type<br />
+dm_relation_type<br />
+append,c,l,predicate<br />
+1 = 1<br />
+append,c,l,type<br />
+dmi_queue_item<br />
+append,c,l,predicate<br />
+1 = 1<br />
+append,c,l,type<br />
+dmi_registry<br />
+append,c,l,predicate<br />
+1 = 1<br />
+append,c,l,type<br />
+dmr_containment<br />
+append,c,l,predicate<br />
+1 = 1<br />
+append,c,l,type<br />
+dmr_content<br />
+append,c,l,predicate<br />
+1 = 1<br />
+append,c,l,type<br />
+dm_acl<br />
+append,c,l,predicate<br />
+1 = 1<br />
+#<br />
+# NOTE: also dump any user defined non-sysobject types.<br />
+#<br />
+save,c,l<br />
+getmessage,c</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>QUEUE 관련 IAPI 및 DQL</title>
+		<link>https://github.com/appi77/myblog/documentum/maintenance/queue-%ea%b4%80%eb%a0%a8-iapi-%eb%b0%8f-dql/</link>
+				<pubDate>Thu, 30 Jun 2016 11:03:48 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Maintenance]]></category>
+
+		<guid isPermaLink="false">http://apps.ipdisk.co.kr/apps/wordpress/?p=28</guid>
+				<description><![CDATA[PDF변환 QUEUE 등록 API : queue,session,object_id,user_name,event,priority[,send_mail],[due_date],message 예 queue,c,091876a98002095a,dm_autorender_win31,rendition,0,,,rendition_req_ocr PDF변환 QUEUE 삭제 API : dequeue,c,stamp PDF변환 QUEUE 조회 DQL : select * from dm_queue where name = &#8216;dm_autorender_win31&#8217; and message = &#8216;rendition_req_ocr&#8217;; ※ &#8216;rendition_req_ocr&#8217; 은&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>PDF변환 QUEUE 등록 API :<br />
+queue,session,object_id,user_name,event,priority[,send_mail],[due_date],message<br />
+예<br />
+queue,c,091876a98002095a,dm_autorender_win31,rendition,0,,,rendition_req_ocr</p>
+<p>PDF변환 QUEUE 삭제 API :<br />
+dequeue,c,stamp</p>
+<p>PDF변환 QUEUE 조회 DQL :<br />
+select * from dm_queue where name = &#8216;dm_autorender_win31&#8217; and message = &#8216;rendition_req_ocr&#8217;;<br />
+※ &#8216;rendition_req_ocr&#8217; 은 queue 처리 할 쪽과 약속한 메시지임</p>
+]]></content:encoded>
+										</item>
+	</channel>
+</rss>

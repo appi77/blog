@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /wordpress/wp-admin/
+Disallow: /shingil/
+Allow: /
+
+Sitemap: https://github.com/appi77/myblog/sitemap.xml
+
+
+
+

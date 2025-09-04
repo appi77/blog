@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>oralce &#8211; 山情</title>
+	<atom:link href="https://github.com/appi77/myblog/tag/oralce/feed/" rel="self" type="application/rss+xml" />
+	<link>http://github.com/appi77/myblog/</link>
+	<description>산정의 블로그</description>
+	<lastBuildDate>Mon, 01 Apr 2019 06:10:36 +0000</lastBuildDate>
+	<language>ko-KR</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=5.3.2</generator>
+
+<image>
+	<url>https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/07/cropped-20160505_122002-32x32.jpg</url>
+	<title>oralce &#8211; 山情</title>
+	<link>http://github.com/appi77/myblog/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>문제 있는 쿼리 찾기</title>
+		<link>https://github.com/appi77/myblog/si-technology/rdbms/%eb%ac%b8%ec%a0%9c-%ec%9e%88%eb%8a%94-%ec%bf%bc%eb%a6%ac-%ec%b0%be%ea%b8%b0/</link>
+				<pubDate>Mon, 01 Apr 2019 05:49:35 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[RDBMS]]></category>
+		<category><![CDATA[oralce]]></category>
+		<category><![CDATA[sql]]></category>
+		<category><![CDATA[tunning]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=611</guid>
+				<description><![CDATA[SELECT q.cpu_x, q.execs, t.sql_text, q.* FROM ( SELECT q.dbid, q.instance_number, q.sql_id, MAX(q.optimizer_mode) optmode, MAX(q.module) module, MAX(q.action) action, MAX(q.force_matching_signature) force_matching_signature, MAX(q.parsing_schema_name) parse_schema, SUM(q.executions_delta) execs, SUM(q.disk_reads_delta) dreads, SUM(q.buffer_gets_delta) bgets, SUM(q.rows_processed_delta) rows_processed, SUM(q.cpu_time_delta) cpu, SUM(q.elapsed_time_delta) elapsed, SUM(q.iowait_delta)&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>SELECT<br />
+q.cpu_x,<br />
+q.execs,<br />
+t.sql_text,<br />
+q.*<br />
+FROM ( SELECT<br />
+q.dbid,<br />
+q.instance_number,<br />
+q.sql_id,<br />
+MAX(q.optimizer_mode) optmode,<br />
+MAX(q.module) module,<br />
+MAX(q.action) action,<br />
+MAX(q.force_matching_signature) force_matching_signature,<br />
+MAX(q.parsing_schema_name) parse_schema,<br />
+SUM(q.executions_delta) execs,<br />
+SUM(q.disk_reads_delta) dreads,<br />
+SUM(q.buffer_gets_delta) bgets,<br />
+SUM(q.rows_processed_delta) rows_processed,<br />
+SUM(q.cpu_time_delta) cpu,<br />
+SUM(q.elapsed_time_delta) elapsed,<br />
+SUM(q.iowait_delta) iowait,<br />
+SUM(q.clwait_delta) clwait,<br />
+SUM(q.apwait_delta) apwait,<br />
+SUM(q.ccwait_delta) ccwait,<br />
+SUM(q.direct_writes_delta) direct_writes,<br />
+SUM(q.plsexec_time_delta) plsexec_time,<br />
+SUM(q.javexec_time_delta) javaexec_time,<br />
+SUM(q.disk_reads_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) dreads_x,<br />
+SUM(q.buffer_gets_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) bgets_x,<br />
+SUM(q.rows_processed_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) rows_x,<br />
+( SUM(q.cpu_time_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 cpu_x,<br />
+( SUM(q.elapsed_time_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 elapsed_x,<br />
+( SUM(q.iowait_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 iowait_x,<br />
+( SUM(q.clwait_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 clwait_x,<br />
+( SUM(q.apwait_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 apwait_x,<br />
+( SUM(q.ccwait_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 ccwait_x,<br />
+SUM(q.direct_writes_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) direct_writes_x,<br />
+( SUM(q.plsexec_time_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 plsexec_time_x,<br />
+( SUM(q.javexec_time_delta) / DECODE(SUM(q.executions_delta),0,1,NULL,1,SUM(q.executions_delta) ) ) / 1000000 javaexec_time_x<br />
+FROM<br />
+dba_hist_snapshot s,<br />
+dba_hist_sqlstat q<br />
+WHERE<br />
+s.dbid = q.dbid<br />
+AND s.instance_number = q.instance_number<br />
+AND s.snap_id = q.snap_id<br />
+AND TO_CHAR( s.begin_interval_time,&#8217;yyyy/mm/dd HH24:MI:SS&#8217;) BETWEEN &#8216;2019/03/26 20:00:00&#8217; AND &#8216;2019/04/01 23:59:59&#8217;<br />
+GROUP BY Q.DBID, Q.INSTANCE_NUMBER, Q.SQL_ID</p>
+<p>) Q, DBA_HIST_SQLTEXT T<br />
+WHERE Q.DBID = T.DBID<br />
+AND Q.SQL_ID = T.SQL_ID<br />
+AND Q.CPU_X &gt; 2<br />
+AND Q.EXECS &gt; 1<br />
+&#8211;and T.SQL_TEXT like &#8216;select all df1.r_object_id%&#8217;<br />
+and module in ( &#8216;documentum.exe&#8217;, &#8216;jdbc thin client&#8217; ) order by q.execs desc</p>
+]]></content:encoded>
+										</item>
+	</channel>
+</rss>

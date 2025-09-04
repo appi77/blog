@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Install &#8211; 山情</title>
+	<atom:link href="https://github.com/appi77/myblog/category/documentum/install/feed/" rel="self" type="application/rss+xml" />
+	<link>http://github.com/appi77/myblog/</link>
+	<description>산정의 블로그</description>
+	<lastBuildDate>Fri, 14 Dec 2018 01:25:32 +0000</lastBuildDate>
+	<language>ko-KR</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=5.3.2</generator>
+
+<image>
+	<url>https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/07/cropped-20160505_122002-32x32.jpg</url>
+	<title>Install &#8211; 山情</title>
+	<link>http://github.com/appi77/myblog/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Centera DA 설정</title>
+		<link>https://github.com/appi77/myblog/documentum/centera-da-%ec%84%a4%ec%a0%95/</link>
+				<pubDate>Fri, 14 Dec 2018 01:25:20 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Documentum]]></category>
+		<category><![CDATA[Install]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=493</guid>
+				<description><![CDATA[da에서File -> New -> Content Addressable Store 를 메뉴에서 선택하여Name :     ca_storage_01 Plugin Name :    CSEC Plugin  Storage Parameters :    192.168.1.111, 192.168.1.112Set Retention Information Retention Attribute Name :    retention_01Application must provide value for retention attribute  Content Attribute Name&#160;&#160;Content Attribute Description&#160;&#160;&#160;&#160;title&#160;&#160;&#160;&#160;&#160;description&#160;&#160;&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[
+<p>da에서<br>File -> New -> Content Addressable Store 를 메뉴에서 선택하여<br>Name :     ca_storage_01 <br>Plugin Name :    CSEC Plugin  <br>Storage Parameters :    192.168.1.111, 192.168.1.112<br>Set Retention Information <br>Retention Attribute Name :    retention_01<br>Application must provide value for retention attribute </p>
+
+
+
+<p>Content Attribute Name&nbsp;&nbsp;Content Attribute Description&nbsp;&nbsp;<br>&nbsp;&nbsp;title&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;description&nbsp;&nbsp;</p>
+
+
+
+<p>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;<br>Storage Parameters에 스토리지쪽에서 알려준 IP를 넣는것이 포인트
+
+</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>Linux 에 Content Server 설치 환경설정</title>
+		<link>https://github.com/appi77/myblog/documentum/install/linux-%ec%97%90-content-server-%ec%84%a4%ec%b9%98%eb%a5%bc-%ec%9c%84%ed%95%9c-%ed%99%98%ea%b2%bd-%ec%84%a4%ec%a0%95/</link>
+				<pubDate>Fri, 01 Jul 2016 11:30:53 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Install]]></category>
+
+		<guid isPermaLink="false">http://apps.ipdisk.co.kr/apps/wordpress/?p=100</guid>
+				<description><![CDATA[/usr/sbin/groupadd docs /usr/sbin/useradd -m -g docs dmadmin passwd dmadmin mkdir -p /opt/documentum mkdir -p /opt/dctm_client mkdir -p /data/dmdata chown -R dmadmin:docs /opt/documentum /data/dmdata /opt/dctm_client chmod -R 775 /opt/documentum /data/dmdata /opt/dctm_client .bash_profile export ORACLE_HOME=/opt/ora/oracle/product/10.2.0/db_1 export&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>/usr/sbin/groupadd docs<br />
+/usr/sbin/useradd -m -g docs dmadmin<br />
+passwd dmadmin</p>
+<p>mkdir -p /opt/documentum<br />
+mkdir -p /opt/dctm_client<br />
+mkdir -p /data/dmdata<br />
+chown -R dmadmin:docs /opt/documentum /data/dmdata /opt/dctm_client<br />
+chmod -R 775 /opt/documentum /data/dmdata /opt/dctm_client</p>
+<p>.bash_profile</p>
+<p>export ORACLE_HOME=/opt/ora/oracle/product/10.2.0/db_1<br />
+export TNS_ADMIN=$ORACLE_HOME/network/admin<br />
+export DOCUMENTUM=/opt/documentum<br />
+export DM_HOME=$DOCUMENTUM/product/6.0<br />
+export DOCUMENTUM_SHARED=/opt/dctm_client</p>
+<p>export LANG=ko_KR.eucKR</p>
+<p>DHCP로 아이피 가져온것 host파일에 적용하기<br />
+vi /usr/local/bin/hosts.sh</p>
+<p>#!/bin/bash</p>
+<p>ifconfig | grep inet\ addr | grep -v &#8216;127.0.0.1&#8217; |awk -F &#8216; +||:+&#8217; &#8216;{print $4}&#8217; > /tmp/ethx-addresses<br />
+gethostname=`hostname|awk -F&#8217;.&#8217; &#8216;{print $1}&#8217;`<br />
+grep $gethostname /etc/hosts | grep -v &#8216;127.0.0.1&#8217;  | grep -v &#8220;#&#8221;| awk -F&#8217; +&#8217; &#8216;{print $1}&#8217;>/tmp/myhost-addresses<br />
+lineas=`wc -l /tmp/ethx-addresses| cut -d&#8217; &#8216; -f1`<br />
+lineasetmyhosts=`wc -l /tmp/myhost-addresses| cut -d&#8217; &#8216; -f1`<br />
+for i in `seq 1 $lineas` ;do<br />
+    ip=`head -n $i /tmp/ethx-addresses | tail -1`<br />
+    if [ $i -le $lineasetmyhosts ]; then<br />
+       ipetcmyhost=`head -n $i /tmp/myhost-addresses | awk &#8216;{print $1}&#8217;`<br />
+        cat  /etc/hosts | sed &#8220;s/$ipetcmyhost/$ip/g&#8221; > /tmp/chhosts ; cat /tmp/chhosts > /etc/hosts<br />
+    else<br />
+        ip=`head -n $i /tmp/ethx-addresses | tail -1`<br />
+        echo &#8220;$ip       $gethostname&#8221; >> /etc/hosts</p>
+<p>    fi<br />
+done</p>
+<p>/etc/sysconfig/network-scripts/ifup<br />
+if [ -n &#8220;${DYNCONFIG}&#8221; ]; then<br />
+	.<br />
+	.<br />
+	.<br />
+	.<br />
+ /usr/local/bin/hosts.sh</p>
+<p># end dynamic device configuration<br />
+else</p>
+]]></content:encoded>
+										</item>
+	</channel>
+</rss>

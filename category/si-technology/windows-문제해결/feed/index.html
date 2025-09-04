@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Windows 문제해결 &#8211; 山情</title>
+	<atom:link href="https://github.com/appi77/myblog/category/si-technology/windows-%eb%ac%b8%ec%a0%9c%ed%95%b4%ea%b2%b0/feed/" rel="self" type="application/rss+xml" />
+	<link>http://github.com/appi77/myblog/</link>
+	<description>산정의 블로그</description>
+	<lastBuildDate>Fri, 30 Nov 2018 06:30:49 +0000</lastBuildDate>
+	<language>ko-KR</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=5.3.2</generator>
+
+<image>
+	<url>https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/07/cropped-20160505_122002-32x32.jpg</url>
+	<title>Windows 문제해결 &#8211; 山情</title>
+	<link>http://github.com/appi77/myblog/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>windows TrustedInstaller 권한 관련 메시지 발생 시</title>
+		<link>https://github.com/appi77/myblog/si-technology/windows-%eb%ac%b8%ec%a0%9c%ed%95%b4%ea%b2%b0/windows-trustedinstaller-%ea%b6%8c%ed%95%9c-%ea%b4%80%eb%a0%a8-%eb%a9%94%ec%8b%9c%ec%a7%80-%eb%b0%9c%ec%83%9d-%ec%8b%9c/</link>
+				<pubDate>Fri, 30 Nov 2018 06:28:55 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Windows 문제해결]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=485</guid>
+				<description><![CDATA[하드디스크 교체 또는 계정 전환 후 권한 문제가 발생했을때 CMD 명령어로 TrustedInstaller권한 해결 가능 1. CMDa(관리자 권한) 2. takeown /f c:\users\myid /a /r 명령어로 소유자 변경 3. icacls c:\users\myid /grant administrators:f /t /l 이렇게&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>하드디스크 교체 또는 계정 전환 후 권한 문제가 발생했을때<br />
+CMD 명령어로 TrustedInstaller권한 해결 가능<br />
+1. CMDa(관리자 권한)<br />
+2. takeown /f c:\users\myid /a /r 명령어로 소유자 변경<br />
+3. icacls c:\users\myid /grant administrators:f /t /l</p>
+<p>이렇게 하면 권한이 바뀐다.</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>Windows 10 기본 앱 삭제 방법</title>
+		<link>https://github.com/appi77/myblog/si-technology/windows-%eb%ac%b8%ec%a0%9c%ed%95%b4%ea%b2%b0/windows-10-%ea%b8%b0%eb%b3%b8-%ec%95%b1-%ec%82%ad%ec%a0%9c-%eb%b0%a9%eb%b2%95/</link>
+				<pubDate>Fri, 30 Nov 2018 04:22:53 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Windows 문제해결]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=481</guid>
+				<description><![CDATA[Powershell.exe 실행 후 하당 목록에서 삭제할 프로그램 제거 하시면 됩니다. (ex. Get-AppxPackage *3dbuilder* &#124; Remove-AppxPackage ) 3D Builder(3D빌더) Get-AppxPackage *3dbuilder* &#124; Remove-AppxPackage Alarms and Clock(알람 앤 클락) Get-AppxPackage *windowsalarms* &#124; Remove-AppxPackage Calculator(계산기) Get-AppxPackage *windowscalculator*&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>Powershell.exe 실행 후 하당 목록에서 삭제할 프로그램 제거 하시면 됩니다.</p>
+<p>(ex. Get-AppxPackage *3dbuilder* | Remove-AppxPackage )</p>
+<p>3D Builder(3D빌더)<br />
+Get-AppxPackage *3dbuilder* | Remove-AppxPackage</p>
+<p>Alarms and Clock(알람 앤 클락)<br />
+Get-AppxPackage *windowsalarms* | Remove-AppxPackage</p>
+<p>Calculator(계산기)<br />
+Get-AppxPackage *windowscalculator* | Remove-AppxPackage</p>
+<p>Calendar and Mail(캘린더 앤 메일)<br />
+Get-AppxPackage *windowscommunicationsapps* | Remove-AppxPackage</p>
+<p>Camera(카메라)<br />
+Get-AppxPackage *windowscamera* | Remove-AppxPackage</p>
+<p>Get Office(오피스)<br />
+Get-AppxPackage *officehub* | Remove-AppxPackage</p>
+<p>Get Skype(스카이프)<br />
+Get-AppxPackage *skypeapp* | Remove-AppxPackage</p>
+<p>Get Started<br />
+Get-AppxPackage *getstarted* | Remove-AppxPackage</p>
+<p>Groove Music(그루브 뮤직)<br />
+Get-AppxPackage *zunemusic* | Remove-AppxPackage</p>
+<p>Maps(맵스 지도 어플)<br />
+Get-AppxPackage *windowsmaps* | Remove-AppxPackage</p>
+<p>Microsoft Solitaire Collection<br />
+Get-AppxPackage *solitairecollection* | Remove-AppxPackage</p>
+<p>Money(머니)<br />
+Get-AppxPackage *bingfinance* | Remove-AppxPackage</p>
+<p>Movies &amp; TV(무비 앤 티비)<br />
+Get-AppxPackage *zunevideo* | Remove-AppxPackage</p>
+<p>News(뉴스)<br />
+Get-AppxPackage *bingnews* | Remove-AppxPackage</p>
+<p>OneNote(원노트)<br />
+Get-AppxPackage *onenote* | Remove-AppxPackage</p>
+<p>People(피플)<br />
+Get-AppxPackage *people* | Remove-AppxPackage</p>
+<p>Phone Companion(폰 컴패니언)<br />
+Get-AppxPackage *windowsphone* | Remove-AppxPackage</p>
+<p>Photos(포토 사진 관리 앱)<br />
+Get-AppxPackage *photos* | Remove-AppxPackage</p>
+<p>Store(윈도우 앱스토어)<br />
+Get-AppxPackage *windowsstore* | Remove-AppxPackage</p>
+<p>Sports(스포츠)<br />
+Get-AppxPackage *bingsports* | Remove-AppxPackage</p>
+<p>Voice Recorder(보이스 레코더)<br />
+Get-AppxPackage *soundrecorder* | Remove-AppxPackage</p>
+<p>Weather(웨더. 날씨 어플)<br />
+Get-AppxPackage *bingweather* | Remove-AppxPackage</p>
+<p>Xbox(엑스박스)<br />
+Get-AppxPackage *xboxapp* | Remove-AppxPackage</p>
+<p>만약 지운것 중에 다시 깔고싶은것들은 윈도우 어플 스토어에서 찾을 수 있는것은 찾으시고.<br />
+한번에 모두 되돌리고 싶다 하시는 분은 아래의 명령어를 입력하시면 됩니다.</p>
+<p>Get-AppxPackage -AllUsers| Foreach {Add-AppxPackage -DisableDevelopmentMode -Register “$($_.InstallLocation)\AppXManifest.xml”}<br />
+* 첨부파일 다운로드 후 해당 파일을 마우스 우클릭하여 [Powershell에서 실행] 클릭</p>
+]]></content:encoded>
+										</item>
+	</channel>
+</rss>

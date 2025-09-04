@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Mail &#8211; 山情</title>
+	<atom:link href="https://github.com/appi77/myblog/category/si-technology/mail/feed/" rel="self" type="application/rss+xml" />
+	<link>http://github.com/appi77/myblog/</link>
+	<description>산정의 블로그</description>
+	<lastBuildDate>Thu, 30 Jun 2016 11:16:21 +0000</lastBuildDate>
+	<language>ko-KR</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=5.3.2</generator>
+
+<image>
+	<url>https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/07/cropped-20160505_122002-32x32.jpg</url>
+	<title>Mail &#8211; 山情</title>
+	<link>http://github.com/appi77/myblog/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>telnet을 이용한 smtp 테스트</title>
+		<link>https://github.com/appi77/myblog/si-technology/mail/telnet%ec%9d%84-%ec%9d%b4%ec%9a%a9%ed%95%9c-smtp-%ed%85%8c%ec%8a%a4%ed%8a%b8/</link>
+				<pubDate>Thu, 30 Jun 2016 11:16:21 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Mail]]></category>
+
+		<guid isPermaLink="false">http://apps.ipdisk.co.kr/apps/wordpress/?p=53</guid>
+				<description><![CDATA[비인증방식 telnet www.example.com 25 HELO mydomain.com MAIL FROM: &#60;sender@mydomain.com&#62; RCPT TO: &#60;friend@example.com&#62; data To: friend&#60;friend@example.com&#62; From: myname&#60;sender@mydomain.com&#62; Subject: mail test Hello, This is a test. Goodbye. . quit 인증 방식 (AUTH LOGIN 다음에 메일주소와&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>비인증방식<br />
+telnet www.example.com 25<br />
+HELO mydomain.com<br />
+MAIL FROM: &lt;sender@mydomain.com&gt;<br />
+RCPT TO: &lt;friend@example.com&gt;<br />
+data<br />
+To: friend&lt;friend@example.com&gt;<br />
+From: myname&lt;sender@mydomain.com&gt;<br />
+Subject: mail test</p>
+<p>Hello,<br />
+This is a test.<br />
+Goodbye.<br />
+.<br />
+quit</p>
+<p>인증 방식 (AUTH LOGIN 다음에 메일주소와 암호를 Base 64변환하여 넣는다 &#8211; http://ostermiller.org/calc/encode.html )<br />
+telnet www.example.com 25<br />
+HELO<br />
+AUTH LOGIN<br />
+ZWNtYWRtaW5AcG9vbmdzYW4uY28ua3I=<br />
+ZWNtYWRtaW4=<br />
+MAIL FROM: &lt;sender@mydomain.com&gt;<br />
+RCPT TO: &lt;friend@example.com&gt;<br />
+data<br />
+To: friend&lt;friend@example.com&gt;<br />
+From: myname&lt;sender@mydomain.com&gt;<br />
+Subject: mail test</p>
+<p>Hello,<br />
+This is a test.<br />
+Goodbye.<br />
+.<br />
+quit</p>
+]]></content:encoded>
+										</item>
+	</channel>
+</rss>

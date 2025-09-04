@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Configration &#8211; 山情</title>
+	<atom:link href="https://github.com/appi77/myblog/category/documentum/configration/feed/" rel="self" type="application/rss+xml" />
+	<link>http://github.com/appi77/myblog/</link>
+	<description>산정의 블로그</description>
+	<lastBuildDate>Thu, 30 Jun 2016 10:58:19 +0000</lastBuildDate>
+	<language>ko-KR</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=5.3.2</generator>
+
+<image>
+	<url>https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/07/cropped-20160505_122002-32x32.jpg</url>
+	<title>Configration &#8211; 山情</title>
+	<link>http://github.com/appi77/myblog/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Database tunning</title>
+		<link>https://github.com/appi77/myblog/documentum/configration/database-tunning/</link>
+				<pubDate>Thu, 30 Jun 2016 10:58:19 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Configration]]></category>
+
+		<guid isPermaLink="false">http://apps.ipdisk.co.kr/apps/wordpress/?p=13</guid>
+				<description><![CDATA[▣ Oracle Server. [문제] rocesses와 sessions 계산 [해법] processes = 2 * total number of concurrent_session in server.ini sessions = processes * 1.1 + 5 [문제] 폴더 탐색과 폴더 표시에 성능 저하가 보이기 시작함&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>▣ Oracle Server.</p>
+<p>[문제] rocesses와 sessions 계산<br />
+[해법] processes = 2 * total number of concurrent_session in server.ini<br />
+sessions = processes * 1.1 + 5</p>
+<p>[문제] 폴더 탐색과 폴더 표시에 성능 저하가 보이기 시작함<br />
+[해법] &lt;WebApp&gt;/WEB-INF/classes/dfc.properties 파일에 trace옵션을 설정한다.<br />
+dfc.tracing.enable = true<br />
+dfc.tracing.verbose = true<br />
+dfc.tracing.max_stack_depth = 0<br />
+dfc.tracing.include_rpcs = true<br />
+dfc.tracing.mode = compact<br />
+dfc.tracing.include_session_id = true</p>
+<p><a href="https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/06/111.png"><img class="alignnone wp-image-14 " src="https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/06/111.png" alt="trace" width="675" height="104" srcset="https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/06/111.png 1036w, https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/06/111-300x46.png 300w, https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/06/111-768x118.png 768w, https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/06/111-1024x157.png 1024w, https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/06/111-624x96.png 624w" sizes="(max-width: 675px) 100vw, 675px" /></a></p>
+<p>장기실행 DQL을 찾아 쿼리 타이밍과 응답을 검토한다.<br />
+[해법] 이슈를 재현하기 위해 동일ID로 IAPI에 로그인한다.(실사용자 성능과 관련된 문제라면 설치소유자ID를 사용하지 말것)<br />
+– SQL trace ON :<br />
+API&gt; trace,c,1,,SQL_TRACE<br />
+&#8230;<br />
+OK<br />
+– 문제쿼리를 실행 (예) :<br />
+API&gt; ?,c, select 1,upper(object_name),r_object_id,object_name,r_object_type …..<br />
+– 다음 폴더에서 결과를 볼 수 있음 :<br />
+$DOCUMENTUM/dba/log/&lt;DOCBASE_ID&gt;/&lt;USER_NAME&gt;<br />
+– SQL trace on OFF:<br />
+API&gt; trace,c,0,,SQL_TRACE<br />
+&#8230;<br />
+OK<br />
+▣ SQL Server.</p>
+<p>서버 -&gt; 속성 -&gt; 고급<br />
+최대 병렬 처리 수준( Max Degree of Parallelism ) = 1 로 설정한다.<br />
+Max Degree of Parallelism 은 하나의 SQL문에 대해 CPU 프로세서의 수를 지정해 주는 것이다.<br />
+기본값은 0이고 이는 필요에 따라 가지고 있는 모든 CPU를 사용할 수도 있다는 뜻이다.<br />
+하나의 SQL문이 너무 많은 리소스를 사용하면 다른 작업의 속도가 저하된다.</p>
+<p>데이터베이스 -&gt; 속성 -&gt; 옵션<br />
+매개 변수화 (Parameterization) = 강제(Forced)<br />
+통계 자동 작성(Auto Create Statistics) = False<br />
+통계 자동 업데이트(Auto Update Statistics)= True(*)<br />
+통계를 비동기적으로 자동 업데이트(Auto Update Statistics Asynchronously)= True(*)<br />
+(*) 과도한 업데이트가 서버에서 발견되면 False로 설정하고 통계 수동 업데이트 한다.<br />
+READ_COMMITTED_SNAPSHOT=True<br />
+ALTER DATABASE DM_&lt;repository_name&gt;_docbase SET READ_COMMITTED_SNAPSHOT ON</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>DA 설정</title>
+		<link>https://github.com/appi77/myblog/documentum/configration/da-%ec%84%a4%ec%a0%95/</link>
+				<pubDate>Thu, 30 Jun 2016 10:53:56 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Configration]]></category>
+
+		<guid isPermaLink="false">http://apps.ipdisk.co.kr/apps/wordpress/?p=11</guid>
+				<description><![CDATA[Session timeout . &#60;web-app&#62;\WEB-INF\web.xml 의 &#60;session-config&#62;를 수정한다. 예를 들어 : &#60;session-config&#62; &#60;session-timeout&#62;300&#60;/session-timeout&#62; &#60;/session-config&#62; 300분 동안 요청이 없으면 session-timeout]]></description>
+								<content:encoded><![CDATA[<p>Session timeout .<br />
+&lt;web-app&gt;\WEB-INF\web.xml 의 &lt;session-config&gt;를 수정한다.<br />
+예를 들어 :<br />
+&lt;session-config&gt;<br />
+&lt;session-timeout&gt;300&lt;/session-timeout&gt;<br />
+&lt;/session-config&gt;</p>
+<p>300분 동안 요청이 없으면 session-timeout</p>
+]]></content:encoded>
+										</item>
+	</channel>
+</rss>

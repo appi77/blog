@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Trouble &#8211; 山情</title>
+	<atom:link href="https://github.com/appi77/myblog/category/documentum/trouble/feed/" rel="self" type="application/rss+xml" />
+	<link>http://github.com/appi77/myblog/</link>
+	<description>산정의 블로그</description>
+	<lastBuildDate>Sun, 03 Jul 2016 08:24:11 +0000</lastBuildDate>
+	<language>ko-KR</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=5.3.2</generator>
+
+<image>
+	<url>https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/07/cropped-20160505_122002-32x32.jpg</url>
+	<title>Trouble &#8211; 山情</title>
+	<link>http://github.com/appi77/myblog/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Documentum content server hostname 변경</title>
+		<link>https://github.com/appi77/myblog/documentum/trouble/documentum-content-server-hostname-%eb%b3%80%ea%b2%bd/</link>
+				<pubDate>Sun, 03 Jul 2016 08:24:11 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[Trouble]]></category>
+
+		<guid isPermaLink="false">http://apps.ipdisk.co.kr/apps/wordpress/?p=145</guid>
+				<description><![CDATA[Documentum content server hostname 변경 Symptoms For copying a Repository and changing the hostname Resolution To make a copy of an environment &#8211; even if it is a vm image, you need to consider&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>Documentum content server hostname 변경<br />
+Symptoms</p>
+<p>For copying a Repository and changing the hostname</p>
+<p>Resolution</p>
+<p>To make a copy of an environment &#8211; even if it is a vm image, you need to consider the instructions in copying a repository mentioned in Content server installation guide Copy Repository section.</p>
+<p>Install with the same user, db, etc.</p>
+<p>Need to then change the hostname in a few of the db tables.<br />
+Verify that the database tables have the correct value for the test system host name by checking the following values:<br />
+*&nbsp; r_host_name in dm_server_config_s<br />
+*&nbsp; host_name in dm_mount_point_s<br />
+*&nbsp; target_server in dm_job_s<br />
+*&nbsp; projection_targets in dm_server_config_r<br />
+Then the hostname in the <a href="http://server.ini">server.ini</a>, <a href="http://dmcl.ini">dmcl.ini</a> files</p>
+]]></content:encoded>
+										</item>
+	</channel>
+</rss>

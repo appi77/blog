@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>PC환경 수정 &#8211; 山情</title>
+	<atom:link href="https://github.com/appi77/myblog/category/project/pc%ed%99%98%ea%b2%bd-%ec%88%98%ec%a0%95/feed/" rel="self" type="application/rss+xml" />
+	<link>http://github.com/appi77/myblog/</link>
+	<description>산정의 블로그</description>
+	<lastBuildDate>Tue, 19 Nov 2019 12:19:29 +0000</lastBuildDate>
+	<language>ko-KR</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=5.3.2</generator>
+
+<image>
+	<url>https://github.com/appi77/myblog/wordpress/wp-content/uploads/2016/07/cropped-20160505_122002-32x32.jpg</url>
+	<title>PC환경 수정 &#8211; 山情</title>
+	<link>http://github.com/appi77/myblog/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>윈도우10 OneDrive 삭제 방법</title>
+		<link>https://github.com/appi77/myblog/project/pc%ed%99%98%ea%b2%bd-%ec%88%98%ec%a0%95/%ec%9c%88%eb%8f%84%ec%9a%b010-onedrive-%ec%82%ad%ec%a0%9c-%eb%b0%a9%eb%b2%95/</link>
+				<pubDate>Tue, 19 Nov 2019 12:19:29 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[PC환경 수정]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=1578</guid>
+				<description><![CDATA[set x86=&#8221;%SYSTEMROOT%\System32\OneDriveSetup.exe&#8221; set x64=&#8221;%SYSTEMROOT%\SysWOW64\OneDriveSetup.exe&#8221; echo Closing the OneDrive process. echo. taskkill /f /im OneDrive.exe &#62; NUL 2&#62;&#38;1 ping 127.0.0.1 -n 5 &#62; NUL 2&#62;&#38;1 echo Uninstalling OneDrive&#8230; echo. if exist %x64% ( %x64% /uninstall&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>set x86=&#8221;%SYSTEMROOT%\System32\OneDriveSetup.exe&#8221;<br />
+set x64=&#8221;%SYSTEMROOT%\SysWOW64\OneDriveSetup.exe&#8221;</p>
+<p>echo Closing the OneDrive process.<br />
+echo.<br />
+taskkill /f /im OneDrive.exe &gt; NUL 2&gt;&amp;1<br />
+ping 127.0.0.1 -n 5 &gt; NUL 2&gt;&amp;1</p>
+<p>echo Uninstalling OneDrive&#8230;<br />
+echo.<br />
+if exist %x64% (<br />
+%x64% /uninstall<br />
+) else (<br />
+%x86% /uninstall<br />
+)<br />
+ping 127.0.0.1 -n 5 &gt; NUL 2&gt;&amp;1</p>
+<p>echo Removing OneDrive leftovers&#8230;<br />
+echo.<br />
+rd &#8220;%USERPROFILE%\OneDrive&#8221; /Q /S &gt; NUL 2&gt;&amp;1<br />
+rd &#8220;C:\OneDriveTemp&#8221; /Q /S &gt; NUL 2&gt;&amp;1<br />
+rd &#8220;%LOCALAPPDATA%\Microsoft\OneDrive&#8221; /Q /S &gt; NUL 2&gt;&amp;1<br />
+rd &#8220;%PROGRAMDATA%\Microsoft OneDrive&#8221; /Q /S &gt; NUL 2&gt;&amp;1</p>
+<p>echo Removing OneDrive from the Windows Explorer Side Panel&#8230;<br />
+echo.<br />
+REG DELETE &#8220;HKEY_CLASSES_ROOT\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}&#8221; /f &gt; NUL 2&gt;&amp;1<br />
+REG DELETE &#8220;HKEY_CLASSES_ROOT\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}&#8221; /f &gt; NUL 2&gt;&amp;1</p>
+]]></content:encoded>
+										</item>
+		<item>
+		<title>파일 탐색기의 내 PC에 있는 기본 데이터 폴더 숨기기/보이기 &#8211; Windows 10</title>
+		<link>https://github.com/appi77/myblog/project/pc%ed%99%98%ea%b2%bd-%ec%88%98%ec%a0%95/%ed%8c%8c%ec%9d%bc-%ed%83%90%ec%83%89%ea%b8%b0%ec%9d%98-%eb%82%b4-pc%ec%97%90-%ec%9e%88%eb%8a%94-%ea%b8%b0%eb%b3%b8-%eb%8d%b0%ec%9d%b4%ed%84%b0-%ed%8f%b4%eb%8d%94-%ec%88%a8%ea%b8%b0%ea%b8%b0-%eb%b3%b4/</link>
+				<pubDate>Tue, 19 Nov 2019 12:07:52 +0000</pubDate>
+		<dc:creator><![CDATA[박경원]]></dc:creator>
+				<category><![CDATA[PC환경 수정]]></category>
+
+		<guid isPermaLink="false">https://github.com/appi77/myblog/?p=1576</guid>
+				<description><![CDATA[보이기 명령어 reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f&#46;&#46;&#46;]]></description>
+								<content:encoded><![CDATA[<p>보이기 명령어<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Show&#8221; /f</p>
+<p>숨기기 명령어</p>
+<p>reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f<br />
+reg.exe add &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag&#8221; /v &#8220;ThisPCPolicy&#8221; /d &#8220;Hide&#8221; /f</p>
+<p>3D 객체 삭제<br />
+reg.exe delete &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}&#8221; /f<br />
+reg.exe delete &#8220;HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A&#8221; /f</p>
+]]></content:encoded>
+										</item>
+	</channel>
+</rss>
