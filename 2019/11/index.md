@@ -1,6 +1,6 @@
 ---
 title : Jmeter
-date : 2019/09/01
+date : 2019/11/01
 ---
 
 `https://jmeter-plugins.org/install/Install/` 에서
