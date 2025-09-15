@@ -1,0 +1,17 @@
+# Admin Server
+{{- if ne (.Values.contentServerAdmin.replicas  | toString) "-1" }}
+{{ $data := dict "Values" .Values "Chart" .Chart "Release" .Release "pod_type" "admin" "Capabilities" .Capabilities }}
+{{ template "otcs.statefulset" $data }}
+{{- end}}
+
+# Distributed Agents
+{{ $data := dict "Values" .Values "Chart" .Chart "Release" .Release "pod_type" "da" "Capabilities" .Capabilities }}
+{{ template "otcs.statefulset" $data }}
+
+# Frontend Server
+{{ $data := dict "Values" .Values "Chart" .Chart "Release" .Release "pod_type" "frontend" "Capabilities" .Capabilities }}
+{{ template "otcs.statefulset" $data }}
+
+# Backend Search
+{{ $data := dict "Values" .Values "Chart" .Chart "Release" .Release "pod_type" "backend-search" "Capabilities" .Capabilities }}
+{{ template "otcs.statefulset" $data }}

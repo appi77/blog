@@ -1,0 +1,190 @@
+# Service Account required for the pre-upgrade job
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: otxecm-pre-upgrade-job-sa
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-6"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+
+---
+# RBAC role to be assigned to service account for the pre-upgrade job
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: otxecm-pre-upgrade-job-role
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-6"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+rules:
+- apiGroups: ["", "apps"]
+  resources: ["services", "statefulsets","pods","secrets","configmaps","persistentvolumeclaims"]
+  verbs: ["list", "delete", "get", "watch", "patch"]
+
+---
+# Binding the role with the service account for the pre-upgrade job
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: otxecm-pre-upgrade-job-rbac
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: otxecm-pre-upgrade-job-role
+subjects:
+- kind: ServiceAccount
+  name: otxecm-pre-upgrade-job-sa
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: otxecm-pre-upgrade
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-4"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded    
+data:
+  pre-upgrade.sh: |
+    #!/bin/bash
+    echo "Starting pre-Upgrade script"
+    installed=$(kubectl get secret -l owner=helm,status=deployed -o json | jq -r '.items[] | select(.metadata.labels.name=="{{ .Release.Name }}").data.release' | base64 -d | base64 -d  | gzip -d | jq -r ".chart.metadata.version")
+    installedRelease=$(awk -F. '{print $1"."$2}' <<< $installed)
+    echo "Current installed ${installed} - Release ${installedRelease}"
+    
+    upgrade="{{ .Chart.Version }}"
+    upgradeRelease=$(awk -F. '{print $1"."$2}' <<< $upgrade)
+    echo "Upgrade to ${upgrade} - Release ${upgradeRelease}"
+
+    if [[ "$FORCE_RESTART" == "true" || "$installedRelease" != "$upgradeRelease" ]]; then
+        echo "Upgrade Release - delete statefulsets"
+
+        kubectl delete sts otac --ignore-not-found=true
+        kubectl delete sts otpd --ignore-not-found=true 
+        kubectl delete sts otcs-frontend --ignore-not-found=true 
+        kubectl delete sts otcs-admin --ignore-not-found=true
+        kubectl delete sts otcs-backend-search --ignore-not-found=true
+        kubectl delete sts otcs-da --ignore-not-found=true
+        kubectl delete services --ignore-not-found=true otcs-backend-search
+        kubectl wait --for=delete pod/otcs-admin-0 --timeout=60s
+    else
+        kubectl rollout restart sts otcs-admin otcs-frontend otcs-backend-search otcs-da
+    fi
+
+    kubectl delete configmap otcs-state-configmap --ignore-not-found=true
+---
+# Pre-upgrade job definition
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: otxecm-pre-upgrade-job
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-4"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      annotations:
+        "sidecar.istio.io/inject": "false"
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      restartPolicy: Never
+      serviceAccountName: otxecm-pre-upgrade-job-sa
+      containers:
+      - name:  otxecm-pre-upgrade-container
+{{- if not (regexFind "\\/$" (default .Values.global.imageSourcePublic .Values.preUpgradeJob.image.source )) }}
+        image: {{ (default .Values.global.imageSourcePublic .Values.preUpgradeJob.image.source) }}/{{ .Values.preUpgradeJob.image.name }}:{{ .Values.preUpgradeJob.image.tag }}
+{{- else }}
+        image: {{ (default .Values.global.imageSourcePublic .Values.preUpgradeJob.image.source) }}{{ .Values.preUpgradeJob.image.name }}:{{ .Values.preUpgradeJob.image.tag }}
+{{- end }}
+        command: ["sh"]
+        args:
+          - "-c"
+          - "/script/pre-upgrade.sh"
+        env:
+          - name: FORCE_RESTART
+            value: "{{ .Values.preUpgradeJob.otxecm.forceRestart }}"
+        securityContext:
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - name: otxecm-pre-upgrade
+          mountPath: /script/
+      volumes:
+      - name: otxecm-pre-upgrade
+        configMap:
+          name: otxecm-pre-upgrade
+          defaultMode: 0010
+      dnsPolicy: ClusterFirst
+---
+{{- if eq .Values.global.otcs.enabled true }}
+{{- if  eq .Values.otcs.config.database.type "postgres" }}
+# Pre-upgrade job definition
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: otxecm-pre-upgrade-job-db-check
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      annotations:
+        "sidecar.istio.io/inject": "false"
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      restartPolicy: OnFailure
+      serviceAccountName: otxecm-pre-upgrade-job-sa
+      containers:
+      - name:  otxecm-pre-upgrade-container
+{{- if not (regexFind "\\/$" (default .Values.global.imageSourcePublic .Values.preUpgradeJobDBCheck.image.source )) }}
+        image: {{ (default .Values.global.imageSourcePublic .Values.preUpgradeJobDBCheck.image.source) }}/{{ .Values.preUpgradeJobDBCheck.image.name }}:{{ .Values.preUpgradeJobDBCheck.image.tag }}
+{{- else }}
+        image: {{ (default .Values.global.imageSourcePublic .Values.preUpgradeJobDBCheck.image.source) }}{{ .Values.preUpgradeJobDBCheck.image.name }}:{{ .Values.preUpgradeJobDBCheck.image.tag }}
+{{- end }}
+        command: ["pg_isready"]
+        args:
+          - "-d"
+          - "{{ ( default .Values.global.database.adminDatabase .Values.otcs.config.database.adminDatabase ) }}"
+          - "-h"
+          - "{{ ( default .Values.global.database.hostname .Values.otcs.config.database.hostname ) }}"
+          - "-p" 
+          - "{{ ( default .Values.global.database.port .Values.otcs.config.database.port ) }}"
+          - "-U"
+          - "{{ ( default .Values.global.database.adminUsername .Values.otcs.config.database.adminUsername ) }}"
+          - "-t"
+          - "10"
+        securityContext:
+          allowPrivilegeEscalation: false
+---
+{{- end }}
+{{- end }}

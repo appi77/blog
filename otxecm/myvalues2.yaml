@@ -1,0 +1,107 @@
+global:
+  database:
+    admin: "postgres"
+    hostname: "ecmsvr25"
+    ivName: otiv
+    password: "SystemAdmin@1234"                # 변경한 패스워드
+    port: 5432
+  imagePullPolicy: "IfNotPresent"
+  imagePullSecret: "regcred"
+  imageSource: "registry.opentext.com"
+  ingressAnnotations:
+    kubernetes.io/ingress.allow-http:               false
+    nginx.ingress.kubernetes.io/affinity:           cookie
+    
+    nginx.ingress.kubernetes.io/proxy-body-size:    "0"
+    nginx.ingress.kubernetes.io/proxy-buffer-size:  "16k"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
+#    nginx.ingress.kubernetes.io/configuration-snippet: |
+#      if ($http_origin) {more_set_headers "Access-Control-Allow-Headers: $sent_http_access_control_allow_headers, X-XHR-Logon, X-Requested-With";}
+  ingressClass: nginx
+  ingressDomainName: "ecmsvr25.pentasystem.kr"
+  ingressEnabled: true
+  ingressSSLSecret: "tls-secret"
+  masterPassword: "SystemAdmin@1234"
+  otac:
+    enabled: true
+  otacc:
+    enabled: false
+  otacPublicUrl: "https://ecmsvr25-otac.pentasystem.kr"
+  otcsPublicUrl: "https://ecmsvr25.pentasystem.kr"
+  otds:
+    enabled: true
+  otdsPublicUrl: "https://ecmsvr25.pentasystem.kr"
+  otiv:
+    enabled: true
+  otpd:
+    enabled: false
+  otpdPublicUrl: "https://ecmsvr25-otpd.pentasystem.kr"
+  resourceRequirements: false
+  serviceAccountName: "otxecm-sa"
+  storageClassName: "otmm-nfs"
+  storageClassNameNFS: "otmm-nfs"
+  timeZone: "Asia/Seoul"
+
+otcs:
+  config:
+    businessScenariosList:
+      - OT-Teamspaces
+      - OT-Projects
+      - OT-Agreements
+      - OT-EAM
+      - OT-REALESTATE
+      - OT-Procurement
+    database:
+      adminUsername: "postgres"
+      name: "otdsdb"
+      useExistingDatabase: true
+      username: "otdsuser"
+    defaultAppsInstall: true
+    deployBusinessScenarios: true
+    extensions:
+      enabled: true
+      includeManifestInitContainer: false
+    otds:
+      trustedSites:
+        - "https://teams.microsoft.com"
+        - "https://otawg.ubuntu-otcm.hv"
+    useExtendedECMLicese: false
+  containerLogLevel: DEBUG
+  contentServerBackendSearch:
+    replicas: 1
+  contentServerFrontend:
+    replicas: 1
+  loadAdminSettings:
+    enabled: false
+  loadLicense:
+    enabled: false
+    filename: otxecmLicense.lic
+  objectimporter:
+    enabled: true
+  passwords:
+    database:
+      adminPassword: "SystemAdmin@1234"
+    scenarioOwnerPassword: "SystemAdmin@1234"
+
+otds:
+  otdsws:
+    cryptKey: "Z2hkN2hyNDBkbWNGcVQ0TA=="
+    otdsdb:
+      automaticDatabaseCreation:
+        dbName: "otdsdb"
+        enabled: false
+      password: "SystemAdmin@1234"
+      url: "jdbc:postgresql://ecmsvr25:5432/otdsdb"
+      username: "otdsuser"            # 여기 수정됨
+
+otiv:
+  amqp:
+    rabbitmq:
+      password: "SystemAdmin@1234"
+
+otpd:
+  loadLicense: false
+  otpdLicense: otpdLicense.lic
+  technicalUserPassword: "SystemAdmin@1234"
+  database:
+    hostname: "localhost"

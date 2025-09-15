@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "base.resource.name" . }}-configmap
+  {{- template "metadata.namespace" . }}
+data:
+    AUTH_TOKEN_URL: {{ template "otds.api.url" .}}/oauth2/token
+    DOC_ROOT: 'https://developer.opentext.com/products_services/aa064dbd-8954-4d0f-8892-65fe2de124bb'
+    LOG_LEVEL: '{{ .Values.loglevel }}'
+{{- if (include "is.iv" .) }}
+    ARTIFACT_BASE_URL_PUBLIC: {{ $.Values.global.publicWebProtocol }}://{{ include "ingress.fqdn.asset" .}}/artifacts
+    ARTIFACT_BASE_URL: http://otiv-asset/artifacts
+    AUTH_CLIENT_ID: {{ .Values.clientId }}
+    PUBLICATION_AUTHORITY: http://otiv-publication:{{ .Values.publication.port }}
+{{- else }}
+    PUBLICATION_AUTHORITY: http://cvt-publication:{{ .Values.publication.port }}
+{{- end }}
+    CORS_ADDITIONAL_HEADERS_LIST: '{{ .Values.global.customHttpHeaders }}'
+    COUNTER: '{{ .Values.global.counter }}'
+    {{- template "highlight.secret.keys" . }}
+    {{ template "cors.config" . }}
+    {{ template "forwarded.config" . }}
+    {{- template "new.relic.viewing.config" . }}
+    {{ template "node.forwarding" . }}
+{{- if or .Values.global.enableOtivCustomizedTruststore .Values.global.otivSecretProviderClassCerts.enabled }}
+    NODE_EXTRA_CA_CERTS: /opt/certs/combined_crt_file.crt
+{{- end }}
+{{- if .Values.nodeOptions }}
+    NODE_OPTIONS: '{{ .Values.nodeOptions }}'
+{{- end }}
+    OTDS_CERT_UPDATE_INTERVAL: '{{ .Values.global.otdsCertUpdateInterval }}'
+{{- if (include "is.ocp" .) }}
+    {{- template "proxy.url.params" . }}
+{{- end }}
+    PORT: '{{ .Values.service.targetPort }}'
+    SEARCH_AUTHORITY: {{ $.Values.global.publicWebProtocol }}://{{ include "ingress.fqdn.highlight" .}}
+    {{- template "timezone" . }}
+    __VERSION__: '{{ template "version.stamp" . }}'

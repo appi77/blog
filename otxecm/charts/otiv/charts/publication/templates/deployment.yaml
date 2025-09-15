@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "base.resource.name" . }}
+  {{- template "metadata.namespace" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "brava.name" . }}
+    helm.sh/chart: {{ include "brava.chart" . }}
+    app.kubernetes.io/instance: {{ include "base.resource.name" . }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  {{- if not .Values.global.hpa.enabled }}
+  replicas: {{ .Values.replicas }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ include "base.resource.name" . }}
+      app.kubernetes.io/name: {{ include "brava.name" . }}
+      app.kubernetes.io/instance: {{ include "base.resource.name" . }}
+      hazel: brava
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include "config.secret.checksum" . }}
+      labels:
+        app: {{ include "base.resource.name" . }}
+        app.kubernetes.io/name: {{ include "brava.name" . }}
+        app.kubernetes.io/instance: {{ include "base.resource.name" . }}
+        hazel: brava
+        hazelcast: cvt
+        {{- template "hazelcast.namespace.deploy" . }}
+      {{- if .Values.global.transformationPvcRWO }}
+        cvt-volume: rwo
+      {{- end }}
+      {{- if (include "is.ocp" .) }}
+        opentext.com/chart-hash: '{{ printf "%063d" 0 }}'
+      {{- end }}
+        {{- include "otiv.custom.labels" . }}
+    spec:
+    {{- if .Values.global.transformationPvcRWO }}
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: cvt-volume
+                operator: In
+                values:
+                - rwo
+            topologyKey: "kubernetes.io/hostname"
+    {{- end }}
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        {{- template "onRootMismatch.policy" . }}
+      {{- template "topology.spread" . }}
+      {{- template "ocp.service.account" . }}
+    {{- if (include "is.iv" .) }}
+      serviceAccountName: {{ .Values.global.serviceAccountName }}
+    {{- end }}
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
+      {{- template "dev-qa.node.pool" . }}
+      containers:
+        - name: {{ include "base.resource.name" . }}
+          image: {{ include "image.source.path" . }}
+          imagePullPolicy: {{ include "image.pull.policy" . }}
+          {{- if not .Values.global.ivShutdownDisabled }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["bash", "/app/bin/shutdown"]   
+          {{- end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          ports:
+          - name: hazelcast
+            containerPort: {{ .Values.global.hazelport }}
+            protocol: TCP
+          - name: http
+            containerPort: {{ .Values.service.targetPort }}
+            protocol: TCP
+          {{- template "resources.cpu.memory" . }}
+          {{- template "cvt.probes" . }}
+          env:
+          - name: VERTX_CLUSTER_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          {{ template "env.secrets" . }}
+          {{ template "pg.rb.env.passwords" . }}
+          envFrom:
+          - configMapRef:
+              name: {{ include "iv-cvt.product.prefix" . }}-configmap
+          - configMapRef:
+              name: {{ include "base.resource.name" . }}-configmap
+          {{- if .Values.command }}
+          command: {{ .Values.command }}
+          {{- end }}
+          {{- if (include "is.iv" .) }}
+          volumeMounts:
+          {{- template "otiv.cert.volume.mount" . }}
+            - mountPath: /var/mkondo/fs-0
+              name: bas-data
+          {{- end }}
+        {{ template "cloud.sql.proxy.container" . }}
+        {{- template "secretlink.container" . }}
+    {{- if .Values.global.imagePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.global.imagePullSecret }}
+    {{- end }}
+      {{ template "transformation.grace.period" . }}
+    {{- if (include "is.iv" .) }}
+      volumes:
+      {{- template "otiv.cert.volume" . }}  
+        - name: bas-data
+          persistentVolumeClaim:
+            claimName: otiv-bas
+    {{- end }}
+

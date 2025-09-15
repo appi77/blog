@@ -1,0 +1,299 @@
+########################################################################
+# Settings for PowerDocs and its Database
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+########################################################################
+
+global:
+  otds:
+    ## enabled: controls if subchart is deployed
+    ## It also controls whether an existing OTDS server outside the cluster is used or not.
+    ## Set this to false if OTDS already exists, or is deployed separately from the otxecm helm chart.
+    enabled: true
+service:
+  # custom annotations that need to be assigned to otpd service.
+  annotations: []
+  # below is an example
+  # - "imageregistry: \"https://registry.opentext.com/\""
+pvc:
+  labels:
+    # custom labels that need to be applied to pd-persist-logs pvc's
+    pd-persist-logs: {}
+    # custom labels that need to be applied to pd-persist-fonts pvc's
+    pd-persist-fonts: {}
+    # below is an example
+    # app.kubernetes.io/key: value
+## ingress enables Kubernetes Ingress for PowerDocs
+ingress:
+  enabled:
+serviceType:
+## readinessProbe.*: parameters to indicate if otpd pod is ready to receive traffic
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 25
+  timeoutSeconds: 6
+  periodSeconds: 30
+## livenessProbe.*: parameters to indicate if otpd pod is alive and operational
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 7200
+  timeoutSeconds: 8
+  periodSeconds: 60
+  failureThreshold: 3
+## serviceName defines the name of the Kubernetes service for
+## PowerDocs:
+serviceName: otpd
+## publicHostname defines the FQDN or IP address of the
+## Kubernetes Services of Content Server. If empty ("") the hostname
+## will dynamically be determined via the Kubernetes API.
+## To make the dynamic lookup work you need to define this rolebinding
+## in your Kubernetes cluster:
+publicHostname:
+## port is the external port the PowerDocs Kubernetes service
+## is reachable:
+port: 80
+## targetPort is the internal container port the Kubernetes service is
+## forwarding requests to.
+targetPort: 8080
+## protocol: communication protocol - used in config map
+protocol: http
+## hostname defines the hostname of the Kubernetes container for
+## PowerDocs (inside the stateful set definition):
+hostname: otpd
+## image.* defines Docker image location, tags and pull parameters for
+## PowerDocs - you need to adjust this:
+image:
+  source:
+  name: otpd
+  tag: 25.3.0
+  pullPolicy:
+  pullSecret:
+## admin defines the name of the PowerDocs Admin User (for Tomcat and PowerDocs apps)
+admin: powerdocsadmin
+## adminPassword defines the PowerDocs Admin Password (for Tomcat and PowerDocs apps)
+adminPassword:
+## user defines the name of the PowerDocs User in Tomcat (for Tomcat and PowerDocs apps)
+user: powerdocsuser
+## userPassword defines the PowerDocs User password
+userPassword:
+## monitorUser defines the name of the PowerDocs User in Tomcat
+monitorUser: powerdocsmonitoruser
+## monitorUserPassword defines the monitorUser User password
+monitorUserPassword:
+## apiUser defines the name of the PowerDocs User in Tomcat
+apiUser: powerdocsapiuser
+## apiUserPassword defines the apiUser User password
+apiUserPassword:
+## technicalUser defines the user for script parameters
+technicalUser: pduser
+## technicalUserPassword defines the technicalUser User password
+technicalUserPassword:
+## otdsPartition defines the name of the PowerDocs OTDS partition.
+## Use "powerdocs" if PowerDocs is deployed stand-alone.
+## Use "Content Server Members" if PowerDocs is deployed
+## as part of Extended ECM / Content Server.
+otdsPartition: Content Server Members
+## otdsResource defines the name of the PowerDocs OTDS resource
+otdsResource: pd
+## otdsOAuthClient defines the name of the PowerDocs OTDS OAuth client
+otdsOAuthClient: powerdocs
+## startupTime defines the time in seconds the PowerDocs Server Manager
+## needs to start in Tomcat and to create the PowerDocs database tables
+startupTime: 30
+## replicas for PowerDocs should always be 2:
+replicas: 2
+## fsGroup defines the group ID in Linux that the PowerDocs
+## Docker container runs in and that the volumes are mounted with.
+## Normally you don't want to change this!
+fsGroup: 1000
+## serviceAccountName defines the name of the service account the
+## pods are running under. Normally that is 'default'
+serviceAccountName:
+## importDatabase defines the database for PowerDocs to import at startup
+## "OpenText_PowerDocs_db_config" is the PowerDocs sample database.
+## "SFSF_base_database_config" is the SuccessFactors sample database.
+## If not required leave importDatabase value as blank (no database import).
+importDatabase: SFSF_base_database_config
+## licensekey for powerdocs
+## NOTE the xECM PowerDocs license file must exist in otpd/
+otpdLicense:
+## OTPD will not work without a valid license, so always set loadLicense value to true during fresh installation
+## In upgrade scenario license info is fetched from database, so we need to apply license only if it get deleted manually before upgrade
+loadLicense: true
+## customRootCA takes the rootCA file as an input. This will take effect only when importCustomRootCA is true.
+## The rootCA file must exist in otpd/
+customRootCA:
+## importCustomRootCA defines whether or not to import root CA into truststore.
+## To import a root CA, set the value to true along with sslEnabledDB to true
+importCustomRootCA: false
+## sslEnabledDB defines if the DB is enabled with SSL. Set this value to true if the DB is enabled with SSL.
+sslEnabledDB: false
+## additionalJavaOpts defines additional Java parameters for OTPD
+additionalJavaOpts: ""
+## existingSecret: An already existing kubernetes secret, which contains passwords.
+existingSecret:
+## resources.* defines the resource requirements for PowerDocs:
+resources:
+  enabled:
+  requests:
+    cpu: 1
+    memory: 1.5Gi
+  limits:
+    cpu: 2
+    memory: 3Gi
+  storageClassName:
+## volumes.* defines the PowerDocs Applications that are used for volume mounts
+## to create persistency :
+volumes:
+  - mountPath: /opt/opentext/pdpersistlogs
+    name: pd-persist-logs
+    storage: 3.5Gi
+    accessMode: ReadWriteOnce
+  - mountPath: /opt/opentext/pdpersistfonts
+    name: pd-persist-fonts
+    storage: 2Gi
+    accessMode: ReadWriteOnce
+
+## emailServerSettings.* defines the email server settings that the administrator can use to preset them upon deployment
+emailServerSettings:
+  enabled: false
+  server:
+  port:
+  user:
+  password:
+
+## configureAdminSettings.* defines the server settings that the administrator can use to preset them during deployment
+configureAdminSettings:
+  monitoring:
+    ## These settings are applied only if this flag 'enabled' is set to 'true'
+    enabled: false
+    ## Can be: 0=OFF, 1=SEVERE, 2=WARNING, 3=INFO, 4=ALL
+    logLevel: 3
+  stickySession:
+    ## If it is a fresh installation with multiple replicas, enable this flag and set the 'loadBalancingCookie' and 'loadBalancingPort' properties
+    ## to ensure session stickiness is maintained.
+    ## For upgrades where the original deployment already has the 'loadBalancingCookie' and 'loadBalancingPort' properties rightly configured,
+    ## this flag can be disabled.
+    enabled: false
+    ## Name of the cookie used for load balancing
+    loadBalancingCookie: INGRESSCOOKIE
+    ## Port number used for the load balancing server, if applicable
+    loadBalancingPort: 443
+
+## secretlink.* defines the SecretLink program variables required to fetch the secret keys from the vault
+secretlink:
+  enabled: false
+  image:
+    pullPolicy:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 128Mi
+  ## SecretLink Loglevel value
+  loglevel: 
+  ## Address where the SecretLink exists 
+  address: 127.0.0.1
+  ## Listener Port for SecretLink service
+  port: 8000
+  vault:
+    ## Address of the vault server including the protocol and the port
+    ## Ex: https://vaulttest-csdps.otxlab.net/
+    address:
+    ## Mount Point of the secrets engine
+    ## Ex: kv
+    mountpoint:
+    ## Namespace of the Vault Enterprise deployment
+    ## Ex: bn-tg
+    namespace:
+    ## Path of the secret
+    ## Ex: dev/dev-sandbox/bn-vault-example/foo
+    path:
+    ## Name of the Authentication Path
+    ## Ex: auth/jwt-bn-vault-example-dev-dev-sandbox-anthos-bp2-bn-cicd-sandbox-btse-sandbox-1
+    authpath:
+    ## Name of the Authentication Role
+    ## Ex: anthos-bp2-bn-cicd-sandbox-btse-sandbox-1
+    role:
+
+## allowediFrameEmbeddingDomains defines the list of domains that are allowed to embed PowerDocs UI
+allowediFrameEmbeddingDomains: https://*.sapsf.eu https://*.successfactors.eu https://*.sapsf.com https://*.successfactors.com https://*.sapsf.cn https://*.successfactors.cn https://*.hec.ondemand.com https://*.s4hana.ondemand.com https://*.my.salesforce.com https://*.cloud.sap https://*.sapcloud.cn
+
+## database.* includes all database connection parameters for
+## PowerDocs:
+database:
+  ## Only 'postgres', 'oracle' and 'mssql' databases are supported
+  type: postgres
+  hostname: otxecm-db
+  port: 5432
+  adminDatabase: postgres
+  adminUsername: postgres
+  adminPassword:
+  name: pddocgen
+  username: pddocgen
+  password:
+  oracle:
+    ## This should be the service name of your pluggable database
+    serviceName: ORCLPDB1
+    ## The path for the oracle database's data file. The folder must exist but the file cannot exist at the path.
+    dbDataFileSpec: /opt/oracle/pd.dbf
+    dbDataFileSize: 500
+  mssql:
+    ## The path for main/master data file and log data file for MSSQL database. The folder must exist but the file cannot exist at the path.
+    dbDataFileSpec: /opt/mssql/pd.mdf
+    dbLogFileSpec: /opt/mssql/pd.ldf
+    dbDataFileSize: 8
+    dbLogFileSize: 1
+    dbDataFileMaxSize: 100
+    dbLogFileMaxSize: 100
+## otds.* includes the connecion parameters to
+## OpenText Directory Services (OTDS)
+otds:
+  publicHostname:
+  ## hostname defines the hostname of the Kubernetes container for
+  ## OTDS (inside the stateful set definition):
+  hostname: otds
+  ## admin is the name of the administrator user (login) for OTDS:
+  admin: admin
+  ## password is the name of the password of the administrator user
+  ## for OTDS:
+  password:
+  ## port defines the external port for the OTDS Kubernetes service:
+  port: 80
+  ## protocol: communication protocol - used in config map
+  protocol: http
+otcs:
+  publicHostname:
+  ## enabled controls if otcs deployed along with powerdocs
+  ## will wait for otcs to completes its configuration
+  enabled: true
+  ## hostname defines the hostname of the Kubernetes container for
+  ## otcs-admin
+  hostname: otcs-admin-0
+  ## admin is the name of the administrator user (login) for OTCS:
+  admin: admin
+  ## password: password for the administrator user for OTCS
+  password:
+  ## port defines the external port for the OTCS Kubernetes service:
+  port: 8080
+  ## protocol: communication protocol - used in config map
+  protocol: http
+config:
+  ## timeZone: This sets the time zone of the Linux OS within the container. The default value for
+  ## the timeZone is Etc/UTC. The value for the timeZone MUST be a CORRECT value from a trusted
+  ## source, otherwise unexpected behaviour will occur, this could have unforeseen repercussions for
+  ## software running in the container.
+  timeZone:
+## JDBC connection parameters
+jdbc:
+  postgres:
+    ## The indication of whether objects will be validated before being borrowed from the pool.
+    ## If the object fails to validate, it will be dropped from the pool, and we will attempt to borrow another. Default value is false
+    ## In order to have a more efficient validation, set validationInterval.
+    testOnBorrow: false
+    ## 'validationInterval' (time in milliseconds) helps to avoid excess validation.
+    ## If a connection is due for validation, but has been validated previously within this interval, it will not be validated again.
+    ## The default value is 3000 (3 seconds) as per Apache Tomcat's Docs.
+    validationInterval: 3000

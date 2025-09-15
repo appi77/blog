@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "rabbitmq.fullname" . }}-config
+data:
+  enabled_plugins: |-
+{{ template "rabbitmq.plugins" . }}
+  rabbitmq.conf: |-
+    default_user=$(IV_AMQP_USER)
+    default_pass=$(IV_AMQP)
+    cluster_formation.k8s.service_name = {{ template "rabbitmq.fullname" . }}
+{{ .Values.rabbitmq.configuration | indent 4 }}
+{{ if .Values.rabbitmq.extraConfiguration}}
+{{ .Values.rabbitmq.extraConfiguration | indent 4 }}
+{{- end }}
+
+{{ if .Values.rabbitmq.advancedConfiguration}}
+  advanced.config: |-
+{{ .Values.rabbitmq.advancedConfiguration | indent 4 }}
+{{- end }}

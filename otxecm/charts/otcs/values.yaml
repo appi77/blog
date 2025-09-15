@@ -1,0 +1,757 @@
+global:
+  ## otdsUseReleaseName controls whether the release name is used in
+  ## the names of the objects.
+  otdsUseReleaseName: false
+  ## otdsServiceName defines the hostname of the Kubernetes container for
+  ## OTDS (inside the stateful set definition):
+  otdsServiceName: otds
+
+service:
+  # custom annotations that need to be assigned to otcs-admin service.
+  admin:
+    annotations: []
+  # custom annotations that need to be assigned to otcs-backend-search service.
+  backendSearch:
+    annotations: []
+  # custom annotations that need to be assigned to otcs-frontend service.
+  frontend:
+    annotations: []
+  # custom annotations that need to be assigned to otcs-admin-qds service.
+  qds:
+    annotations: []
+  # below is an example
+  # - "imageregistry: \"https://registry.opentext.com/\""
+
+pvc:
+  # custom labels that need to be applied to cs_persist pvcs
+  csPersist:
+    labels: []
+  # custom labels that need to be applied to cs logs pvcs
+  logs:
+    labels: []
+  # custom labels that need to be applied to cs sftp-volume pvc
+  # This pvc is created only when objectimporter is enabled
+  sftpVolume:
+    labels: []
+  # custom labels that need to be applied to cs otcs-contentProtection pvc
+  # This pvc is created only when contentProtection is enabled
+  contentProtection:
+    labels: []
+
+# below is an example to add label
+# velero will exclude pvc with below label from backup
+# - "velero.io/exclude-from-backup: \"true\""
+
+## otcs container settings
+image:
+  source:
+  name: otxecm
+  tag: 25.3.0
+  pullPolicy:
+  pullSecret:
+kubectl:
+  image:
+    source:
+    name: bitnami/kubectl
+    tag: 1.30.4
+    pullPolicy:
+    pullSecret:
+otxecmctrl:
+  image:
+    source:
+    name: otxecm-ctrl
+    tag: 25.3.0
+    pullPolicy:
+    pullSecret:
+  ## enable customPayload --set otcs.otxecmctrl.customPayload.enabled=true to add additional payloads to otxecmctrl pod.
+  customPayload:
+    ## provide the payload details
+    payloadConfig: {}
+
+## serviceAccountName: name of the kubernetes service account the pods are running under
+serviceAccountName:
+## containerLogLevel: an environment variable that determines the otcs container setup logging level. DEBUG, INFO, WARNING, ERROR, CRITICAL.
+## If DEBUG is set, then Content Server thread and connect logs will be set at level '2 - INFO' during and after deployment.
+## WARNING: You will need to monitor logs after deployment when using DEBUG, or adjust log levels. Otherwise the log storage may fill up.
+containerLogLevel: INFO
+## sharedAddressSpaceNat: enable the Carrier-grade NAT address block (100.64.0.0 - 100.127.255.255) for Tomcat when set to true
+sharedAddressSpaceNat:
+  enabled: false
+passwords:
+  ## adminUserPassword is the password of the Content Server 'admin' user
+  adminUserPassword:
+  ## adminServerPassword is the password of the Content Server admin server
+  adminServerPassword:
+  ## autoSysAdminPassword is the password of the Content Server 'system admin' user
+  autoSysAdminPassword:
+  ## alfluserPassword is the password of the ALFilter user
+  alfluserPassword:
+  ## appMonitorPassword is password of the Content Server 'appmonitor' user
+  appMonitorPassword:
+  ## dataEncryptionKey can't be changed after CS is first deployed, all instances must use the same DEK value
+  dataEncryptionKey: /opt/opentext/cs/ #DEK password
+  database:
+    ## adminPassword: password of the admin user of the database
+    adminPassword: ## Required if useExistingDatabase is false
+    ## password: password of the user that owns the database
+    password:
+  otacc:
+    ## corePassword: password of the otacc user, if that is being used for storage
+    corePassword:
+  synchronizedPartition:
+    ## ldapBindPassword: password of LPAD server to add users and groups to cs
+    ldapBindPassword:
+  ## proxyPassword: password of the proxy settings
+  proxyPassword:
+  ## awsSecretKey: awsSecretKey for the connection awsStorageProvider
+  awsSecretKey:
+   ## awsAccessId: awsAccessId for the connection awsStorageProvider
+  awsAccessId:
+## existingSecret: An already existing kubernetes secret, which contains passwords.
+existingSecret:
+## config parameters are mounted as a yaml file inside the otcs container
+config:
+  ## url: empty string can be used if using kubernetes LoadBalancer instead of Ingress
+  url:
+  ## port: defines the external port for the otcs kubernetes service. Cannot be changed after initial deployment.
+  port: 80
+  ## adminRestartTime: The time in hours after which an admin server process can be automatically restarted. The exit code of the process must be higher than maxGoodExit, which is configured on the Admin Server. 0 disables this feature.
+  adminRestartTime: 1
+  database:
+    ## only postgres, oracle, and mssql databases are supported
+    type: postgres
+    name: cs
+    hostname:
+    port:
+    ## useExistingDatabase: default value 'false' for primary instances, ignored for secondary instances.
+    ## If 'true' then it is assumed the database specified by 'name' and the user specified by 'username' are already created.
+    useExistingDatabase: false
+    ## adminUsername: required if useExistingDatabase is false
+    adminUsername:
+    ## adminDatabase: the default name of the database that we will be connecting into
+    adminDatabase:
+    ## username: user that owns the Content Server database
+    username: cs
+    autoExtendDataFile: true
+    autoExtendLogFile: true
+    oracle:
+      ## This should be the service name of your pluggable database
+      serviceName: ORCLPDB1
+      ## Ignored unless loadTnsnames enabled true
+      ## Should be the connection alias for the pluggable database to use
+      tnsnamesConnectionAlias: ORCL
+      ## The path for the oracle database's data file. The folder must exist but the file cannot exist at the path.
+      dbDataFileSpec: /opt/oracle/cs.dbf
+      dbDataFileSize: 500
+      loadTnsnames:
+        enabled: false
+        filename: tnsnames.ora
+    mssql:
+      ## The desired path for the Content Server DBs data file
+      dbDataFileSpec:
+      ## Size of the data file in MBs
+      dbDataFileSize: 500
+      ## The desired path for the Content Server DBs log file
+      dbLogFileSpec:
+      ## Size of the log file in MBs
+      dbLogFileSize: 500
+      master_database_name: master
+  documentStorage:
+    ## type: Default value 'otac' (Archive Server). Can also use 'aws', 'gcp', 'efs', or 'database'. Can also use 'otacc' on OpenText hosted platform.
+    type: otac
+    ## efsPath: Required if documentStorage:type is 'efs'
+    efsPath: ""
+    ## efsStorage: Required if documentStorage:type is 'efs'
+    efsStorage: 1Gi
+    ## efsStorageClassName: Required if documentStorage:type is 'efs'
+    efsStorageClassName:
+  ## enableMultiProcessMode: Enables/disables multi process mode, default is true.
+  enableMultiProcessMode: true
+  ## useExtendedECMLicense: Determines which license model is being used.
+  useExtendedECMLicense: false
+  ## createBizadmin: Creates user "bizadmin" in content server
+  createBizadminUser: false
+  ## createAppMonitorUser: Creates user "appmonitor" in content server
+  createAppMonitorUser: false
+  ## enableSecurityLogs: Enables Security Logs in content server
+  enableSecurityLogs: false
+  ## enableSysmonLogs: Enables System Monitoring Logs in content server
+  enableSysmonLogs: false
+  # sets the oauth client id for the llm
+  llm:
+    clientID: LLM_Client
+    clientSecret:
+    enabled: false
+  ## Creats Storage Provider Cache pvc for OTMM, storageClassNameneed to be RWX
+  storageProviderCache: 
+    enabled: false
+    storage: 500Gi
+    storageClassName:
+    dmtshost:
+  extensions:
+    ## set enabled to true, if you want to install custom modules/language packs/patches using init containers
+    enabled: false
+    ## set includeManifestInitContainer to true and include init container image of manifest file under initContainers section,
+    ## if containers in cluster don't have access to internet
+    includeManifestInitContainer: false
+  ual:
+    ## set enabled to true, if you want to enable ual
+    enabled: false
+    certFilename: sp.pem
+    certSecret:
+  ## deployBusinessScenarios will deploy the scenarios listed in the businessScenariosList
+  deployBusinessScenarios: false
+  ## List the scenario names in businessScenariosList array
+  ## businessScenariosList:
+  ## - OT-EAM
+  ## - OT-Teamspaces
+  ## - OT-Projects
+  ## - OT-Agreements
+  ## - OT-HCM
+  ## - OT-CRM
+  ## - OT-REALESTATE
+  ## - OT-SALES
+  ## - OT-SystemCategories
+  ## - OT-CustomerService
+  ## - OT-DMS
+  ## - OT-Procurement
+  ## Further details about the scenarios can be found in the Cloud Deployment Guide
+  businessScenariosList: ["OT-EAM","OT-DMS","OT-Teamspaces","OT-Projects","OT-Agreements","OT-HCM","OT-CRM","OT-REALESTATE","OT-Procurement","OT-SALES","OT-SystemCategories","OT-CustomerService"]
+  ## deployTransportPackage: deploy the transport packages if it is true
+  ## --set otcs.config.deployTransportPackage=true
+  deployTransportPackage: false
+  ## transportPackagesUrlList contains the list of package url's
+  ## eg: --set otcs.config.transportPackagesUrlList[0]='url'
+  ## eg: --set otcs.config.transportPackagesUrlList[1]='url'
+  transportPackagesUrlList: []
+  ## defaultAppsInstall will install default apps that comes with content server when it is set to true
+  defaultAppsInstall: false
+  ## defaultAppsUpgrade will upgrade default apps that comes with content server when it is set to true
+  defaultAppsUpgrade: false
+  ## csResourceName contains the resource name of the cs, default value is "cs"
+  ## --set otcs.config.csResourceName=""
+  csResourceName: "cs"
+  ## set enableSynchronizedPartition to true to enable synchronizedPartition from otxecm-ctrl 
+  enableSynchronizedPartition: false 
+  ## proxy: Proxy values are optional, and are used for different proxy settings in contentserver
+  ## These values should be string like "thing.example.com",
+  proxy:
+    enabled: false
+    username: ""
+    host:
+    port:
+    excludes:
+  syndication:
+    enabled: false
+    isPrimary: false
+    siteid:
+    sitename:
+  contentProtection:
+    enabled: false
+    storage:
+    path:
+  awsStorageProvider:
+    region:
+    bucketName:
+  gcpStorageProvider:
+    serviceAccountJson: gcs_serviceaccount.json
+    bucketName:
+  otds:
+    ## signInUrl: is used in the web browser to redirect users to the OTDS login page.
+    ## signInUrl is defaulted to otdsPublicUrl. In case otdsPublicUrl is an empty string ("")
+    ## (if using a LoadBalancer instead of Ingress), the hostname is retrieved from the Kubernetes API.
+    signInUrl:
+    ## serverURL: is used for the direct communication between otcs and otds servers.
+    ## If external otds is used (global.otds.enabled=false) then serverUrl defaults to otdsPublicUrl as well. Otherwise it
+    ## uses the otds kubernetes service name.
+    serverUrl:
+    ## displayName: sets the message displayed on the OTDS login page
+    displayName: "OpenText Content Management CE 25.3"
+    port: 80 ## port defines the external port for the otds kubernetes service.  Cannot be changed after initial deployment.
+    ## sameSite: sameSite values are optional
+    sameSite:
+      ## set enabled to true, if you want OTDS sameSite attribute
+      enabled: false
+      ## value is only used when otcs.config.otds.sameSite.enabled: true
+      ## value: Default value 'None'. Can also use 'Strict', or 'Lax'.
+      ## If a invalid value is provided, it will default to None
+      value: None
+    ## trustedSites contains the list of trusted url's
+    ## eg: --set otcs.config.otds.trustedSites[0]='url'
+    ## eg: --set otcs.config.otds.trustedSites[1]='url'
+    trustedSites: []
+  ## otac: values for this section are required if documentStorage:type is 'otac'
+  otac:
+    ## url: do not modify unless you are using an external server not managed by the helm chart
+    url: http://otac-0:8080
+    ## if using 'otac' storage, this must match the archive name used by otac
+    archiveName: A1
+    certFilename: sp.pem
+    certSecret:
+  ## otacc: values for this section are required if documentStorage:type is 'otacc'
+  otacc:
+    ## url: do not modify unless you are using an external server not managed by the helm chart
+    url: http://otacc:8080
+    archiveName: A1
+    certFilename: sp.pem
+    coreUser: 'ba.test@username'
+    archiveDescription: 'MyArchive'
+    collectionName: 'Content Management'
+    certSecret:
+  ## search: settings for the otcs search indexes, and whether they are stored on a RWO (ReadWriteOnce) or RWX (ReadWriteMany) pvc.
+  ## A RWX pvc is needed for sharing search files across containers, like in a high availability scenario.
+  search:
+    localSearch:
+      ## enabled: this should be enabled if you are creating a RWO (ReadWriteOnce) pvc for your otcs admin or backend-search container
+      enabled: true
+      storage: 1Gi
+    memcached:
+      ## autoMemcached: this is enabled by default and maintains a minimum of 3 memcached servers with 256MB of memory each,
+      ##  autobalanced across admin servers. Starting at 4 frontends, the number of memcached servers are equal (4 frontends, 4 memcached),
+      ##  and capped at 8 memcached servers when there are 8 or more frontends.
+      ##  If autoMemcached is false, you must remove the brackets {} from the 'servers' key below and populate it as desired.
+      autoMemcached: true
+      servers: {}
+      ## If autoMemcached is 'false', you can manually specify memcached servers using the format below
+      #  otcs-admin-0: # hostname of pod running memcached. This must be an Admin server (search) hostname.
+      #    numberOfMemcachedServers: 2
+      #    memory: 256 # memory in MB. Supported values 64, 128, 256, 512, 1024
+      #  otcs-backend-search-0: # hostname of pod running memcached. This must be an Admin server (search) hostname.
+      #    numberOfMemcachedServers: 2
+      #    memory: 256 # memory in MB. Supported values 64, 128, 256, 512, 1024
+    sharedSearch:
+      ## enabled: this should be enabled if you are creating a shared pvc to share storage across search instances
+      enabled: false
+      ## storageClassName: This should be a RWX (ReadWriteMany) kubernetes storage class.
+      storageClassName:
+      ## storage: this is the amount of storage to use
+      storage: 1Gi
+  ## timeZone: This sets the time zone of the Linux OS within the container. The default value for
+  ## the timeZone is Etc/UTC. The value for the timeZone MUST be a CORRECT value from a trusted
+  ## source, otherwise unexpected behaviour will occur, this could have unforeseen repercussions for
+  ## software running in the container.
+  timeZone:
+  tomcat:
+    # CATALINA_OPTS - (Optional) Java runtime options used when the "start",
+    # "run" or "debug" command is executed.
+    # Examples are heap size, GC logging, JMX ports etc.
+    # Eg: To set max heap size to 4Gi
+    # catalinaOpts: "-Xmx4096m"
+    # Make necessary adjustments to the memory resource limits of otcs pods, if you want to change heap size of tomcat
+    catalinaOpts: "-Xmx1024m"
+    # Default number of days to keep Tomcat access logs
+    accessLogsMaxDays: 7
+  ## restartAutomationTime sets the amount of time the automation waits after failing before restarting the pod
+  restartAutomationTime: 60
+  ## socketIPFamilyHint: the IP family to be used. Must be 1, or 2. 1 is IPv4, and 2 is IPv6.
+  socketIPFamilyHint: 1
+## ingress enables Kubernetes Ingress for OTCS
+ingress:
+  enabled:
+serviceType:
+## readinessProbe.*: parameters to indicate if otcs container is ready to receive traffic
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 0
+  timeoutSeconds: 6
+  periodSeconds: 10
+## livenessProbe.*: parameters to indicate if otcs container is alive and operational
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 600
+  timeoutSeconds: 15
+  periodSeconds: 30
+  failureThreshold: 3
+  # The max lifespan of a thread in minutes
+  maxThreadLifespan: 10
+## loadAdminSettings.*: specify a XML administration setting file to be applied the first time the
+## container is started
+loadAdminSettings:
+  enabled: false
+  initialConfigmap:
+  recurrentConfigmap:
+## This specifies the location of custom admin settings folder
+adminSettingsFolder: adminSettings
+loadLicense:
+  enabled: false
+  filename:
+## storageClassName: the kubernetes storage class for volumes
+storageClassName:
+storageClassNameNFS:
+## default storage size for the volumes containing Content Server persisted data
+csPersist:
+  storage: 6Gi
+  logStorage: 5Gi
+  logStorageClassName:
+# Distributed Agents. DA workers can optionally run on other instance types.
+contentServerDa:
+  ## replicas: controls the number of pods.
+  replicas: 1
+  ## podManagementPolicy: startup policy for pods in statefulset. 'Parallel' means that if
+  ## replicas > 1, pods will start at the same time
+  podManagementPolicy: Parallel
+  ## resource requirements are enabled by default. See this url for details on kubernetes resources:
+  ## https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+  resources:
+    enabled:
+    requests:
+      cpu: 1
+      memory: 4Gi
+    limits:
+      cpu: 2
+      memory: 4Gi
+  ## threadsNumber: number of threads set in opentext.ini for otcs
+  threadsNumber: 1
+  # daWorkers: number of Distributed Agent workers to run
+  daWorkers: 5
+  ## specify labels, kubernetes only schedules the pod onto nodes that have each of the labels you specify under nodeSelector
+  nodeSelector: {}
+  ## specify the affinity rule that you want to apply for pods
+  ## Eg: Below anti-affinity rule says that the scheduler should try to avoid scheduling the pod
+  ## onto a node where one or more Pods with the label "app.kubernetes.io/component: otcs-da" already exists
+  ##  affinity:
+  ##    podAntiAffinity:
+  ##    requiredDuringSchedulingIgnoredDuringExecution:
+  ##      - labelSelector:
+  ##          matchLabels:
+  ##            app.kubernetes.io/component: otcs-da
+  ##        topologyKey: kubernetes.io/hostname
+  affinity: {}
+  ## toleration for pod
+  ## Eg: Below toleration can tolerate taint with label key1:value1 and effect NoSchedule
+  ## i.e if a node has taint with label key1:key2 and effect NoSchedule, the pod can still be scheduled on that node
+  ## tolerations:
+  ## - key: "key1"
+  ##   operator: "Equal"
+  ##   value: "value1"
+  ##   effect: "NoSchedule"
+  tolerations: []
+contentServerFrontend:
+  ## replicas: controls the number of frontend pods. Add more for performance.
+  ## If set to 0 the admin pod will receive the traffic from the otcs-frontend service, when running a helm install or upgrade command.
+  replicas: 1
+  ## podManagementPolicy: startup policy for pods in statefulset. 'Parallel' means that if
+  ## replicas > 1, pods will start at the same time
+  podManagementPolicy: Parallel
+  ## resource requirements are enabled by default. See this url for details on kubernetes resources:
+  ## https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+  resources:
+    enabled:
+    requests:
+      cpu: 1
+      memory: 4Gi
+    limits:
+      cpu: 2
+      memory: 4Gi
+  ## threadsNumber: number of threads set in opentext.ini for otcs
+  threadsNumber: 8
+  # daWorkers: number of Distributed Agent workers to run
+  daWorkers: 0
+  ## specify labels, kubernetes only schedules the pod onto nodes that have each of the labels you specify under nodeSelector
+  nodeSelector: {}
+  ## specify the affinity rule that you want to apply for contentServerFrontend pods
+  ## Eg: Below anti-affinity rule says that the scheduler should try to avoid scheduling the contentServerFrontend pod
+  ## onto a node where one or more Pods with the label "app.kubernetes.io/component: otcs-frontend" already exists
+  ##  affinity:
+  ##    podAntiAffinity:
+  ##    requiredDuringSchedulingIgnoredDuringExecution:
+  ##      - labelSelector:
+  ##          matchLabels:
+  ##            app.kubernetes.io/component: otcs-frontend
+  ##        topologyKey: kubernetes.io/hostname
+  affinity: {}
+  ## specify toleration for contentServerFrontend pod
+  ## Eg: Below toleration can tolerate taint with label key1:value1 and effect NoSchedule
+  ## i.e if a node has taint with label key1:key2 and effect NoSchedule, the pod can still be scheduled on that node
+  ## tolerations:
+  ## - key: "key1"
+  ##   operator: "Equal"
+  ##   value: "value1"
+  ##   effect: "NoSchedule"
+  tolerations: []
+## init container details
+initContainers: []
+# - name: DESIRED_NAME_FOR_INIT_CONTAINER
+#   image:
+#     source: IMAGE_SOURCE
+#     name: IMAGE_NAME
+#     tag: IMAGE_TAG
+
+## List additional pod labels to apply
+## eg:
+## podLabels:
+##   app.kubernetes.io/app_name:  otcs
+##   app.kubernetes.io/app_version: "app version"
+podLabels: {}
+
+## List additional pod annotations to apply
+podAnnotations: {}
+
+## Specifies additional volumes
+## Each volume must have a name and mountPath.
+## The volumeOptions and mountOptions are optional fields that will be applied to the volume definition in the statefulset and volume mount
+## --set otcs.additionalVolumes[0].name=azure-mount \
+## --set otcs.additionalVolumes[0].mountPath='/opt/opentext/azureMount' \
+## --set otcs.additionalVolumes[0].volumeOptions.azureFile.secretName=azure-secret \
+## --set otcs.additionalVolumes[0].volumeOptions.azureFile.shareName=azure-shared \
+## --set otcs.additionalVolumes[0].mountOptions.subPath=azureMount \
+## --set otcs.additionalVolumes[1].name=pvc \
+## --set otcs.additionalVolumes[1].mountPath='/opt/opentext/pvc' \
+## --set otcs.additionalVolumes[1].volumeOptions.persistentVolumeClaim.claimName=pvc \
+additionalVolumes: []
+
+contentServerAdmin:
+  sharedSearch:
+    storage: 1Gi
+  ## podManagementPolicy: startup policy for pods in statefulset. 'OrderedReady' means that if
+  ## replicas > 1, pods will start one after the other. Currently only 1 Admin Server is supported
+  podManagementPolicy: OrderedReady
+  ## resource requirements are enabled by default. See this url for details on kubernetes resources:
+  ## https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+  resources:
+    enabled:
+    requests:
+      cpu: 1
+      memory: 6Gi
+    limits:
+      cpu: 2
+      memory: 6Gi
+  ## threadsNumber: number of threads set in opentext.ini for otcs
+  threadsNumber: 8
+  # daWorkers: number of Distributed Agent workers to run
+  daWorkers: 0
+  ## specify labels, kubernetes only schedules the pod onto nodes that have each of the labels you specify under nodeSelector
+  nodeSelector: {}
+  ## specify the affinity rule that you want to apply for contentServerAdmin pods
+  ## Eg: Below anti-affinity rule says that the scheduler should try to avoid scheduling the contentServerAdmin pod
+  ## onto a node where one or more pods with the label "app.kubernetes.io/component: otcs-admin" already exists
+  ##  affinity:
+  ##    podAntiAffinity:
+  ##    requiredDuringSchedulingIgnoredDuringExecution:
+  ##      - labelSelector:
+  ##          matchLabels:
+  ##            app.kubernetes.io/component: otcs-admin
+  ##        topologyKey: kubernetes.io/hostname
+  affinity: {}
+  ## specify toleration for contentServerAdmin pod
+  ## Eg: Below toleration can tolerate taint with label key1:value1 and effect NoSchedule
+  ## i.e if a node has taint with label key1:key2 and effect NoSchedule, the pod can still be scheduled on that node
+  ## tolerations:
+  ## - key: "key1"
+  ##   operator: "Equal"
+  ##   value: "value1"
+  ##   effect: "NoSchedule"
+  tolerations: []
+contentServerBackendSearch:
+  sharedSearch:
+    storage: 1Gi
+  ## replicas: controls the number of backend admin pods. Add more for configuring the various
+  ## backend activities in your deployment. Currently admin pods can only be scaled up, not down.
+  replicas: 0
+  ## podManagementPolicy startup policy for pods in the statefulset. 'Parallel' means that if
+  ## replicas > 1, pods will be started at the same time
+  podManagementPolicy: Parallel
+  ## resource requirements are enabled by default. See this url for details on kubernetes resources:
+  ## https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+  resources:
+    enabled:
+    requests:
+      cpu: 1
+      memory: 4Gi
+    limits:
+      cpu: 2
+      memory: 4Gi
+  ## threadsNumber: number of threads set in opentext.ini for otcs
+  threadsNumber: 8
+  # daWorkers: number of Distributed Agent workers to run
+  daWorkers: 0
+  ## specify labels, kubernetes only schedules the pod onto nodes that have each of the labels you specify under nodeSelector
+  nodeSelector: {}
+  ## specify the affinity rule that you want to apply for contentServerBackendSearch pods
+  ## Eg: Below anti-affinity rule says that the scheduler should try to avoid scheduling the contentServerBackendSearch pod
+  ## onto a node where one or more pods with the label "app.kubernetes.io/component: otcs-backend-search" already exists
+  ##  affinity:
+  ##    podAntiAffinity:
+  ##    requiredDuringSchedulingIgnoredDuringExecution:
+  ##      - labelSelector:
+  ##          matchLabels:
+  ##            app.kubernetes.io/component: otcs-backend-search
+  ##        topologyKey: kubernetes.io/hostname
+  affinity: {}
+  ## specify toleration for contentServerBackendSearch pod
+  ## Eg: Below toleration can tolerate taint with label key1:value1 and effect NoSchedule
+  ## i.e if a node has taint with label key1:key2 and effect NoSchedule, the pod can still be scheduled on that node
+  ## tolerations:
+  ## - key: "key1"
+  ##   operator: "Equal"
+  ##   value: "value1"
+  ##   effect: "NoSchedule"
+  tolerations: []
+# rootsquashNFS if enabled modifies the directory permissions of ( cs_persist , cs_index , extensions ) in root squash enabled NFS environment
+rootSquashNFS:
+  enabled: false
+  image:
+    name: busybox
+    source:
+    tag: latest
+## Enable secretlink to use api's to fetch secrets from vault. disable this to use k8's secret
+secretlink:
+  enabled:
+  image:
+    name:
+    source:
+    tag:
+  ## loglevel: SecretLink Loglevel by default INFO
+  ## address: Address of the Vault Server incl. protocol and port (e.g. https://vaulttest-csdps.otxlab.net/)
+  ## mountpoint: Mount Point of the secrets engine (e.g. "kv")
+  ## namespace: Namespace of the Vault Enterprise deployment (e.g. "bn-tg")
+  ## path: Path of the secret (e.g. dev/dev-sandbox/bn-vault-example/foo)
+  ## authpath: Name of the Authentication Path (e.g. auth/jwt-bn-vault-example-dev-dev-sandbox-anthos-bp2-bn-cicd-sandbox-btse-sandbox-1)
+  ## role: Name of the Authentication Role (e.g. anthos-bp2-bn-cicd-sandbox-btse-sandbox-1)
+  loglevel:
+  vault:
+      address:
+      mountpoint:
+      namespace:
+      path:
+      authpath:
+      role:
+fluentbit:
+  enabled: false
+  image:
+    name: fluent/fluent-bit
+    source:
+    tag: 3.0.7
+  ## Enable customOutput to export logs to SIEM (Security Information and Event Management) application and set the customOutputFilePath
+  customOutput:
+    enabled: false
+    customOutputFilePath:
+  ## enable proxy to connect to remote fluentbit through proxy and set the proxy host and port. 
+  ## To use an HTTP proxy with basic authentication,enable authentication and provide the username and password.
+  proxy:
+    enabled: false
+    host:
+    port:
+    enableauthentication: false
+    username:
+    password:
+
+  ## List the log types that need to be monitored by fluentbit.
+  ## logsToMonitor:
+  ## - connect - will monitor connect logs
+  ## - dcs - will monitor document conversion server logs
+  ## - search - will monitor search logs
+  ## - security - will monitor security logs
+  ##            - Make sure security logs are enabled.
+  ##            - optionally enable security logs by setting otcs.config.enableSecurityLogs to true
+  ## - sysmon   - will monitor system monitoring logs
+  ##            - make sure system monitoring logs are enabled
+  ##            - optionally enable system monitoring logs by setting otcs.config.enableSysmonLogs to true
+  ## - thread - will monitor thread logs
+  ## - timings - will monitor timings logs
+  ## eg: logsToMonitor: ["connect", "dcs", "search", "security", "sysmon", "thread", "timings"]
+  logsToMonitor: []
+  ## readinessProbe.*: parameters to indicate if fluentbit container is ready to receive traffic
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+  ## livenessProbe.*: parameters to indicate if fluentbit container is alive and operational
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 3
+## This will configure the object importer
+objectimporter:
+  enabled: false
+  storage: 1Gi
+multifileStorage: 10Gi  
+## This will monitor otcs-admin-pod
+adminPodMonitor:
+  pod_monitor_client_id: otcs-podmonitor
+  pod_monitor_client_secret:
+  enabled: false
+istio:
+  enabled: false
+csAdminPorts:
+  - name: tcp-admin-server
+    port: 5858
+  - name: tcp-document-conversion-server-admin
+    port: 5868
+  - name: tcp-document-conversion-server-rest-api
+    port: 5869
+  - name: tcp-enterprise-search-federator-search
+    port: 8500
+  - name: tcp-enterprise-search-federator-admin
+    port: 8501
+  - name: tcp-8502
+    port: 8502
+  - name: tcp-enterprise-update-distributor
+    port: 8503
+  - name: tcp-enterprise-document-conversion
+    port: 8504
+  - name: tcp-8505
+    port: 8505
+  - name: tcp-8506
+    port: 8506
+  - name: tcp-8507
+    port: 8507
+  - name: tcp-enterprise-search-engine-admin
+    port: 8508
+  - name: tcp-enterprise-search-engine-server
+    port: 8509
+  - name: tcp-enterprise-index-engine-admin
+    port: 8510
+  - name: tcp-enterprise-index-engine-server
+    port: 8511
+  - name: tcp-memcached-1
+    port: 8512
+  - name: tcp-memcached-2
+    port: 8513
+  - name: tcp-memcached-3
+    port: 8514
+  - name: tcp-9000
+    port: 9000
+  - name: tcp-9001
+    port: 9001
+  - name: tcp-9002
+    port: 9002
+  - name: tcp-9003
+    port: 9003
+  - name: tcp-9004
+    port: 9004
+  - name: tcp-9005
+    port: 9005
+  - name: tcp-9006
+    port: 9006
+  - name: tcp-9007
+    port: 9007
+  - name: tcp-9008
+    port: 9008
+  - name: tcp-9009
+    port: 9009
+  - name: tcp-9010
+    port: 9010
+  - name: tcp-9011
+    port: 9011
+  - name: tcp-9012
+    port: 9012
+  - name: tcp-9013
+    port: 9013
+  - name: tcp-9014
+    port: 9014
+  - name: tcp-9015
+    port: 9015
+  - name: tcp-9016
+    port: 9016
+  - name: tcp-9017
+    port: 9017
+  - name: tcp-9018
+    port: 9018
+  - name: tcp-9019
+    port: 9019
+  - name: tcp-9020
+    port: 9020

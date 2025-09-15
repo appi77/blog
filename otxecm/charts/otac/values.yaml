@@ -1,0 +1,437 @@
+########################################################################
+# Settings for Archive Center and its Database
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+########################################################################
+
+global:
+  ## otdsUseReleaseName controls whether the release name is used in
+  ## the names of the objects.
+  otdsUseReleaseName:                                   false
+  ## otdsServiceName defines the hostname of the Kubernetes container for
+  ## OTDS (inside the stateful set definition):
+  otdsServiceName:                                      otds
+
+service:
+  # custom annotations that need to be assigned to otac service.
+  annotations: []
+  # below is an example
+  # - "imageregistry: \"https://registry.opentext.com/\""
+
+pvc:
+  labels:
+    # custom labels that need to be applied to otac-bdv pvc's
+    bdv: {}
+    # custom labels that need to be applied to otac-dv pvc's
+    dv: {}
+    # custom labels that need to be applied to otac-logs pvc's
+    logs: {}
+    # custom labels that need to be applied to otac-config pvc's
+    config: {}
+    # custom labels that need to be applied to otac-sd pvc's
+    sd: {}
+    # custom labels that need to be applied to sftp-volume pvc
+    sftpVolume: {}
+    # below is an example
+    # app.kubernetes.io/key: value 
+
+## serviceName defines the name of the Kubernetes service for
+## Archive Center:
+serviceName: otac
+## port is the external port the Archive Center Kubernetes service
+## is reachable:
+port: 8080
+## targetPort is the internal container port the Kubernetes service is
+## forwarding requests to.
+targetPort: 8080
+## protocol: communication protocol - used in config map
+protocol: http
+## archiveName is the name of the Archive Center archive that will be
+## used to store Content Server documents
+archiveName: A1
+## poolName is the name of the Archive Center pool that will be
+## used to store Content Server documents
+poolName: Pool1
+## volumeName is the name of the Archive Center volume that will be
+## used to store Content Server documents
+volumeName: Vol1
+## hostname defines the hostname of the Kubernetes container for
+## Archive Center (inside the stateful set definition):
+hostname: otac
+## During the installation of Archive Center, some standard users like dsadmin, dpadmin, dpuser are configured
+## If using Document Pipeline, provide the passwords for dpuser and dpadmin as needed.
+## These values must have at least 8 characters.
+standardUserPasswords:
+  # This is the administrator of the archive system. The group has the “ALL_ADMS” policy and can perform all administration tasks, 
+  # view accounting information, and start/stop the Spawner
+  # If the 'dsadmin' password is not provided, global 'masterPassword' will be taken as default
+  dsadmin:
+  # This user controls the DocTools of the Document Pipelines and the documents in the queues. The group has the “ALL_DPINFO” policy.
+  dpadmin:
+  # This user controls the DocTools of the Document Pipelines. The group has the “DPinfoDocToolAdministration” policy.
+  dpuser:
+## image.* defines Docker image location, tags and pull parameters for
+## Archive Center - you need to adjust this:
+image:
+  source:
+  name: otac
+  tag: 24.4.3
+  pullPolicy:
+  pullSecret:
+## preUpgrade - Cleanup Job Image
+preUpgradeJob:
+  image:
+    source:
+    tag: latest
+    name: bitnami/kubectl
+## readinessProbe.*: parameters to indicate if otac container is ready to receive traffic
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 120
+  timeoutSeconds: 5
+  periodSeconds: 10
+## livenessProbe.*: parameters to indicate if otac container is alive and operational
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  timeoutSeconds: 60
+  periodSeconds: 10
+  failureThreshold: 5
+## forces otac to recreate the pod for every upgrade.
+forceRestart: false
+## Retry after a specified delay (in milliseconds) if the attempt to remove an empty folder fails.
+rmdir:
+    sleeptime: 50
+    retrycount: 2
+## replicas for Archive Center should always be 1:
+replicas: 1
+## fsGroup defines the group ID in Linux that the Archive Center
+## Docker container runs in and that the volumes are mounted with.
+## Normally you don't want to change this!
+fsGroup: 1000
+## serviceAccountName defines the name of the service account the
+## pods are running under. Normally that is 'default'
+serviceAccountName:
+## acPort is an additional container port (see stateful set) that
+## is NOT exposed via the Kubernetes service for Archive Center
+acPort: 4034
+## portProtocol is the protocol the Archive Center Kubernetes service
+## is using:
+portProtocol: TCP
+## volumeDirectory is the path to the Archive Center storage location
+## that will be used to store Content Server documents
+volumeDirectory: /opt/opentext/ac_sd/vol1
+##AC Config directory
+acConfigDir: /opt/opentext/archive_center/ac_config
+
+## resType for Archive Center is always 'AC' - do not change!
+resType: AC
+## SHARED_ADDRESS_SPACE_NAT can be set to true to configure Tomcat to treat
+## 100.64.0.0/10 addresses as internal for compatibility with environments
+## that use Carrier-grade NAT
+SHARED_ADDRESS_SPACE_NAT: false
+## GCS public key JSON file location
+## eg: /opt/opentext/keys/gcp.json
+GOOGLE_APPLICATION_CREDENTIALS: /opt/opentext/archive_center/ac_config/gcp.json
+
+## List additional pod annotations to apply
+podAnnotations: {}
+
+# catalinaOpts will be ignored if a custom setenv.sh file is placed in otac/tomcat folder.
+tomcat:
+  # CATALINA_OPTS - (Optional) Java runtime options used when the "start",
+  # "run" or "debug" command is executed.
+  # Examples are heap size, GC logging, JMX ports etc.
+  # Eg: To set max heap size to 4Gi
+  # catalinaOpts: "-Xmx4096m"
+  # Make necessary adjustments to the memory resource limits of otac pods, if you want to change heap size of tomcat
+  catalinaOpts: "-Xmx2048m"
+
+## Configuration related to Document encryption
+encryption:
+  ## If encryption is enabled, then the customer should create/use the System Keys through the Administration Client (ADMC) to allow document encryption
+  enabled: false
+  ## Following parameters should be set to save the System Key into keystore directory. This directory shold be persisted as the keystore has sensitive information.
+  ## default dir to /opt/opentext/archive_center/ac_config/keystore
+  keyStoreExportFolderVal: /opt/opentext/archive_center/ac_config/keystore
+  ## Control the Encryption Key cache timeout
+  ## Provide value in minutes. By default -1 (no timeout)
+  encKeyCacheTimeoutVal: -1
+  ## Configuration related to Customer Managed Key based document encryption through OTKM
+  ## If this switch is enabled then OTKM should be integrated into OTAC to leverage the Key Management Systems for document encryption
+  ## If this setting is false, then OTAC uses the Archive Server managed key(Server Key) based document encryption.
+  ## OTKM configuration.
+  otkm:
+    enabled: false
+    ## OTKM Service URL: "http[s]://host:port"
+    serviceUrlVal:
+    ## Mapped UUID for Master key
+    mekIdVal:
+    ## OTDS Principal details
+    ## Pass OTDS OAuth non-confidential client id default: key_mediator
+    clientIdVal: key_mediator
+    ## OTDS User (OAuthClients)
+    userVal:
+    ## User password
+    userPasswordVal:
+    ## Enable SSL connection to OTKM through Root CA certificate
+    ## Configure the OTKM SSL certificate if this setting is enabled.
+    ## This setting is always set to 'false' in current deployments
+    certPinningEnabledVal: false
+    ## OTKM SSL certificate in *.cer format 
+    caCertFileNameVal: otkm-root-ca.cer
+    ## Fixed place holder for Certificates
+    certCAPathVal: /opt/opentext/archive_center/ac_config/certs
+
+## Configuration for auto settingup ILM
+ilm:
+  ## Enable ILM to use Application Layer scenarios
+  enabled: false
+  tenant:
+    ## The tenant name is used to create a tenant-specific OTDS partition. This partition contains all the tenant-specific users. And also used to create the OTDS groups in the OTDS partition 'OTInternal'
+    ## Allowed characters are [a-zA-Z][a-zA-Z0-9_]{48}
+    name: OTAC
+    ## This name is used to "mark" all the objects which belong to a specific tenant. 
+    ## Allowed characters are [A-Z][A-Z0-9]{4}
+    shortname: OTAC
+  ## While logging into Archive Center Administration in your web browser, You must enter the full user name, which consists of the ID and the OTDS partition, for example ba.admin@OTInternal.
+  ## If want to use ILM scenarios 'ba' and 'ilm' fields must be filled mandatorily
+  users:
+    ## This user is added to the <new tenant> group, with assigned policy “BusinessAdministration,” and thereby is allowed to perform all tasks related to Archive Center Administration.
+    ba:
+      userName: ba.admin
+      password:
+    ## This user is added to a group has the name <new tenant>_ED and the assigned policy “ArchiveAccess,” and thereby is allowed to perform all tasks related to Archive Center Access.
+    access:
+      userName: access.admin
+      password:
+    ## This user is added to a group has the name <new tenant>_ILM and users have the access to login into Archive Server using client and thereby is allowed to perform all tasks related to ILM.
+    ilm:
+      userName: ilm.admin
+      password:
+    ## This user is added to a group has the name <new tenant>_UG and use Directory Services to let users have web access to their archived documents through My Archive.
+    my:
+      userName: my.admin
+      password:
+    ## System user 'system.cmis' is added to a group has the name <new tenant>_SU and used as a technical user for the Application Layer (Archive Center CMIS).
+    systemPassword:
+
+## resources.* defines the resource requirements for Archive Center:
+resources:
+  enabled:
+  requests:
+    cpu: 1
+    memory: 1.5Gi
+  limits:
+    cpu: 2
+    memory: 3Gi
+  storageClassName:
+  storageClassNameRWX:
+## volumes.* defines the Archive Center volumes :
+volumes:
+    accessMode: ReadWriteOnce
+    storage:
+      ## bdv: location for buffer device
+      bdv: 1Gi
+      ## dv: location for device
+      dv: 1Gi
+      ## sd: volume where all archive data is stored.
+      ## Must be large enough to store all incoming documents.
+      sd: 1Gi
+      ## logs: volume where all logs files are stored.
+      logs: 4Gi
+
+## database.* includes all database connection parameters for
+## Archive Center:
+database:
+  name: ac
+  ## Type defines which DB OTAC should be configured to
+  ## Allowed Values postgres / oracle
+  type: postgres
+  ssl:
+  executeSchema: true
+  hostname:
+  port:
+  adminUsername:
+  adminPassword:
+  ## username: user that owns the Archive Center database
+  username: ac
+  password:
+  ## Mention the file name of the custom certificate placed in the helm 'cert' folder
+  ## Provided SSL Certificate is used to connect to the database.
+  customSSLCertificate: global-bundle.pem
+  postgres:
+    ## Default Table space for Postgres is pg_default
+    ts_default: pg_default
+  oracle:
+    ts_index: ac_index
+    ts_data: ac_data
+    ## This should be the service name of your pluggable database
+    serviceName: ac
+    ## Should be the connection alias for the pluggable database to use
+    tnsnamesConnectionAlias: ac
+    loadTnsnames:
+      enabled: false
+      filename: tnsnames.ora
+## otds.* includes the connecion parameters to
+## OpenText Directory Services (OTDS)
+otds:
+  ## hostname defines the hostname of the Kubernetes container for
+  ## OTDS (inside the stateful set definition):
+  hostname: otdsws
+  ## admin is the name of the administrator user (login) for OTDS:
+  admin: admin
+  ## password is the name of the password of the administrator user
+  ## for OTDS:
+  password:
+  ## port defines the external port for the OTDS Kubernetes service:
+  port: 80
+  ## protocol: communication protocol - used in config map
+  protocol: http
+## existingSecret: An already existing kubernetes secret, which contains passwords.
+existingSecret:
+config:
+  ## timeZone: This sets the time zone of the Linux OS within the container. The default value for
+  ## the timeZone is Etc/UTC. The value for the timeZone MUST be a CORRECT value from a trusted
+  ## source, otherwise unexpected behaviour will occur, this could have unforeseen repercussions for
+  ## software running in the container.
+  timeZone:
+  storageDevices:
+    ## Storage Devices Configurations.
+    gcs:
+      ## Google Cloud Storage configuration. This configuration is active if enable=true
+      enable: false
+      ## Google Cloud Storage Device Name
+      name: GCP
+      ## Specify the Google Cloud Storage service available.
+      serviceAddress: storage.googleapis.com
+      ## Mention the file name of the custom SSL Certificate placed in the helm 'cert' folder
+      ## A file holding one or more CA (root) certificates in PEM format to verify the peer with.
+      ## Provided certificate is used to connect storage device to the final storage bucket
+      ## If customSSLCertificate value is empty, the default '/opt/opentext/archive_center/ac_config/config/gs/gcs_cert.pem' is used
+      ## If upgrading from an OTAC version older than 24.4.2 and not using the default pem file, 
+      ## then please provide the custom pem file name in the below attribute and also include the pem file in the helm 'cert' folder
+      customSSLCertificate:
+      ## Specify the Bucket Address Style. The value is PATH_STYLE (default) or VIRTUAL_HOST_STYLE
+      ## PATH_STYLE:          the address to the GCS system is built using https://hostname/bucket
+      ## VIRTUAL_HOST_STYLE:  the address to the GCS system is built using https://bucket.hostname/
+      bucketAddressStyle: VIRTUAL_HOST_STYLE
+      ## GCS bucket name
+      bucket:
+      ## GCS volume name
+      volumeName: volgcs1
+      ## JSON file name with GCS service account key, Need to place the same json file in the helm.
+      serviceAccountJSONFileName: gcs_serviceaccount.json
+      ## Storage HTTPS Proxy format <hostname:port>
+      storageProxy:
+      ## New archive name for the GCS volume, 
+      ## Mentioned archive name will be used only in case of upgrage scenario 
+      ## Otherwise, the application will automatically use the Helm key value <archiveName>.
+      archive2Name: A2
+      ## Default Service Account is enabled or not.
+      ## serviceAccountEnabled can be set to true if application can leverage the Default Service Account concept.
+      serviceAccountEnabled: false
+      # Specify the retention mode value if required, supported values: COMPLIANCE or GOVERNANCE
+      retentionmode:
+        global: 
+        object:
+      
+    s3:
+      ## S3 configuration. This configuration is active if enable=true
+      enable: false
+      ## S3 Device Name
+      name: S3
+      ## Specify the AWS service available.
+      serviceAddress: s3.amazonaws.com
+      ## Mention the file name of the custom SSL Certificate placed in the helm 'cert' folder
+      ## A file holding one or more CA (root) certificates in PEM format to verify the peer with.
+      ## Provided certificate is used to connect storage device to the final storage bucket
+      ## If customSSLCertificate value is empty, the default '/opt/opentext/archive_center/ac_config/config/gs/awss3_cert.pem' is used
+      ## If you are upgrading from an OTAC version older than 24.4.2 and not using the default pem file, 
+      ## then please provide the custom pem file name in the below attribute and also include the pem file in the helm 'cert' folder
+      customSSLCertificate:
+      ## The value is PATH_STYLE (default) or VIRTUAL_HOST_STYLE
+      ##  - PATH_STYLE:          the address to the S3 system is built using https://hostname/bucket
+      ##  - VIRTUAL_HOST_STYLE:  the address to the S3 system is built using https://bucket.hostname/
+      bucketAddressStyle: VIRTUAL_HOST_STYLE
+      ## AWS S3 bucket name
+      bucket: 
+      ## AWS S3 Region 
+      region: 
+      ## Default userolebasedauth is enabled or not.
+      ## userolebasedauth can be set to true if application is running in Amazon Web Services and IAM role is enabled
+      userolebasedauth: false
+      ## Set accesskey/seceretkey, only if userolebasedauth is set to false
+      ## AWS S3 bucket accesskey
+      accesskey: 
+      ## AWS S3 bucket seceretkey
+      secretkey: 
+      ## AWS S3 volume name
+      volumeName: vols31
+      ## Storage HTTPS Proxy format <hostname:port>
+      storageProxy: 
+      ## New archive name for the AWS volume, 
+      ## Mentioned archive name will be used only in case when GCS storage is enabled or in case of upgrade scenario. 
+      ## Otherwise, the application will automatically use the Helm key value <archiveName>.
+      archive2Name: A3
+      ## Specify the retention mode value, supported values are COMPLIANCE or GOVERNANCE
+      retentionmode:
+        global: 
+        object:
+        
+    azure:
+      ## Azure configuration. This configuration is active if enable=true
+      enable: false
+      ## Azure Device Name
+      name: AZURE
+      ## Specify the Azure Host address
+      host: https://blob.core.windows.net:443
+      ## Mention the file name of the custom SSL Certificate placed in the helm 'cert' folder
+      ## A file holding one or more CA (root) certificates in PEM format to verify the peer with.
+      ## Provided certificate is used to connect storage device to the final storage bucket
+      ## If customSSLCertificate value is empty, the default '/opt/opentext/archive_center/ac_config/config/gs/azure_cert.pem' is used
+      ## If you are upgrading from an OTAC version older than 24.4.3 and not using the default pem file, 
+      ## then please provide the custom pem file name in the below attribute and also include the pem file in the helm 'cert' folder
+      customSSLCertificate: 
+      ## Azure Container Name
+      containerName: 
+      ## Azure Account Name
+      accountName: 
+      ## Azure AccessKey
+      accesskey: 
+      ## Azure volume name
+      volumeName: volazure1
+      ## Storage HTTPS Proxy format <hostname:port>
+      storageProxy:
+      ## New archive name for the Azure volume, 
+      ## Mentioned archive name will be used only in case when GCS/AWS storage is enabled or in case of upgrade scenario. 
+      ## Otherwise, the application will automatically use the Helm key value <archiveName>.
+      archive2Name: A4
+        
+## Enable secretlink to use api's to fetch secrets from vault. disable this to use k8's secret
+secretlink:
+  enabled:
+  image:
+    name:
+    source:
+    tag:
+  ## loglevel: SecretLink Loglevel by default INFO
+  ## vault.address: Address of the Vault Server incl. protocol and port (e.g. https://vaulttest-csdps.otxlab.net/)
+  ## vault.mountpoint: Mount Point of the secrets engine (e.g. "kv")
+  ## vault.namespace: Namespace of the Vault Enterprise deployment (e.g. "bn-tg")
+  ## vault.path: Path of the secret (e.g. dev/dev-sandbox/bn-vault-example/foo)
+  ## vault.authpath: Name of the Authentication Path (e.g. auth/jwt-bn-vault-example-dev-dev-sandbox-anthos-bp2-bn-cicd-sandbox-btse-sandbox-1)
+  ## vault.role: Name of the Authentication Role (e.g. anthos-bp2-bn-cicd-sandbox-btse-sandbox-1)
+  loglevel:
+  vault:
+    address:
+    mountpoint:
+    namespace:
+    path:
+    authpath:
+    role:
+
+## This will configure the object importer
+objectimporter:
+  enabled: false
+  storage: 1Gi

@@ -1,0 +1,403 @@
+########################################################################
+# Values for otxecm helm chart (OpenText Content Management).
+#
+# The chart includes the following subcharts:
+# - otac - OpenText Archive Center
+# - otacc - OpenText Core Archive connector
+# - otcs - OpenText Content Server
+# - otds - OpenText Directory Services
+# - otiv - OpenText Intelligent Viewing
+# - otpd - OpenText PowerDocs
+#
+# Values in the otxecm parent chart will override subchart values.
+# Only commonly used values are displayed for subcharts.
+# For further customization, view the subcharts for more options.
+# However the postgresql and kubectl tags still exists only for th otiv parent values file since they are special tags
+#
+# Settings you should review:
+# - Mandatory: Docker Images: source paths, tags, pull secrets
+# - Important: Decide if you want to deploy Archive Center as storage backend via 'otac.enabled' and
+#   'otcs.config.documentStorage.type'.
+# - For production use:
+#   - passwords (currently all passwords are not defined)
+#   - generate your own Archive Center Certificate (*.pem file - name can be changed below) if you
+#     have Archive Center enabled. Archive Center provides a tool for this.
+#   - resource requirements (CPU, memory, storage, storage classes)
+#   - enable kubernetes ingress. You need a public IP, DNS entries for OTDS and Content Server,
+#     and a TLS (SSL) certificate. These are configured in the 'global' section.
+# - Optional:
+#   - To automatically apply Content Server settings, export your settings from a reference
+#     Content Server system (XML) and place the XML file into the otcs chart with filename
+#     "adminSettings.xml", and enable the setting below:
+#     otcs.loadAdminSettings.enabled=true
+#   - To automatically apply a Content Server license, place a license.lic file into the otcs
+#     chart and update these settings:
+#     otcs.loadLicense.enabled=true
+#     otcs.loadLicense.filename=license.lic
+#
+########################################################################
+
+global:
+  otac:
+    ## enabled: controls if subchart is deployed
+    enabled: true
+  otds:
+    ## enabled: controls if subchart is deployed
+    enabled: true
+  otacc:
+    ## enabled: controls if subchart is deployed
+    enabled: false
+  otcs:
+    ## enabled: controls if subchart is deployed
+    enabled: true
+  otiv:
+    ## enabled: controls if subchart is deployed
+    enabled: true
+  otpd:
+    ## enabled: controls if subchart is deployed
+    enabled: false
+  otxecmctrl:
+    ## enabled: true - required for controlled operations (e.g business scenario deployment)
+    enabled: true
+  pdb:
+    ## enabled: controls if pod disruption budget is used for otcs frontend and otds
+    enabled: true
+  ## ingressClass is platform dependent. See README.md for details.
+  ingressClass: nginx
+  ## ingressAnnotations are a default set of annotations that can be overridden or added to.
+  ## They are ignored if 'ingressAnnotationsCustom' values are supplied.
+  ingressAnnotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=1800
+    alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=30
+    alb.ingress.kubernetes.io/target-type: ip
+#    alb.ingress.kubernetes.io/configuration-snippet: |
+#      if ($http_origin) {more_set_headers "Access-Control-Allow-Headers: $sent_http_access_control_allow_headers, X-XHR-Logon, X-Requested-With";}
+    kubernetes.io/ingress.allow-http: false
+    nginx.ingress.kubernetes.io/affinity: cookie
+    ## 'proxy-body-size' controls the maximum request size. Specify a specific value to restrict request sizes.
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+      #    nginx.ingress.kubernetes.io/server-snippet: add_header X-Robots-Tag "noindex, nofollow";
+#    nginx.ingress.kubernetes.io/configuration-snippet: |
+#      if ($http_origin) {more_set_headers "Access-Control-Allow-Headers: $sent_http_access_control_allow_headers, X-XHR-Logon, X-Requested-With";}
+  ## ingressAnnotationsCustom are ingress annotations to use instead of ingressAnnotations.
+  ingressAnnotationsCustom: {}
+  ## ingressEnabled is normally enabled for production environments. If disabled, you can either deploy using
+  ## NodePort which is enabled by default or deploy using LoadBalancer
+  ## which is typically assigned a CNAME or static IP, depending on the kubernetes
+  ## platform. If you want to use NodePort without ingress, you must set serviceType below to NodePort
+  ## and ingress to false or if you want to deploy using LoadBalancer you must set serviceType to LoadBalancer
+  ## You must also set the xPublicUrl values below to an empty string "" in order to deploy Load balancer.
+  ingressEnabled: true
+  ingressSSLSecret: xecm-secret
+  serviceType: NodePort
+  ## ingressDomainName is used to construct the ingress URLs for OTIV services
+  ## The value is equal to the portion of the otcsPublicUrl value minus the
+  ## https protocol and first DNS field (i.e. {otcsPublicUrl} - https://otcs.)
+  ingressDomainName: example.com
+  otcsPublicUrl: https://otcs.example.com
+  otdsPublicUrl: https://otds.example.com
+  otacPublicUrl: https://otac.example.com
+  otaccPublicUrl: https://otacc.example.com
+  otpdPublicUrl: https://otpd.example.com
+  ## storageClassName is platform dependent. See README.md for details.
+  storageClassName: ""
+  ## This value should be updated based on your provisioner value
+  storageClassNameNFS: ""
+  ## masterPassword: default secret i.e otxecm-default-secrets will use this value to populate required key values
+  ## otxecm-default-secrets will be created only when .global.existingSecret value is "otxecm-default-secrets"
+  ## This values must use the OTDS password requirements of at least 8 characters, 1 upper
+  ## case, 1 lower case, 1 digit, 1 symbol.
+  ## If you are using secretlink, this is ignored.
+  masterPassword:
+  imageSource: registry.opentext.com
+  ## imageSourcePublic is the docker registry for retrieval of 3rd party docker images
+  imageSourcePublic: docker.io
+  imagePullSecret:
+  imagePullPolicy: Always
+  resourceRequirements: true
+  serviceAccountName: otxecm-sa
+  ## existingSecret: An already existing kubernetes secret, which contains passwords.
+  ## If you have existing kubernetes secret replace otxecm-default-secrets with existing secret name
+  ## If you don't have existing secret then specify .global.masterPassword value, a default secret with name otxecm-default-secrets
+  ## will be created by consuming secret values from masterPassword
+  ## If you are using secretlink, this is ignored.
+  existingSecret: otxecm-default-secrets
+  ## existingLicenseSecret: An already existing kubernetes secret, which contains the otxecm license files.
+  existingLicenseSecret:
+  ## timeZone: This sets the time zone of the Linux OS within the container. The default value for
+  ## the timeZone is Etc/UTC. The value for the timeZone MUST be a CORRECT value from a trusted
+  ## source, otherwise unexpected behaviour will occur, this could have unforeseen repercussions for
+  ## software running in the container.
+  ## For a list of time zones, see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  timeZone: Etc/UTC
+  # values for the otds helm chart. These are also used by the otxecm parent chart.
+  ## otdsUseReleaseName controls whether the release name is used in
+  ## the names of the objects.
+  otdsUseReleaseName: false
+  ## otdsServiceName defines the hostname of the Kubernetes container for
+  ## OTDS (inside the stateful set definition):
+  otdsServiceName: otds
+  ########################################################################
+  # Global settings for OpenText Intelligent Viewing:
+  ########################################################################
+  amqp:
+    password:
+
+  database:
+    ## set to name of external postgresql instance service or IP
+    hostname: otxecm-db
+    ## Database name that psql initially connects with prior to initializing the application database
+    adminDatabase: postgres
+    ## Database admin user name
+    adminUsername: postgres
+    ## set to name of database used to store IV data
+    ivName: otiv
+    ## IV database application user name
+    ivUsername: otiv
+    ##  postgresql port; defaults to 5432
+    port: 5432
+    ## set to true if database is configured for SSL communication
+    ssl: false
+  passwords:
+    database:
+      adminPassword:
+      ## Password for the OTIV db app user (global.database.ivUsername)
+      ivPassword:
+  secretlink:
+    enabled: false
+    image:
+      name: secretlink
+      source:
+      tag: 25.3.0
+    ## loglevel: SecretLink Loglevel by default INFO
+    ## address: Address of the Vault Server incl. protocol and port (e.g. https://vaulttest-csdps.otxlab.net/)
+    ## mountpoint: Mount Point of the secrets engine (e.g. "kv")
+    ## namespace: Namespace of the Vault Enterprise deployment (e.g. "bn-tg")
+    ## path: Path of the secret (e.g. dev/dev-sandbox/bn-vault-example/foo)
+    ## authpath: Name of the Authentication Path (e.g. auth/jwt-bn-vault-example-dev-dev-sandbox-anthos-bp2-bn-cicd-sandbox-btse-sandbox-1)
+    ## role: Name of the Authentication Role (e.g. anthos-bp2-bn-cicd-sandbox-btse-sandbox-1)
+    loglevel: INFO
+    vault: 
+      address:
+      mountpoint:
+      namespace:
+      path:
+      authpath:
+      role:
+  # determines if the ingress hostname includes the kubernetes namespace;
+  #  set to true if OTIV may be deployed to multiple namespaces within a cluster
+  ingressIncludeNamespace: false
+  # The following fields determine how the publicly accessible IV FQDNs are set
+  # * if no value is set, the FQDN is set to: otiv-<service>-<namespace>.<ingressDomainName> where service equals asset, etc.
+  #     Note that "-<namespace>" is only included if ingressIncludeNamespace is set to true
+  # * if value contains at least one ".", the value represents the full FQDN of the IV service, i.e. <ingressOtivAsset>
+  # * if a value is set but doesn't contain a ".", the value represents the first DNS field of the FQDN
+  #     which is prepended to ingressDomainName, i.e. <ingressOtivAsset>-<namespace>.<ingressDomainName>
+  #     Note that "-<namespace>" is only included if ingressIncludeNamespace is set to true
+  ingressOtivAsset:
+  ingressOtivHighlight:
+  ingressOtivMarkup:
+  ingressOtivPublication:
+  ingressOtivViewer:
+  ## indicates if otds is accessible via the k8s network; if set to false, global.otdsPublicUrl is used
+  otdsInCluster: true
+  ## the k8s url that OTDS is accessible at; only relevant if otdsInCluster is set to true
+  ## if property is not set, defaults to the otds service name for the cluster
+  ## if OTDS is installed in a different namespace, the format will be:
+  #     http://otds.<otdsNamespace>.svc.cluster.local  ; this assumes otds is the k8s service name
+  otdsPrivateUrl:
+  # These properties take a comma delimited set of origins, i.e. http(s)://<hostname><:port>
+  # where sources files to be converted are allowed to be retrieved from.
+  # If neither trustedSourceOrigins nor trustedSourceOriginsAnonymous is set, then there is
+  # no origin restriction and IV attempts to retrieve source files from the requested
+  # file url; however, if the file url is at an http endpoint (as opposed to https), no
+  # Authorization header is sent with the request.
+  # If either property is defined, then retrievals are restricted to the defined origins.
+  # Origins defined in trustedSourceOrigins will pass along an Authorization header,
+  # whereas origins defined in trustedSourceOriginsAnonymous won't include an
+  # Authorization header. The same origin should not be listed in both properties.
+  trustedSourceOrigins: http://otcs-frontend
+  trustedSourceOriginsAnonymous:
+  priorityClasses:
+    enabled: true
+
+########################################################################
+# Pre-Upgrade Job
+########################################################################
+preUpgradeJob:
+  image:
+    source:
+    tag: latest
+    name: bitnami/kubectl
+  otxecm:
+    forceRestart: false
+
+########################################################################
+# Pre-Upgrade Job Check DB
+########################################################################
+preUpgradeJobDBCheck:
+  image:
+    source:
+    tag: 13
+    name: postgres
+########################################################################
+# OpenText Directory Services subchart:
+########################################################################
+otds:
+  ## ingress.* define Ingress specific settings
+  ingress:
+    ## otds.ingress.enabled should use 'false' to allow the otxecm parent chart to control the ingress for otds.
+    enabled: false
+  otdsws:
+    otdsdb:
+      ## url: specifies the url used to connect to the DB for OTDS
+      url: jdbc:postgresql://otxecm-db:5432/otdsdb
+      username: otdsuser
+    image:
+      name: otds-server
+    resources:
+      requests:
+        cpu: 1
+        memory: 2Gi
+      limits:
+        cpu: 2
+        memory: 3Gi
+
+########################################################################
+# OpenText Archive Server subchart:
+########################################################################
+otac:
+  port: 8080
+  protocol: http
+  ## archiveName: name of the otac archive used by Content Server
+  archiveName: A1
+  ## poolName: Name of the Archive Center pool used to store Content Server documents
+  poolName: Pool1
+  ## volumeName: Name of the Archive Center volume used to store Content Server documents
+  volumeName: Vol1
+
+  image:
+    name: otac
+  resources:
+    requests:
+      cpu: 1
+      memory: 1.5Gi
+    limits:
+      cpu: 2
+      memory: 3Gi
+  volumes:
+      storage:
+        ## bdv: location for buffer device
+        bdv: 50Gi
+        ## dv: location for device
+        dv: 1Gi
+        ## sd: volume where all archive data is stored.
+        ## Must be large enough to store all incoming documents.
+        sd: 1Gi
+        ## logs: volume where all logs files are stored.
+        logs: 4Gi
+      accessMode: ReadWriteOnce
+  ## database.*: parameters to connect Archive Center with its database
+  database:
+    ## Type defines which DB OTAC should be configured to
+    ## Allowed Values postgres / oracle
+    type: postgres
+    executeSchema: true
+    postgres:
+      ## Default Table space for Postgres is pg_default
+      ts_default: pg_default
+    oracle:
+      loadTnsnames:
+        ## enabled flag should be set to true if Oracle DB is configured with otac
+        enabled: true
+        filename: tnsnames.ora
+
+  otds:
+    ## admin: name of the administrator user (login)
+    admin: admin
+  otkm:
+    ## enabled: controls if subchart is deployed
+    enabled: false
+
+########################################################################
+# OpenText Core Archive subchart:
+########################################################################
+otacc:
+  image:
+    name: otacc
+  resources:
+    requests:
+      cpu: 1
+      memory: 4Gi
+    limits:
+      cpu: 2
+      memory: 4Gi
+  port: 8080
+  cloud:
+    ## Allow insecure server connections when using SSL
+    ## For productive Core Archive servers there is no need to set this flag
+    insecure: false
+  connector:
+    ## If the connector is already registered in Core Archive and this
+    ## connector needs a reregistration, then set this value to true
+    reregister: false
+
+########################################################################
+# OpenText Intelligent Viewing subchart:
+########################################################################
+otiv:
+  ingress:
+    enabled: false
+  otcs:
+    ## indicates whether otcs is internal to the k8s cluster that IV is running in and accessible at otcs.serviceUrl
+    inCluster: true
+    ## the internal k8s url that OTCS is accessible at; only relevant if otcs.inCluster is set to true
+    serviceUrl: http://otcs-frontend
+
+########################################################################
+# OpenText PowerDocs subchart:
+########################################################################
+otpd:
+  image:
+    name: otpd
+  ## serviceName defines the name of the Kubernetes service for
+  ## PowerDocs:
+  serviceName: otpd
+  ## OTPD will not work without a valid license, so always set loadLicense value to true during fresh installation
+  ## In upgrade scenario license info is fetched from database, so we need to apply license only if it get deleted manually before upgrade
+  loadLicense: true
+  ## port is the external port the PowerDocs Kubernetes service
+  ## is reachable:
+  port: 8080
+  ## targetPort is the internal container port the Kubernetes service is
+  ## forwarding requests to.
+  targetPort: 8080
+  ## protocol: communication protocol - used in config map
+  protocol: http
+  ## hostname defines the hostname of the Kubernetes container for
+  ## PowerDocs (inside the stateful set definition):
+  hostname: otpd
+  ## admin defines the name of the PowerDocs Admin User (for Tomcat and PowerDocs apps)
+  admin: powerdocsadmin
+  ## user defines the name of the PowerDocs User in Tomcat
+  user: powerdocsuser
+  ## monitorUser defines the name of the PowerDocs User in Tomcat
+  monitorUser: powerdocsmonitoruser
+  ## technicalUser defines the user for script parameters
+  technicalUser: pduser
+  ## emailServerSettings.* defines the email server settings that the administrator can use to preset them upon deployment
+  emailServerSettings:
+    enabled: false
+  otds:
+    ## admin is the name of the administrator user (login) for OTDS:
+    admin: admin
+  otcs:
+    enabled: true
+
+rabbitmq:
+  persistence:
+    storageClass:

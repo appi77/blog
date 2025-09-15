@@ -1,0 +1,53 @@
+{{- if not .Values.justDatabase }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "iv-cvt.product.prefix" . }}-configmap
+  {{- template "metadata.namespace" . }}
+data:
+{{- if .Values.otcs }}
+    OTCS_URL: {{ hasKey .Values.otcs "serviceUrl" | ternary .Values.otcs.serviceUrl .Values.global.otcsPublicUrl }}
+  {{- if .Values.otcs.csUriPath }}
+    CS_URI_PATH: '{{ .Values.otcs.csUriPath }}'
+  {{- end }}
+  {{- if .Values.otcs.csResourceName }}
+    CS_RESOURCE_NAME: '{{ .Values.otcs.csResourceName }}'
+  {{- end }}
+{{- end }}
+  {{- if .Release.IsInstall }}
+    IS_INSTALL: 'True'
+  {{- end }}
+  {{- if .Values.global.resourceName }}
+    RESOURCE_NAME:  {{ .Values.global.resourceName }}
+  {{- end }}
+  {{- if .Values.global.resourceGuid }}
+    RESOURCE_GUID:  '{{ .Values.global.resourceGuid }}'
+  {{- end }}
+  {{- if .Values.global.otcs }}
+    XECM_CHART: 'True'
+  {{- end }}
+  {{- if .Values.global.forceIvLicense }}
+    FORCE_IV_LICENSE: 'True'
+  {{- end }}
+  {{- if or .Values.global.enableOtivCustomizedTruststore .Values.global.otivSecretProviderClassCerts.enabled }}
+    CUSTOM_TRUST_STORE: 'True'
+    REQUESTS_CA_BUNDLE: /opt/certs/combined_crt_file.crt
+  {{- end }}
+    KUB_NAMESPACE: {{ .Release.Namespace }}
+    OTDS_ORIGIN: {{ template "otds.api.url" .}}
+{{- if (include "is.iv" .) }}
+  {{- if .Values.global.otivSecretProviderClass.enabled }}
+    REF_NM: 'otiv-spc-secrets'
+  {{- else }}
+    REF_NM: '{{ .Values.existingSecret | default .Values.global.existingSecret | default "otiv-base-secrets" }}'
+  {{- end }}
+    ACC_KY: {{ .Values.global.otdsSecretKey }}
+    RESOURCE_KEY: {{ .Values.resourceSecretKey }}
+    RUNTIME_ENVIRONMENT: cfcr-iv
+   # Provides default secret env vars for transforomation pods; overwritten by some pods
+    {{- template "otiv.secret.env" . }}
+  {{- end }}
+  {{- if .Values.otdsAdminUser }}
+    OTDS_ADMIN_USER: {{ .Values.otdsAdminUser }}
+  {{- end }}
+{{- end }}

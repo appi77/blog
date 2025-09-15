@@ -1,0 +1,27 @@
+{{- if and (eq .Values.global.pdb.enabled true) ( ge .Capabilities.KubeVersion.Major "1" ) ( ge .Capabilities.KubeVersion.Minor  "21" )}}
+{{- if .Values.global.otcs.enabled }}
+{{- if ge ( int .Values.otcs.contentServerFrontend.replicas) 1 }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: otcs-frontend
+spec:
+  minAvailable: "40%"
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: otcs-frontend
+---
+{{- end }}
+{{- end }}
+{{- if ge ( int .Values.otds.otdsws.replicas ) 1 }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: otdsws
+spec:
+  minAvailable: "40%"
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: otdsws
+{{- end }}
+{{- end }}

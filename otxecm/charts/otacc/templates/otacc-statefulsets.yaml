@@ -1,0 +1,156 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+     app: {{ .Chart.Name }}
+spec:
+  serviceName: {{ .Values.serviceName }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: {{ .Chart.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: {{ .Chart.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+{{- if .Values.global.priorityClasses }}
+  {{- if eq .Values.global.priorityClasses.enabled true }}
+      priorityClassName: {{ .Release.Name  }}-{{ .Release.Namespace }}-1
+  {{- end }}
+{{- end }}
+      securityContext:
+        # Since fsGroup is specified, all processes of the container are also part of the
+        # supplementary group ID. The owner for volumes and any files created in the volume will
+        # be Group ID 1000, which is archive.
+        fsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      ## serviceAccountName defines the name of the service account the
+      ## pods are running under. Normally that is 'default'
+      serviceAccountName: {{ default .Values.global.serviceAccountName .Values.serviceAccountName }}
+      containers:
+      - name: {{ .Chart.Name }}
+{{- if not (regexFind "\\/$" (default .Values.global.imageSource .Values.image.source ) ) }}
+        image: {{ required "A valid image.source is required!" (default .Values.global.imageSource .Values.image.source ) }}/{{ required "A valid image.name is required!" .Values.image.name }}:{{ required "A valid image.tag is required!" .Values.image.tag }}
+{{- else }}
+        image: {{ required "A valid image.source is required!" (default .Values.global.imageSource .Values.image.source ) }}{{ required "A valid image.name is required!" .Values.image.name }}:{{ required "A valid image.tag is required!" .Values.image.tag }}
+{{- end }}
+{{- if .Values.image.pullPolicy }}
+        imagePullPolicy: {{ required "A valid image.pullPolicy is required!" .Values.image.pullPolicy }}
+{{- end }}
+        ports:
+        - containerPort: 8080
+        envFrom:
+          - configMapRef:
+              name: {{ .Chart.Name }}-configmap
+{{- if eq .Values.readinessProbe.enabled true }}
+        readinessProbe:
+          exec:
+            command:
+              - /acc/prog/lib/healthcheck/healthcheck.sh
+              - readiness
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+{{- end }}
+{{- if eq .Values.livenessProbe.enabled true }}
+        livenessProbe:
+          exec:
+            command:
+              - /acc/prog/lib/healthcheck/healthcheck.sh
+              - liveness
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+{{- end }}
+{{- if eq .Values.resources.enabled true }}
+        resources:
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /acc/config
+          name: {{ .Chart.Name }}-config
+        - mountPath: /acc/logs
+          name: {{ .Chart.Name }}-logs
+        securityContext:
+          allowPrivilegeEscalation: false
+
+{{- if eq (default .Values.global.secretlink.enabled .Values.secretlink.enabled) true }}
+      - name: secretlink
+{{- if not (regexFind "\\/$" ( default .Values.global.imageSource .Values.secretlink.image.source  ) ) }}
+        image: {{ default .Values.global.imageSource .Values.secretlink.image.source }}/{{ default .Values.secretlink.image.name }}:{{ default .Values.secretlink.image.tag }}
+{{- else }}
+        image: {{ default .Values.global.imageSource .Values.secretlink.image.source }}{{ default .Values.secretlink.image.name }}:{{ default .Values.secretlink.image.tag }}
+{{- end }}
+        imagePullPolicy: {{ default .Values.global.imagePullPolicy .Values.image.pullPolicy }}
+        securityContext:
+          runAsUser: 10001
+        env:
+        - name: SL_LOGLEVEL
+          value: {{ default .Values.global.secretlink.loglevel .Values.secretlink.loglevel }}
+        - name: SL_VAULT_ADDR
+          value: {{ default .Values.global.secretlink.vault.address .Values.secretlink.vault.address }}
+        - name: SL_VAULT_MOUNTPOINT
+          value: {{ default .Values.global.secretlink.vault.mountpoint .Values.secretlink.vault.mountpoint }}
+        - name: SL_VAULT_PATH
+          value: {{ default .Values.global.secretlink.vault.path .Values.secretlink.vault.path }}
+        - name: SL_VAULT_NAMESPACE
+          value: {{ default .Values.global.secretlink.vault.namespace .Values.secretlink.vault.namespace | quote}}
+        - name: SL_VAULT_AUTH_PATH
+          value: {{ default .Values.global.secretlink.vault.authpath .Values.secretlink.vault.authpath }}
+        - name: SL_VAULT_ROLE
+          value: {{ default .Values.global.secretlink.vault.role .Values.secretlink.vault.role | quote}}
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 250m
+            memory: 128Mi
+{{- end }}
+
+{{- if .Values.connector.hostname }}
+      hostname: {{ .Values.connector.hostname }}
+{{- end }}
+      restartPolicy: Always
+      volumes:
+      - name: {{ .Chart.Name }}-config
+        persistentVolumeClaim:
+          claimName: {{ .Chart.Name}}-config
+      - name: {{ .Chart.Name}}-logs
+        persistentVolumeClaim:
+          claimName: {{ .Chart.Name}}-logs
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Chart.Name }}-config
+    spec:
+      accessModes:
+        - ReadWriteOnce
+{{- if (default .Values.global.storageClassName .Values.resources.storageClassName) }}
+      storageClassName: {{ default .Values.global.storageClassName .Values.resources.storageClassName | quote }}
+{{- end }}
+      resources:
+        requests:
+          storage: 1Gi
+  - metadata:
+      name: {{ .Chart.Name }}-logs
+    spec:
+      accessModes:
+        - ReadWriteOnce
+{{- if (default .Values.global.storageClassName .Values.resources.storageClassName) }}
+      storageClassName: {{ default .Values.global.storageClassName .Values.resources.storageClassName | quote }}
+{{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.resources.logStorage | quote }}

@@ -1,0 +1,145 @@
+########################################################################
+# OpenText Content Server (FRONTEND SERVER) Kubernetes Service
+########################################################################
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Chart.Name }}-frontend
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+  {{- if .Values.service.frontend.annotations }}
+  annotations:
+    {{- range .Values.service.frontend.annotations }}
+    {{ . }}
+    {{- end }}
+  {{- end }}
+spec:
+{{- if eq ( default .Values.global.serviceType .Values.serviceType  | toString) "ClusterIP" }}
+  type: ClusterIP
+{{- else if eq ( default .Values.global.serviceType .Values.serviceType  | toString) "NodePort" }}
+  type: NodePort
+{{- else if eq ( default .Values.global.serviceType .Values.serviceType  | toString) "LoadBalancer"}}
+  type: LoadBalancer
+{{- else}}
+  {{- fail "Invalid serviceType"}}
+{{- end }}
+  ports:
+    - name: {{ .Chart.Name }}-web
+      port: {{ .Values.config.port }}
+      targetPort: 8080
+    - name: {{ .Chart.Name }}-api
+      port: 2099
+      targetPort: 2099
+  selector:
+{{- if eq ( .Values.contentServerFrontend.replicas | toString) "0" }} 
+    app.kubernetes.io/component: {{ .Chart.Name }}-admin
+{{- else}}
+    app.kubernetes.io/component: {{ .Chart.Name }}-frontend
+{{- end}}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+---
+{{- if eq .Values.istio.enabled true }}
+#########################################################################
+# OpenText Content Server (ADMIN SERVER) Kubernetes Service Istio Version
+# NOT exposed outside the Kubernetes cluster
+#########################################################################
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Chart.Name }}-admin-0
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+  {{- if .Values.service.admin.annotations }}
+  annotations:
+    {{- range .Values.service.admin.annotations }}
+    {{ . }}
+    {{- end }}
+  {{- end }}
+spec:
+  ports:
+  - name: {{ .Chart.Name }}-admin
+    port: 80
+    targetPort: 8080
+  - name: {{ .Chart.Name }}-tomcat
+    port: 8080
+    targetPort: 8080
+  {{- range .Values.csAdminPorts }}
+  - name: {{ .name  }}
+    protocol: TCP
+    port: {{ .port }}
+    targetPort: {{ .port }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/component: {{ .Chart.Name }}-admin
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  publishNotReadyAddresses: true    
+{{- else }}
+########################################################################
+# OpenText Content Server (ADMIN SERVER) Kubernetes Service
+# NOT exposed outside the Kubernetes cluster
+########################################################################
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Chart.Name }}-admin-0
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+  {{- if .Values.service.admin.annotations }}
+  annotations:
+    {{- range .Values.service.admin.annotations }}
+    {{ . }}
+    {{- end }}
+  {{- end }}
+spec:
+  # Configure the service to be headless
+  clusterIP: None
+  ports:
+  - name: {{ .Chart.Name }}-admin
+    port: 80
+    targetPort: 8080
+  - name: {{ .Chart.Name }}-tomcat
+    port: 8080
+    targetPort: 8080
+  - name: {{ .Chart.Name }}-search
+    port: 5858
+    targetPort: 5858
+  selector:
+    app.kubernetes.io/component: {{ .Chart.Name }}-admin
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  publishNotReadyAddresses: true    
+{{- end }}
+---
+#####################################################################
+# OpenText Content Server (BACKEND SEARCH) Kubernetes Service
+# NOT exposed outside the Kubernetes cluster
+#####################################################################
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Chart.Name }}-backend-search
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+  {{- if .Values.service.backendSearch.annotations }}
+  annotations:
+    {{- range .Values.service.backendSearch.annotations }}
+    {{ . }}
+    {{- end }}
+  {{- end }}
+spec:
+  # Configure the service to be headless
+  clusterIP: None
+  ports:
+  - name: {{ .Chart.Name }}-backend-search
+    port: 80
+    targetPort: 8080
+  - name: {{ .Chart.Name }}-backend-tomcat
+    port: 8080
+    targetPort: 8080
+  - name: {{ .Chart.Name }}-backend-search-admin
+    port: 5858
+    targetPort: 5858
+  selector:
+    app.kubernetes.io/component: {{ .Chart.Name }}-backend-search
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  publishNotReadyAddresses: true
+---

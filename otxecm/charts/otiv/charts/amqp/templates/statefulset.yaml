@@ -1,0 +1,183 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "rabbitmq.fullname" . }}
+  labels:
+    name: {{ template "rabbitmq.fullname" . }}
+spec:
+  serviceName: {{ template "rabbitmq.fullname" . }}
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ template "rabbitmq.fullname" . }}
+      release: "{{ .Release.Name }}"
+  template:
+    metadata:
+      labels:
+        app: {{ template "rabbitmq.fullname" . }}
+        release: "{{ .Release.Name }}"
+        chart: {{ template "rabbitmq.chart" .  }}
+        {{- include "otiv.custom.labels" . }}
+      {{- if .Values.podAnnotations }}
+      annotations:
+{{ toYaml .Values.podAnnotations | indent 8 }}
+      {{- end }}
+    spec:
+{{- if .Values.global.imagePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.global.imagePullSecret }}
+{{- end }}
+      serviceAccountName: {{ .Values.global.serviceAccountName }}
+      containers:
+      - name: {{ template "rabbitmq.fullname" . }}
+        image: {{ include "image.source.path" . }}
+        imagePullPolicy: {{ include "image.pull.policy" . }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: {{ .Values.securityContext.runAsUser }}
+        {{- if .Values.resources }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+        {{- end }}
+        ports:
+        - containerPort: 15672
+          name: discovery
+        - containerPort: 15692
+          name: metrics
+        - containerPort: 5672
+          name: amqp
+        command:
+         - /bin/bash
+         - -c
+         - |
+            cp /tmp/config/rabbitmq.conf /config/rabbitmq.conf
+            cp /tmp/config/advanced.config /config/advanced.config
+            #cp /tmp/config/definitions.json /config/definitions.json
+            cp /tmp/config/enabled_plugins /etc/rabbitmq/enabled_plugins
+            sleep 8
+            export IV_AMQP_USER={{ .Values.global.amqp.user  }}
+            max_attempts=4
+            for attempt in $(seq 1 $max_attempts); do
+              if IV_AMQP=$(python /tmp/ivAmqp.py); then
+                export IV_AMQP
+                break
+              else
+                if [ $attempt -lt $max_attempts ]; then
+                  echo "WARNING: Failed to retrieve amqp credentials, sleeping for 5 seconds"
+                  sleep 5
+                else
+                  echo "ERROR: Failed to retrieve amqp credentials, EXITING"
+                  exit 1
+                fi
+              fi
+            done
+            rm -f /tmp/ivAmqp.py
+            {{- if and .Values.persistence.enabled .Values.forceBoot.enabled }}
+            if [ -d "{{ .Values.persistence.path }}/mnesia/${RABBITMQ_NODENAME}" ]; then rabbitmqctl force_boot; fi
+            {{- end }}
+            exec rabbitmq-server
+        envFrom:
+        - configMapRef:
+            name: {{ include "iv-cvt.product.prefix" . }}-configmap
+        env:
+{{- if .Values.global.ipv6Enabled }}
+        - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
+          value: "-kernel inetrc '/tmp/erl_inetrc' -proto_dist inet6_tcp"
+        - name: RABBITMQ_CTL_ERL_ARGS
+          value: "-proto_dist inet6_tcp"
+{{- end }}
+        - name: AJIRA_PWD_KEY
+          value: {{ .Values.global.amqp.pwdKey }}
+        - name: RABBIT_POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: RABBIT_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: RABBITMQ_NODENAME
+          value: rabbit@$(RABBIT_POD_NAME).{{ template "rabbitmq.fullname" . }}.$(RABBIT_POD_NAMESPACE).svc.cluster.local
+        - name: K8S_HOSTNAME_SUFFIX
+          value: .{{ template "rabbitmq.fullname" . }}.$(RABBIT_POD_NAMESPACE).svc.cluster.local
+        - name: K8S_SERVICE_NAME
+          value: "{{ template "rabbitmq.fullname" . }}"
+        - name: RABBITMQ_USE_LONGNAME
+          value: "true"
+        - name: RABBITMQ_CONFIG_FILE
+          value: "/config/rabbitmq.conf"
+        - name: RABBITMQ_ADVANCED_CONFIG_FILE
+          value: "/config/advanced.config"
+        - name: RABBITMQ_ERLANG_COOKIE
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "rabbitmq.secretErlangName" . }}
+              key: RABBITMQ_ERLANG_COOKIE
+        volumeMounts:
+        - name: config
+          mountPath: /tmp/config/
+          readOnly: false
+        - name: data
+          mountPath: "{{ .Values.persistence.path }}"
+          readOnly: false
+        - name: config-file
+          mountPath: /config/
+        - name: plugins-file
+          mountPath: /etc/rabbitmq/
+{{- if .Values.global.secretlink.enabled }}
+      - name: secretlink
+        image: {{ default .Values.global.imageSource .Values.global.secretlink.image.source }}/{{ .Values.global.secretlink.image.name }}:{{ .Values.global.secretlink.image.tag }}
+        env:
+        {{- if .Values.global.secretlink.devMode }}
+        - name: SL_DEV_MODE
+          value: '{{ .Values.global.secretlink.devMode }}'
+        - name: SL_DEV_PASSWORD
+          value: '{{ .Values.global.secretlink.devPassword }}'
+        - name: SL_DEV_KEYS
+          value: '{{ .Values.global.secretlink.devKeys }}'
+        {{- end }}
+        - name: SL_LOGLEVEL
+          value: {{ .Values.global.secretlink.loglevel }}
+        - name: SL_VAULT_ADDR
+          value: {{ .Values.global.secretlink.vault.address }}
+        - name: SL_VAULT_MOUNTPOINT
+          value: {{ .Values.global.secretlink.vault.mountpoint }}
+        - name: SL_VAULT_PATH
+          value: {{ .Values.global.secretlink.vault.path }}
+        - name: SL_VAULT_NAMESPACE
+          value: {{ .Values.global.secretlink.vault.namespace }}
+        - name: SL_VAULT_AUTH_PATH
+          value: {{ .Values.global.secretlink.vault.authpath }}
+        - name: SL_VAULT_ROLE
+          value: {{ .Values.global.secretlink.vault.role }}
+        securityContext:
+          runAsUser: 10001
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 250m
+            memory: 128Mi
+{{- end }}
+      volumes:
+      - name: config-file
+        emptyDir: {}
+      - name: plugins-file
+        emptyDir: {}
+      - name: config
+        configMap:
+          name: {{ template "rabbitmq.fullname" . }}-config
+          defaultMode: 0755
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ {{ .Values.persistence.accessMode | quote }} ]
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size | quote }}
+      {{ include "rabbitmq.storageClass" . }}

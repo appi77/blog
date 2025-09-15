@@ -1,0 +1,1 @@
+This directory includes .conf files used for Fluent Bit configuration to align with otxecm log files. Modifying these .conf files is not supported. fluent-bit.conf can be changed if necessary.

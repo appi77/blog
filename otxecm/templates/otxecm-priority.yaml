@@ -1,0 +1,20 @@
+{{- if eq .Values.global.priorityClasses.enabled true }}
+# Enables PriorityClasses:
+# this allows us to evict lower priority pods, 
+# which allows us to scale on smaller nodes
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+    name: {{ .Release.Name  }}-{{ .Release.Namespace }}-1
+value: 1000
+globalDefault: false
+description: "This priority class should be used for central service pods only."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+    name: {{ .Release.Name  }}-{{ .Release.Namespace }}-2
+value: 900
+globalDefault: false
+description: "This priority class should be used for services that require high-priority services"  
+{{- end }}

@@ -1,0 +1,29 @@
+apiVersion: v2
+dependencies:
+- condition: global.otds.enabled
+  name: otds
+  repository: '@otds'
+  version: 25.3.0
+- condition: global.otac.enabled
+  name: otac
+  repository: '@opentext'
+  version: 24.4.3
+- condition: global.otacc.enabled
+  name: otacc
+  repository: '@opentext'
+  version: 25.2.1
+- condition: global.otcs.enabled
+  name: otcs
+  repository: '@opentext'
+  version: 25.3.0
+- condition: global.otiv.enabled
+  name: otiv
+  repository: '@opentext'
+  version: 25.3.0-otxecm
+- condition: global.otpd.enabled
+  name: otpd
+  repository: '@opentext'
+  version: 25.3.0
+description: A Helm Chart for OpenText Content Management
+name: otxecm
+version: 25.3.0

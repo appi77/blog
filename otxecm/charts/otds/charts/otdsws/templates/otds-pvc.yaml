@@ -1,0 +1,23 @@
+{{- if and .Values.enabled .Values.pvc.enabled }}
+########################################################################
+# OTDS PersistentVolumeClaim
+########################################################################
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "otdsws.name" . }}-pvc
+{{- if .Values.global.namespace }}
+  namespace: {{ .Values.global.namespace }}
+{{- end }}
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteMany
+{{- if .Values.pvc.storageClassName }}
+  storageClassName: {{ .Values.pvc.storageClassName  | quote }}
+{{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.storage  }}
+{{- end }}

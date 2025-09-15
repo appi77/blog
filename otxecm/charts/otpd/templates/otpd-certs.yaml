@@ -1,0 +1,21 @@
+{{- if and (eq .Values.importCustomRootCA true) (eq .Values.sslEnabledDB true) }}
+########################################################################
+# OpenText PowerDocs Kubernetes Certificate Secret
+########################################################################
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Chart.Name }}-certs
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+type: Opaque
+data:
+  {{- if not .Values.customRootCA }}
+  {{- fail ".Values.otpd.customRootCA must set the customRootCA file since .Values.importCustomRootCA set to true." }}
+  {{- end }}
+  {{- if (eq (.Files.Get .Values.customRootCA) "") }}
+  {{- fail "A valid customRootCA is required to deploy otpd. Please make sure the file specified by .Values.otpd.customRootCA is valid." }}
+  {{- end }}
+  customRootCA.crt: |-
+    {{ .Files.Get .Values.customRootCA | b64enc }}
+{{- end }}

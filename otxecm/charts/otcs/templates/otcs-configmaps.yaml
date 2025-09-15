@@ -1,0 +1,292 @@
+# Content Server settings file yaml - da (distributed agent)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-da-configmap
+data:
+  config.yaml: |-
+{{ toYaml .Values.config | indent 4 }}
+    podMonitor:
+{{ toYaml .Values.adminPodMonitor | indent 5 }}
+    globalDatabase:
+{{ toYaml .Values.global.database | indent 5 }}
+    secretLinkEnabled: {{ default .Values.global.secretlink.enabled .Values.secretlink.enabled | quote }}
+    threadsNumber: {{ .Values.contentServerDa.threadsNumber }}
+    csurl: {{ default .Values.global.otcsPublicUrl .Values.config.url | quote }}
+    daWorkers: {{ .Values.contentServerDa.daWorkers }}
+    otdssignInUrl: {{ default .Values.global.otdsPublicUrl .Values.config.otds.signInUrl | quote }}
+    otdsserverUrl: {{ default .Values.global.otdsPublicUrl .Values.config.otds.serverUrl | quote }}
+    otaccUrl: {{.Values.global.otaccPublicUrl | quote }}
+    otacEnabled: {{ .Values.global.otac.enabled }}
+---
+
+# Content Server settings file yaml - frontend
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-frontend-configmap
+data:
+  config.yaml: |-
+{{ toYaml .Values.config | indent 4 }}
+    podMonitor: 
+{{ toYaml .Values.adminPodMonitor | indent 5 }}
+    globalDatabase: 
+{{ toYaml .Values.global.database | indent 5 }}
+    secretLinkEnabled: {{ default .Values.global.secretlink.enabled .Values.secretlink.enabled | quote }}
+    threadsNumber: {{ .Values.contentServerFrontend.threadsNumber }}
+    csurl: {{ default .Values.global.otcsPublicUrl .Values.config.url | quote }}
+    daWorkers: {{ .Values.contentServerFrontend.daWorkers }}
+    otdssignInUrl: {{ default .Values.global.otdsPublicUrl .Values.config.otds.signInUrl | quote }}
+    otdsserverUrl: {{ default .Values.global.otdsPublicUrl .Values.config.otds.serverUrl | quote }}
+    otaccUrl: {{.Values.global.otaccPublicUrl | quote }}
+    otacEnabled: {{ .Values.global.otac.enabled }}
+---
+
+# Content Server settings file yaml - admin
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-admin-configmap
+data:
+  config.yaml: |-
+{{ toYaml .Values.config | indent 4 }}
+    podMonitor: 
+{{ toYaml .Values.adminPodMonitor | indent 5 }}
+    globalDatabase:
+{{ toYaml .Values.global.database | indent 5 }}
+    secretLinkEnabled: {{ default .Values.global.secretlink.enabled .Values.secretlink.enabled | quote }}
+    threadsNumber: {{ .Values.contentServerAdmin.threadsNumber }}
+    csurl: {{ default .Values.global.otcsPublicUrl .Values.config.url | quote }}
+    daWorkers: {{ .Values.contentServerAdmin.daWorkers }}
+    otdssignInUrl: {{ default .Values.global.otdsPublicUrl .Values.config.otds.signInUrl | quote }}
+    otdsserverUrl: {{ default .Values.global.otdsPublicUrl .Values.config.otds.serverUrl | quote }}
+    otaccUrl: {{.Values.global.otaccPublicUrl | quote }}
+    otacEnabled: {{ .Values.global.otac.enabled }}
+---
+
+# Content Server settings file yaml - backend search
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-backend-search-configmap
+data:
+  config.yaml: |-
+{{ toYaml .Values.config | indent 4 }}
+    podMonitor: 
+{{ toYaml .Values.adminPodMonitor | indent 5 }}
+    globalDatabase: 
+{{ toYaml .Values.global.database | indent 5 }}
+    secretLinkEnabled: {{ default .Values.global.secretlink.enabled .Values.secretlink.enabled | quote }}
+    threadsNumber: {{ .Values.contentServerBackendSearch.threadsNumber }}
+    csurl: {{ default .Values.global.otcsPublicUrl .Values.config.url | quote }}
+    daWorkers: {{ .Values.contentServerBackendSearch.daWorkers }}
+    otdssignInUrl: {{ default .Values.global.otdsPublicUrl .Values.config.otds.signInUrl | quote }}
+    otdsserverUrl: {{ default .Values.global.otdsPublicUrl .Values.config.otds.serverUrl | quote }}
+    otaccUrl: {{.Values.global.otaccPublicUrl | quote }}
+    otacEnabled: {{ .Values.global.otac.enabled }}
+---
+########################################################################
+# Tracks the state of the otcs pods to figure out the automation steps required.
+# If otcs-admin-0 or <pod-name>: unconfigured then full automation will run
+# for either upgrade or initial deploy.
+# If otcs-admin-0 and <pod-name>: configured only deploy webapps and other small tasks
+########################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otcs-state-configmap
+---
+{{- if and (or (eq .Values.config.ual.enabled true) (or (eq .Values.config.documentStorage.type "otac") (eq .Values.config.documentStorage.type "otacc"))) (and (not .Values.config.ual.certSecret) (and (not (.Values.config.otac.certSecret)) (not (.Values.config.otacc.certSecret)))) }}
+########################################################################
+# {{ .Values.config.otac.certFilename }} security certificate to be used with Archive Center.
+# You can use the Archive Center cert-tool to generate your own
+# certificate and place it in the chart directory. The filename is
+# specified in the values.yaml file.
+########################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-archive-cert-configmap
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+{{- if eq .Values.config.ual.enabled true }}
+data:
+  {{- (.Files.Glob .Values.config.ual.certFilename).AsConfig | nindent 2 }}
+{{- if (eq (.Files.Get .Values.config.ual.certFilename) "") }}
+{{- fail "A valid certificate file is required when ual is enabled. Please make sure the file specified by .Values.config.ual.certFilename is valid." }}
+{{- end }}
+{{- else if eq .Values.config.documentStorage.type "otac" }}
+data:
+  {{- (.Files.Glob .Values.config.otac.certFilename).AsConfig | nindent 2 }}
+{{- if (eq (.Files.Get .Values.config.otac.certFilename) "") }}
+{{- fail "A valid certificate file is required when deploying with otac storage type. Please make sure the file specified by .Values.config.otac.certFilename is valid." }}
+{{- end }}
+{{- else if eq .Values.config.documentStorage.type "otacc" }}
+data:
+  {{- (.Files.Glob .Values.config.otacc.certFilename).AsConfig | nindent 2 }}
+{{- if (eq (.Files.Get .Values.config.otacc.certFilename) "") }}
+{{- fail "A valid certificate file is required when deploying with otacc storage type. Please make sure the file specified by .Values.config.otacc.certFilename is valid." }}
+{{- end }}
+{{- end }}
+---
+{{- end }}
+
+{{- if and (eq .Values.loadAdminSettings.enabled true) (not (.Values.loadAdminSettings.initialConfigmap)) }}
+########################################################################
+# This is the file containing admin settings to be applied to Content
+# Server on first container start.
+# See the statefulsets yaml for the required Content Server volume mount
+# and volume.
+########################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-adminsettings-initial-configmap
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+data:
+{{- $adminSettingsFolder := printf "%s/initial/**.xml" .Values.adminSettingsFolder }}
+{{- if $xmlFiles := .Files.Glob  $adminSettingsFolder }}
+  {{- ($xmlFiles).AsConfig | nindent 2 }}
+{{- else}}
+{{- fail "Files are not specified in the given path or given adminsettings folder path is incorrect" }}
+{{- end }}
+---
+{{- end }}
+{{- if and (eq .Values.loadAdminSettings.enabled true) (not (.Values.loadAdminSettings.recurrentConfigmap)) }}
+########################################################################
+# This is the file containing admin settings to be applied to Content
+# Server on every container start
+# See the statefulsets yaml for the required Content Server volume mount
+# and volume.
+########################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-adminsettings-recurrent-configmap
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+data:
+{{- $adminSettingsFolder := printf "%s/recurrent/**.xml" .Values.adminSettingsFolder }}
+{{- if $xmlFiles := .Files.Glob  $adminSettingsFolder }}
+  {{- ($xmlFiles).AsConfig | nindent 2 }}
+{{- else}}
+{{- fail "Files are not specified in the given path or given adminsettings folder path is incorrect" }}
+{{- end }}
+---
+{{- end }}
+
+{{- if and (eq .Values.loadLicense.enabled true) (not (.Values.global.existingLicenseSecret)) }}
+########################################################################
+# This is the file containing a license to be applied to Content
+# Server on first container start.
+# The filename is of the XML file is specified in the values.yaml file.
+########################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-license-configmap
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+data:
+{{- if not .Values.loadLicense.filename }}
+{{- fail "otcs license filename is not specified, set it using otcs.loadLicense.filename " }}
+{{- end }}
+{{- if not (.Files.Glob .Values.loadLicense.filename) }}
+{{- fail "Unable to find license file specified by otcs.loadLicense.filename" }}
+{{- end }}
+  {{- (.Files.Glob .Values.loadLicense.filename).AsConfig | nindent 2 }}
+---
+{{- end }}
+
+{{- if eq .Values.config.database.oracle.loadTnsnames.enabled true }}
+########################################################################
+# Tnsnames.ora ##UPDATE
+########################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-tnsnames-configmap
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+data:
+  {{- (.Files.Glob .Values.config.database.oracle.loadTnsnames.filename).AsConfig | nindent 2 }}
+---
+{{- end }}
+
+{{- if eq .Values.fluentbit.enabled true }}
+########################################################################
+# This configmap contains all the configuration data related to fluentbit.
+# Each .conf file under otcs/fluentbit will be a field in this config map.
+########################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-fluentbit-configmap
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+data:
+  include.conf: |-
+    {{- if has "connect" .Values.fluentbit.logsToMonitor }}
+    @INCLUDE connect-logs-filter.conf
+    {{- end }}
+    {{- if has "dcs" .Values.fluentbit.logsToMonitor }}
+    @INCLUDE dcs-logs-filter.conf
+    {{- end }}
+    {{- if has "search" .Values.fluentbit.logsToMonitor }}
+    @INCLUDE search-logs-filter.conf
+    {{- end }}
+    {{- if has "security" .Values.fluentbit.logsToMonitor }}
+    @INCLUDE security-logs-filter.conf
+    {{- end }}
+    {{- if has "sysmon" .Values.fluentbit.logsToMonitor }}
+    @INCLUDE system-monitoring-logs.conf
+    {{- end }}
+    {{- if has "thread" .Values.fluentbit.logsToMonitor }}
+    @INCLUDE thread-logs-filter.conf
+    {{- end }}
+    {{- if has "timings" .Values.fluentbit.logsToMonitor }}
+    @INCLUDE timings-logs-filter.conf
+    {{- end }}
+  {{- (.Files.Glob "fluentbit/**.conf").AsConfig | nindent 2 }}
+  fluent-bit.conf: |
+    {{- (.Files.Glob "fluentbit/fluent-bit.conf").AsConfig | nindent 2 }}
+{{- if eq .Values.fluentbit.customOutput.enabled true }}
+{{- if not .Values.fluentbit.customOutput.customOutputFilePath }}
+{{- fail "customOutput filepath is not specified, set it using otcs.fluentbit.customOutput.customOutputFilePath " }}
+{{- end }}
+{{- if not (.Files.Glob .Values.fluentbit.customOutput.customOutputFilePath) }}
+{{- fail "Unable to find customOutput file specified by otcs.fluentbit.customOutput.customOutputFilePath" }}
+{{- end }}
+{{ .Files.Get .Values.fluentbit.customOutput.customOutputFilePath | indent 4}}
+{{- end }}
+  cs-parsers.conf: |
+    {{- (.Files.Glob "fluentbit/cs-parsers.conf").AsConfig | nindent 2 }}
+---
+{{- end }}
+
+{{- if eq .Values.fluentbit.enabled true }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-fluentbit-lua-configmap
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+data:
+{{- (.Files.Glob "fluentbit/edit.lua").AsConfig | nindent 2 }}
+---
+{{- end }}
+
+{{- if and (eq .Values.global.otxecmctrl.enabled true) (.Values.otxecmctrl.customPayload.payloadConfig) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otxecm-ctrl-configmap
+  labels:
+   app: otxecm-ctrl
+data:
+  custompayload.yaml: |-
+{{ toYaml .Values.otxecmctrl.customPayload.payloadConfig | indent 4 }}
+---
+{{- end }}
+

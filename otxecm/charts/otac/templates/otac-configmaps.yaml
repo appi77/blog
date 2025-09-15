@@ -1,0 +1,329 @@
+########################################################################
+# OpenText Archive Center Kubernetes Configuration Maps
+########################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-configmap
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+data:
+  ## AC config:
+  bizHost: {{ .Values.serviceName }}-0
+  acProtocol: {{ .Values.protocol }}
+  resType: {{ .Values.resType }}
+  acPostAcConfig: "true"
+  acArchiveName: {{ .Values.archiveName }}
+  acPoolName: {{ .Values.poolName }}
+  acVolumeName: {{ .Values.volumeName }}
+  acVolumeDir: {{ .Values.volumeDirectory }}
+  OTXECM_SECRET_NAME: {{ .Values.global.existingSecret }}
+  ## CMIS config:
+  {{- if (.Values.ilm.enabled) }}
+  configCmisSetup: {{ .Values.ilm.enabled | quote | default "false" }}
+  tenantName: {{ required "A valid tenant name is required!" .Values.ilm.tenant.name | quote }}
+  tenantShortname: {{ required "A valid tenant short name is required!" .Values.ilm.tenant.shortname | quote }}
+  baUserName: {{ required "A valid ba user name is required!" .Values.ilm.users.ba.userName | quote }}
+  accessUserName: {{ default " " .Values.ilm.users.access.userName | quote }}
+  ilmUserName: {{ required "A valid ilm user name is required!" .Values.ilm.users.ilm.userName | quote }}
+  myUserName: {{ default " " .Values.ilm.users.my.userName | quote }}
+  {{- end }}
+  ## Database config:
+  dbType: {{ .Values.database.type }}
+  dbSecureMode: {{ default .Values.global.database.ssl .Values.database.ssl | quote }}
+  targetDBName: {{ required "A valid database name is required!" .Values.database.name | quote }}
+  targetDBUserName: {{ required "A valid database user that owns AC database is required!" .Values.database.username | quote }}
+  DBHOST: {{ default .Values.global.database.hostname .Values.database.hostname | quote }}
+  DBPORT: {{ default .Values.global.database.port .Values.database.port | quote }}
+  DBUSER: {{ default .Values.global.database.adminUsername .Values.database.adminUsername | quote }}
+  {{- if and ( or (eq .Values.global.database.ssl true) (eq .Values.database.ssl true) ) (.Values.database.customSSLCertificate) }}
+      {{- $certPath := printf "cert/%s" .Values.database.customSSLCertificate }}
+      {{- $files := .Files.Glob $certPath }}
+      {{- if eq (len $files) 0 }}
+        {{- fail (printf "Error: The provided otac database certificate file must be placed in the OTAC helm 'cert' folder!") }}
+      {{- else }}
+  dbCertFileName: {{ .Values.database.customSSLCertificate | quote }}
+      {{- end }}
+  {{- end }}
+  SID: {{ .Values.database.oracle.tnsnamesConnectionAlias }}
+  oracleTSData: {{ .Values.database.oracle.ts_data }}
+  oracleTSIndex: {{ .Values.database.oracle.ts_index }}
+  postgresTSDefault: {{ .Values.database.postgres.ts_default }}
+  ## OTDS config:
+  otdsAdmin: {{ .Values.otds.admin }}
+  {{- if (.Values.global.otds.enabled) }}
+  otdsTomcatHostname: {{ include "otxecm.otdsServiceName" . }}
+  {{- else }}
+  otdsTomcatHostname: {{ .Values.otds.hostname }}
+  {{- end }}
+  otdsTomcatPort: {{ .Values.otds.port | quote }}
+  otdsTomcatProtocol: {{ .Values.otds.protocol }}
+  SHARED_ADDRESS_SPACE_NAT: {{ .Values.SHARED_ADDRESS_SPACE_NAT | quote }}
+  runSchema: {{ .Values.database.executeSchema | quote | default "true" }}
+  TZ: {{ default .Values.global.timeZone .Values.config.timeZone }}
+  {{- if not (.Values.config.storageDevices.gcs.serviceAccountEnabled) }}
+  GOOGLE_APPLICATION_CREDENTIALS: {{ .Values.GOOGLE_APPLICATION_CREDENTIALS }}
+  {{- end }}
+  ##Document encryption configuration
+  encryptionEnabled: {{ required "A valid encryption.enabled option is required!" .Values.encryption.enabled | quote }}
+  {{- if (.Values.encryption.enabled) }}
+  encKeyCacheTimeout: {{ .Values.encryption.encKeyCacheTimeoutVal | default "-1" | quote }}
+
+  ##Customer managed Key based document encryption
+  ## OTKM configuration
+  otkmEnabled: {{ required "A valid otkm.enabled is required!" .Values.encryption.otkm.enabled | quote }}
+  {{- if (.Values.encryption.otkm.enabled) }}
+  otkmServiceUrl: {{ required "A valid otkm.serviceUrlVal is required!" .Values.encryption.otkm.serviceUrlVal | quote }}
+  otkmMekId: {{ required "A valid otkm.mekIdVal is required!" .Values.encryption.otkm.mekIdVal | quote }}
+  otkmClientId: {{ .Values.encryption.otkm.clientIdVal | quote }}
+  otkmUser: {{ .Values.encryption.otkm.userVal | quote }}
+  otkmCertPinningEnabled: {{ .Values.encryption.otkm.certPinningEnabledVal | default "false" | quote }}
+  {{- if (.Values.encryption.otkm.certPinningEnabledVal) }}
+  otkmCertFileName: {{ required "A valid otkm.caCertFileNameVal is required!" .Values.encryption.otkm.caCertFileNameVal | quote }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  
+  ## Storage device config:
+  ##GCS
+  gcsEnable: {{ .Values.config.storageDevices.gcs.enable | quote | default "false" }}
+  gcsDeviceName: {{ .Values.config.storageDevices.gcs.name | quote | default "GCP" }}
+  gcsServiceAddress: {{ .Values.config.storageDevices.gcs.serviceAddress | quote | default "storage.googleapis.com" }}
+  {{- if (.Values.config.storageDevices.gcs.enable) }}
+  gcsBucket: {{ required "A valid google cloud storage bucket name is required!" .Values.config.storageDevices.gcs.bucket | quote }}
+  {{- end }}
+  gcsBucketAddressStyle: {{ .Values.config.storageDevices.gcs.bucketAddressStyle | quote | default "VIRTUAL_HOST_STYLE" }}
+  gcsVolumeName: {{ .Values.config.storageDevices.gcs.volumeName | quote | default "volgcs1" }}
+  gcsServiceAccountJSONFileName: {{ .Values.config.storageDevices.gcs.serviceAccountJSONFileName | quote | default "gcs_serviceaccount.json" }}
+  gcsstorageProxy: {{ .Values.config.storageDevices.gcs.storageProxy | quote | default "X" }}
+  acArchiveName2: {{ .Values.config.storageDevices.gcs.archive2Name | quote | default "A2" }}
+  useServiceAccount: {{ .Values.config.storageDevices.gcs.serviceAccountEnabled | quote | default "false" }}
+  gcsglobalretentionmode: {{ .Values.config.storageDevices.gcs.retentionmode.global | quote | default "COMPLIANCE"  }}
+  gcsobjectretentionmode: {{ .Values.config.storageDevices.gcs.retentionmode.object | quote | default "X"  }}
+  {{- if and (eq .Values.config.storageDevices.gcs.enable true) (.Values.config.storageDevices.gcs.customSSLCertificate) }}
+      {{- $certPath := printf "cert/%s" .Values.config.storageDevices.gcs.customSSLCertificate }}
+      {{- $files := .Files.Glob $certPath }}
+      {{- if eq (len $files) 0 }}
+        {{- fail (printf "Error: The provided otac GCS certificate file must be placed in the OTAC helm 'cert' folder!") }}
+      {{- else }}
+  gcsCertFileName: {{ .Values.config.storageDevices.gcs.customSSLCertificate | quote }}
+      {{- end }}
+  {{- end }}
+  
+  ##S3
+  s3Enable: {{ .Values.config.storageDevices.s3.enable | quote | default "false" }}
+  s3DeviceName: {{ .Values.config.storageDevices.s3.name | quote | default "AWS" }}
+  s3ServiceAddress: {{ .Values.config.storageDevices.s3.serviceAddress | quote | default "s3.amazonaws.com" }}
+  {{- if (.Values.config.storageDevices.s3.enable) }}
+  s3Bucket: {{ required "A valid AWS S3 bucket name is required!" .Values.config.storageDevices.s3.bucket | quote }}
+  s3Region: {{ required "A valid AWS S3 Region name is required!" .Values.config.storageDevices.s3.region | quote }}
+  {{- if not (.Values.config.storageDevices.s3.userolebasedauth) }}
+  s3Accesskey: {{ required "A valid AWS S3 bucket Accesskey is required!" .Values.config.storageDevices.s3.accesskey | quote }}
+  {{- end }}
+  {{- end }}
+  s3BucketAddressStyle: {{ .Values.config.storageDevices.s3.bucketAddressStyle | quote | default "VIRTUAL_HOST_STYLE" }}
+  s3VolumeName: {{ .Values.config.storageDevices.s3.volumeName | quote | default "volaws1" }}
+  s3storageProxy: {{ .Values.config.storageDevices.s3.storageProxy | quote | default "X" }}
+  acArchiveName3: {{ .Values.config.storageDevices.s3.archive2Name | quote | default "A3" }}
+  s3UseRoleBasedAuth: {{ .Values.config.storageDevices.s3.userolebasedauth | quote | default "false" }}
+  s3globalretentionmode: {{ .Values.config.storageDevices.s3.retentionmode.global | quote | default "COMPLIANCE"  }}
+  s3objectretentionmode: {{ .Values.config.storageDevices.s3.retentionmode.object | quote | default "X"  }}
+  {{- if and (eq .Values.config.storageDevices.s3.enable true) (.Values.config.storageDevices.s3.customSSLCertificate) }}
+      {{- $certPath := printf "cert/%s" .Values.config.storageDevices.s3.customSSLCertificate }}
+      {{- $files := .Files.Glob $certPath }}
+      {{- if eq (len $files) 0 }}
+        {{- fail (printf "Error: The provided otac S3 certificate file must be placed in the OTAC helm 'cert' folder!") }}
+      {{- else }}
+  s3CertFileName: {{ .Values.config.storageDevices.s3.customSSLCertificate | quote }}
+      {{- end }}
+  {{- end }}
+  
+  ##AZURE
+  azureEnable: {{ .Values.config.storageDevices.azure.enable | quote | default "false" }}
+  azureDeviceName: {{ .Values.config.storageDevices.azure.name | quote | default "AZURE" }}
+  azureHost: {{ .Values.config.storageDevices.azure.host | quote | default "https://blob.core.windows.net:443" }}
+  {{- if (.Values.config.storageDevices.azure.enable) }}
+  azureContainerName: {{ required "A valid Azure Container name is required!" .Values.config.storageDevices.azure.containerName | quote }}
+  azureAccountName: {{ required "A valid Azure Account name is required!" .Values.config.storageDevices.azure.accountName | quote }}
+  {{- end }}
+  azureVolumeName: {{ .Values.config.storageDevices.azure.volumeName | quote | default "volazure1" }}
+  azurestorageProxy: {{ .Values.config.storageDevices.azure.storageProxy | quote | default "X" }}
+  acArchiveName4: {{ .Values.config.storageDevices.azure.archive2Name | quote | default "A4" }}
+  {{- if and (eq .Values.config.storageDevices.azure.enable true) (.Values.config.storageDevices.azure.customSSLCertificate) }}
+      {{- $certPath := printf "cert/%s" .Values.config.storageDevices.azure.customSSLCertificate }}
+      {{- $files := .Files.Glob $certPath }}
+      {{- if eq (len $files) 0 }}
+        {{- fail (printf "Error: The provided otac Azure certificate file must be placed in the OTAC helm 'cert' folder!") }}
+      {{- else }}
+  azureCertFileName: {{ .Values.config.storageDevices.azure.customSSLCertificate | quote }}
+      {{- end }}
+  {{- end }}
+
+  ## Validation of certificates
+  {{- $certList := list }}
+
+  {{- if and (or (eq .Values.global.database.ssl true) (eq .Values.database.ssl true)) (.Values.database.customSSLCertificate) }}
+    {{- $certList = append $certList .Values.database.customSSLCertificate }}
+  {{- end }}
+
+  {{- if and (eq .Values.config.storageDevices.gcs.enable true) (.Values.config.storageDevices.gcs.customSSLCertificate) }}
+    {{- $certList = append $certList .Values.config.storageDevices.gcs.customSSLCertificate }}
+  {{- end }}
+
+  {{- if and (eq .Values.config.storageDevices.s3.enable true) (.Values.config.storageDevices.s3.customSSLCertificate) }}
+    {{- $certList = append $certList .Values.config.storageDevices.s3.customSSLCertificate }}
+  {{- end }}
+
+  {{- if and (eq .Values.config.storageDevices.azure.enable true) (.Values.config.storageDevices.azure.customSSLCertificate) }}
+    {{- $certList = append $certList .Values.config.storageDevices.azure.customSSLCertificate }}
+  {{- end }}
+
+  {{- $found := list }}
+  {{- range $cert := $certList }}
+    {{- if has $cert $found }}
+      {{- fail (printf "Found atleast two custom SSL certificates with the same name: %s. Different names should be used." $cert) }}
+    {{- else }}
+      {{- $found = append $found $cert }}
+    {{- end }}
+  {{- end }}
+
+  ## Tomcat CATALINA_OPTS
+  catalinaOpts: {{ .Values.tomcat.catalinaOpts | quote | default "-Xmx2048m" }}
+
+  ## SecretLink :
+  SL_ENABLED: {{ default .Values.global.secretlink.enabled .Values.secretlink.enabled | quote }}
+---
+
+{{- if eq .Values.database.oracle.loadTnsnames.enabled true }}
+########################################################################
+# Tnsnames.ora ##UPDATE
+########################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-tnsnames-configmap
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+data:
+  {{- (.Files.Glob .Values.database.oracle.loadTnsnames.filename).AsConfig | nindent 2 }}
+---
+{{- end }}
+########################################################################
+# tomcat files ##UPDATE
+########################################################################
+{{- $files := .Files.Glob "tomcat/**" }}
+{{- if $files }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-tomcatfiles-configmap
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels") . | nindent 4 }}
+data:
+{{- range $path, $file := $files }}
+{{- $filename := base $path }}
+{{- if and (ne $filename "README.md") (ne $filename "setenv_template.sh") }}
+  {{ $filename }}: |-
+    {{- $file | toString | trim | nindent 4 }}
+{{- end }}
+{{- end }}
+---
+{{- end }}
+########################################################################
+# db custom certificate files ##UPDATE
+########################################################################
+{{- if and ( or (eq .Values.global.database.ssl true) (eq .Values.database.ssl true) ) (.Values.database.customSSLCertificate) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-dbcustomcertificate-configmap
+  annotations:
+    checksum/config: {{ ( .Files.Get (printf "cert/%s" .Values.database.customSSLCertificate ) | default "" ) | sha256sum }}
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels") . | nindent 4 }}
+data:
+  "{{ .Values.database.customSSLCertificate }}": |
+    {{- .Files.Get (printf "cert/%s" .Values.database.customSSLCertificate) | nindent 4 }}
+---
+{{- end }}
+########################################################################
+# gcs custom certificate files ##UPDATE
+########################################################################
+{{- if and (eq .Values.config.storageDevices.gcs.enable true) (.Values.config.storageDevices.gcs.customSSLCertificate) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-gcscustomcertificate-configmap
+  annotations:
+    checksum/config: {{ ( .Files.Get (printf "cert/%s" .Values.config.storageDevices.gcs.customSSLCertificate ) | default "" ) | sha256sum }}
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels") . | nindent 4 }}
+data:
+  "{{ .Values.config.storageDevices.gcs.customSSLCertificate }}": |
+    {{- .Files.Get (printf "cert/%s" .Values.config.storageDevices.gcs.customSSLCertificate) | nindent 4 }}
+---
+{{- end }}
+########################################################################
+# s3 custom certificate files ##UPDATE
+########################################################################
+{{- if and (eq .Values.config.storageDevices.s3.enable true) (.Values.config.storageDevices.s3.customSSLCertificate) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-s3customcertificate-configmap
+  annotations:
+    checksum/config: {{ ( .Files.Get (printf "cert/%s" .Values.config.storageDevices.s3.customSSLCertificate ) | default "" ) | sha256sum }}
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels") . | nindent 4 }}
+data:
+  "{{ .Values.config.storageDevices.s3.customSSLCertificate }}": |
+    {{- .Files.Get (printf "cert/%s" .Values.config.storageDevices.s3.customSSLCertificate) | nindent 4 }}
+---
+{{- end }}
+########################################################################
+# azure custom certificate files ##UPDATE
+########################################################################
+{{- if and (eq .Values.config.storageDevices.azure.enable true) (.Values.config.storageDevices.azure.customSSLCertificate) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-azurecustomcertificate-configmap
+  annotations:
+    checksum/config: {{ ( .Files.Get (printf "cert/%s" .Values.config.storageDevices.azure.customSSLCertificate ) | default "" ) | sha256sum }}
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels") . | nindent 4 }}
+data:
+  "{{ .Values.config.storageDevices.azure.customSSLCertificate }}": |
+    {{- .Files.Get (printf "cert/%s" .Values.config.storageDevices.azure.customSSLCertificate) | nindent 4 }}
+---
+{{- end }}
+########################################################################
+# gcs_serviceaccount.json ##UPDATE
+########################################################################
+{{- if and (eq .Values.config.storageDevices.gcs.enable true) (.Values.config.storageDevices.gcs.serviceAccountJSONFileName) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-gcsserviceaccount-configmap
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+data:
+  {{- (.Files.Glob .Values.config.storageDevices.gcs.serviceAccountJSONFileName).AsConfig | nindent 2 }}
+---
+{{- end }}
+########################################################################
+# OTKM Root CA Path ##UPDATE
+########################################################################
+{{- if and (eq .Values.encryption.otkm.enabled true) (eq .Values.encryption.otkm.certPinningEnabledVal true) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-otkmcert-configmap
+
+  labels:
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+data:
+  otkmCaCertFile: |
+    {{ (.Files.Get .Values.encryption.otkm.caCertFileNameVal) | nindent 4 }}
+---
+{{- end }}

@@ -1,0 +1,328 @@
+########################################################################
+# OpenText Archive Center Kuberntes Stateful Sets
+########################################################################
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app.kubernetes.io/component: {{ .Chart.Name }}
+    {{- include (printf "%s%s" .Chart.Name ".labels" ) . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  serviceName: {{ .Values.serviceName }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: {{ .Chart.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: {{ .Chart.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        checksum/config: '{{- $dbCert := "" }}{{- $gcsCert := "" }}{{- $s3Cert := "" }}{{- $azureCert := "" }}
+          {{- if and (or (eq .Values.global.database.ssl true) (eq .Values.database.ssl true)) (.Values.database.customSSLCertificate) }}
+            {{- $dbCert = .Files.Get (printf "cert/%s" .Values.database.customSSLCertificate) | default "" }}
+          {{- end }}
+          {{- if and (eq .Values.config.storageDevices.s3.enable true) (.Values.config.storageDevices.s3.customSSLCertificate) }}
+            {{- $gcsCert = .Files.Get (printf "cert/%s" .Values.config.storageDevices.gcs.customSSLCertificate) | default "" }}
+          {{- end }}
+          {{- if and (eq .Values.config.storageDevices.gcs.enable true) (.Values.config.storageDevices.gcs.customSSLCertificate) }}
+            {{- $s3Cert = .Files.Get (printf "cert/%s" .Values.config.storageDevices.s3.customSSLCertificate) | default "" }}
+          {{- end }}
+          {{- if and (eq .Values.config.storageDevices.azure.enable true) (.Values.config.storageDevices.azure.customSSLCertificate) }}
+            {{- $azureCert = .Files.Get (printf "cert/%s" .Values.config.storageDevices.azure.customSSLCertificate) | default "" }}
+          {{- end }}
+          {{- print $dbCert $gcsCert $s3Cert $azureCert | sha256sum }}'
+      {{- if .Values.podAnnotations }}
+      annotations:
+{{ toYaml .Values.podAnnotations | indent 8 }}
+      {{- end }}
+    spec:
+      {{- if eq .Values.global.priorityClasses.enabled true }}
+      priorityClassName: {{ .Release.Name  }}-{{ .Release.Namespace }}-1
+      {{- end }}
+      securityContext:
+        ## The fsGroup field specifies that group ID {{ .Values.fsGroup }} is associated
+        ## with all Containers in the Pod. Group ID {{ .Values.fsGroup }} is also
+        ## associated with the mounted volumes and with any files created
+        ## in that volume.
+        ## This will make volumes be mounted with {{ .Values.fsGroup }} group permissions.
+        fsGroup: {{ .Values.fsGroup }}
+        runAsNonRoot: true
+        runAsUser: 1000
+      ## serviceAccountName defines the name of the service account the
+      ## pods are running under. Normally that is 'default'
+      serviceAccountName: {{ default .Values.global.serviceAccountName .Values.serviceAccountName }}
+      containers:
+      - name: {{ .Chart.Name }}
+{{- if not (regexFind "\\/$" (default .Values.global.imageSource .Values.image.source ) ) }}
+        image: {{ required "A valid image.source is required!" (default .Values.global.imageSource .Values.image.source ) }}/{{ required "A valid image.name is required!" .Values.image.name }}:{{ required "A valid image.tag is required!" .Values.image.tag }}
+{{- else }}
+        image: {{ required "A valid image.source is required!" (default .Values.global.imageSource .Values.image.source ) }}{{ required "A valid image.name is required!" .Values.image.name }}:{{ required "A valid image.tag is required!" .Values.image.tag }}
+{{- end }}
+        imagePullPolicy: {{ default .Values.global.imagePullPolicy .Values.image.pullPolicy }}
+        envFrom:
+          - configMapRef:
+              name: {{ .Chart.Name }}-configmap
+          - configMapRef:
+              name: {{ .Chart.Name }}-tnsnames-configmap
+              optional: true
+          - configMapRef:
+              name: {{ .Chart.Name }}-gcsserviceaccount-configmap
+              optional: true
+          - configMapRef:
+              name: {{ .Chart.Name }}-otkmcert-configmap
+              optional: true
+        env:
+        - name: OTAC_PORT
+          value: {{ default "8080" .Values.port | quote }}
+{{- if .Release.IsUpgrade }}
+        - name: isUpgrade
+          value: "true"
+{{- if (default false .Values.forceRestart) }}
+        - name: forceRestart
+          value: "true"
+        - name: lastUpdated
+          value: {{ .Release.Time | date "2006-01-02T15:04:05Z07:00" }}
+{{- end }}
+{{- end }}
+        - name: RMDIR_SLEEP_TIME
+          value: {{ default "50" .Values.rmdir.sleeptime | quote }}
+        - name: RMDIR_RETRY_COUNT
+          value: {{ default "2" .Values.rmdir.retrycount | quote }}
+{{- if eq .Values.readinessProbe.enabled true }}
+        readinessProbe:
+            exec:
+              command:
+                - "/opt/opentext/shell_scripts/check_as_readiness.sh"
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+{{- end }}
+{{- if eq .Values.livenessProbe.enabled true }}
+        livenessProbe:
+            exec:
+              command:
+                - "/opt/opentext/shell_scripts/check_as_liveness.sh"
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+{{- end }}
+{{- if eq (default .Values.global.resourceRequirements .Values.resources.enabled) true }}
+        resources:
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+{{- end }}
+        ports:
+        - containerPort: {{ .Values.acPort }}
+        - containerPort: {{ .Values.targetPort }}
+        volumeMounts:
+        - mountPath: /opt/opentext/ac_bdv
+          name: {{ $.Chart.Name }}-bdv
+        - mountPath: /opt/opentext/ac_dv
+          name: {{ $.Chart.Name }}-dv
+        - mountPath: /opt/opentext/ac_sd
+          name: {{ $.Chart.Name }}-sd
+        - mountPath: /opt/opentext/logs
+          name: {{ $.Chart.Name }}-logs
+        - mountPath: /opt/opentext/archive_center/ac_config
+          name: {{ $.Chart.Name }}-config
+{{- if (eq .Values.objectimporter.enabled true) }}
+        # Temp mount point for sftp-volume
+        - mountPath: "/opt/opentext/sftp"
+          name: sftp-volume
+{{- end }}
+      {{- if eq .Values.database.oracle.loadTnsnames.enabled true }}
+        - mountPath: /opt/oracle/tnsnames.ora
+          name: {{ .Chart.Name }}-tnsnames-configmap
+          subPath: {{ .Values.database.oracle.loadTnsnames.filename }}
+      {{- end }}
+      {{- if .Files.Glob "tomcat/**" }}
+        - name: {{ .Chart.Name }}-tomcatfiles-configmap
+          mountPath: /opt/opentext/archive_center/ac_config/tomcat
+      {{- end }}
+      {{- if and ( or (eq .Values.global.database.ssl true) (eq .Values.database.ssl true) ) (.Values.database.customSSLCertificate) }}
+        - name: {{ $.Chart.Name }}-dbcustomcertificate-configmap
+          mountPath: /opt/opentext/cert/{{ .Values.database.customSSLCertificate }}
+          subPath: {{ .Values.database.customSSLCertificate }}
+      {{- end }}
+      {{- if and (eq .Values.config.storageDevices.gcs.enable true) (.Values.config.storageDevices.gcs.customSSLCertificate) }}
+        - name: {{ $.Chart.Name }}-gcscustomcertificate-configmap
+          mountPath: /opt/opentext/cert/{{ .Values.config.storageDevices.gcs.customSSLCertificate }}
+          subPath: {{ .Values.config.storageDevices.gcs.customSSLCertificate }}
+      {{- end }}
+      {{- if and (eq .Values.config.storageDevices.s3.enable true) (.Values.config.storageDevices.s3.customSSLCertificate) }}
+        - name: {{ $.Chart.Name }}-s3customcertificate-configmap
+          mountPath: /opt/opentext/cert/{{ .Values.config.storageDevices.s3.customSSLCertificate }}
+          subPath: {{ .Values.config.storageDevices.s3.customSSLCertificate }}
+      {{- end }}
+      {{- if and (eq .Values.config.storageDevices.azure.enable true) (.Values.config.storageDevices.azure.customSSLCertificate) }}
+        - name: {{ $.Chart.Name }}-azurecustomcertificate-configmap
+          mountPath: /opt/opentext/cert/{{ .Values.config.storageDevices.azure.customSSLCertificate }}
+          subPath: {{ .Values.config.storageDevices.azure.customSSLCertificate }}
+      {{- end }}
+      {{- if and (eq .Values.config.storageDevices.gcs.enable true) (.Values.config.storageDevices.gcs.serviceAccountJSONFileName) }}
+        - mountPath: /opt/opentext/gcs/gcs_serviceaccount.json
+          name: {{ .Chart.Name }}-gcsserviceaccount-configmap
+          subPath: {{ .Values.config.storageDevices.gcs.serviceAccountJSONFileName }}
+      {{- end }}
+      {{- if eq .Values.encryption.otkm.certPinningEnabledVal true }}
+        - mountPath: {{ .Values.acConfigDir }}/certs/{{ .Values.encryption.otkm.caCertFileNameVal }} 
+          name: {{ .Chart.Name }}-otkmcert-configmap
+          subPath: {{ .Values.encryption.otkm.caCertFileNameVal }}
+          readOnly: false
+      {{- end }}
+        securityContext:
+          allowPrivilegeEscalation: false
+{{- if eq (default .Values.global.secretlink.enabled .Values.secretlink.enabled) true }}
+      - name: secretlink-container
+{{- if not (regexFind "\\/$" ( default .Values.global.imageSource (default .Values.global.secretlink.image.source .Values.secretlink.image.source) ) ) }}
+        image: {{ default .Values.global.imageSource (default .Values.global.secretlink.image.source .Values.secretlink.image.source) }}/{{ default .Values.global.secretlink.image.name .Values.secretlink.image.name }}:{{ default .Values.global.secretlink.image.tag .Values.secretlink.image.tag }}
+{{- else }}
+        image: {{ default .Values.global.imageSource (default .Values.global.secretlink.image.source .Values.secretlink.image.source) }}{{ default .Values.global.secretlink.image.name .Values.secretlink.image.name }}:{{ default .Values.global.secretlink.image.tag .Values.secretlink.image.tag }}
+{{- end }}
+        imagePullPolicy: {{ default .Values.global.imagePullPolicy .Values.image.pullPolicy }}
+        securityContext:
+          runAsUser: 10001
+        env:
+        - name: SL_LOGLEVEL
+          value: {{ default .Values.global.secretlink.loglevel .Values.secretlink.loglevel | quote }}
+        - name: SL_VAULT_ADDR
+          value: {{ default .Values.global.secretlink.vault.address .Values.secretlink.vault.address | quote }}
+        - name: SL_VAULT_MOUNTPOINT
+          value: {{ default .Values.global.secretlink.vault.mountpoint .Values.secretlink.vault.mountpoint | quote }}
+        - name: SL_VAULT_PATH
+          value: {{ default .Values.global.secretlink.vault.path .Values.secretlink.vault.path | quote }}
+        - name: SL_VAULT_NAMESPACE
+          value: {{ default .Values.global.secretlink.vault.namespace .Values.secretlink.vault.namespace | quote }}
+        - name: SL_VAULT_AUTH_PATH
+          value: {{ default .Values.global.secretlink.vault.authpath .Values.secretlink.vault.authpath | quote }}
+        - name: SL_VAULT_ROLE
+          value: {{ default .Values.global.secretlink.vault.role .Values.secretlink.vault.role | quote}}
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 250m
+            memory: 128Mi
+{{- end }}
+      volumes:
+{{- if (eq .Values.objectimporter.enabled true) }}
+        - name: sftp-volume
+          persistentVolumeClaim:
+            claimName: sftp-volume
+{{- end }}
+        - name: {{ $.Chart.Name }}-config
+          persistentVolumeClaim:
+            claimName: {{ $.Chart.Name }}-config
+      {{- if eq .Values.database.oracle.loadTnsnames.enabled true }}
+        - name: {{ .Chart.Name }}-tnsnames-configmap
+          configMap:
+            name: {{ .Chart.Name }}-tnsnames-configmap
+      {{- end }}
+      {{- if .Files.Glob "tomcat/**" }}
+        - name: {{ .Chart.Name }}-tomcatfiles-configmap
+          configMap:
+            name: {{ .Chart.Name }}-tomcatfiles-configmap
+      {{- end }}
+      {{- if and ( or (eq .Values.global.database.ssl true) (eq .Values.database.ssl true) ) (.Values.database.customSSLCertificate) (.Files.Get (printf "cert/%s" .Values.database.customSSLCertificate)) }}
+        - name: {{ .Chart.Name }}-dbcustomcertificate-configmap
+          configMap:
+            name: {{ .Chart.Name }}-dbcustomcertificate-configmap
+      {{- end }}
+      {{- if and (eq .Values.config.storageDevices.gcs.enable true) (.Values.config.storageDevices.gcs.customSSLCertificate) (.Files.Get (printf "cert/%s" .Values.config.storageDevices.gcs.customSSLCertificate)) }}
+        - name: {{ .Chart.Name }}-gcscustomcertificate-configmap
+          configMap:
+            name: {{ .Chart.Name }}-gcscustomcertificate-configmap
+      {{- end }}
+      {{- if and (eq .Values.config.storageDevices.s3.enable true) (.Values.config.storageDevices.s3.customSSLCertificate) (.Files.Get (printf "cert/%s" .Values.config.storageDevices.s3.customSSLCertificate)) }}
+        - name: {{ .Chart.Name }}-s3customcertificate-configmap
+          configMap:
+            name: {{ .Chart.Name }}-s3customcertificate-configmap
+      {{- end }}
+      {{- if and (eq .Values.config.storageDevices.azure.enable true) (.Values.config.storageDevices.azure.customSSLCertificate) (.Files.Get (printf "cert/%s" .Values.config.storageDevices.azure.customSSLCertificate)) }}
+        - name: {{ .Chart.Name }}-azurecustomcertificate-configmap
+          configMap:
+            name: {{ .Chart.Name }}-azurecustomcertificate-configmap
+      {{- end }}
+      {{- if and (eq .Values.config.storageDevices.gcs.enable true) (.Values.config.storageDevices.gcs.serviceAccountJSONFileName) }}      
+        - name: {{ .Chart.Name }}-gcsserviceaccount-configmap
+          configMap:
+            name: {{ .Chart.Name }}-gcsserviceaccount-configmap
+      {{- end }}
+      {{- if eq .Values.encryption.otkm.certPinningEnabledVal true }}
+        - name: {{ .Chart.Name }}-otkmcert-configmap
+          configMap:
+            name: {{ .Chart.Name }}-otkmcert-configmap
+            items:
+              - key: otkmCaCertFile
+                path: {{ .Values.encryption.otkm.caCertFileNameVal }}
+      {{- end }}
+
+      hostname: {{ .Values.hostname }}
+{{- if .Values.global.imagePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.global.imagePullSecret }}
+{{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ $.Chart.Name }}-bdv
+      labels:
+      {{- toYaml .Values.pvc.labels.bdv | nindent 8 }}
+    spec:
+      accessModes:
+      - {{ .Values.volumes.accessMode | default "ReadWriteOnce" }}
+    {{- if ( default $.Values.global.storageClassName $.Values.resources.storageClassName ) }}
+      storageClassName: {{ ( default $.Values.global.storageClassName $.Values.resources.storageClassName ) | quote }}
+    {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.volumes.storage.bdv }}
+  - metadata:
+      name: {{ $.Chart.Name }}-dv
+      labels:
+      {{- toYaml .Values.pvc.labels.dv | nindent 8 }}
+    spec:
+      accessModes:
+      - {{ .Values.volumes.accessMode | default "ReadWriteOnce" }}
+    {{- if ( default $.Values.global.storageClassName $.Values.resources.storageClassName ) }}
+      storageClassName: {{ ( default $.Values.global.storageClassName $.Values.resources.storageClassName ) | quote }}
+    {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.volumes.storage.dv }}
+  - metadata:
+      name: {{ $.Chart.Name }}-sd
+      labels:
+      {{- toYaml .Values.pvc.labels.sd | nindent 8 }}
+    spec:
+      accessModes:
+      - {{ .Values.volumes.accessMode | default "ReadWriteOnce" }}
+    {{- if ( default $.Values.global.storageClassName $.Values.resources.storageClassName ) }}
+      storageClassName: {{ ( default $.Values.global.storageClassName $.Values.resources.storageClassName ) | quote }}
+    {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.volumes.storage.sd }}
+  - metadata:
+      name: {{ $.Chart.Name }}-logs
+      labels:
+      {{- toYaml .Values.pvc.labels.logs | nindent 8 }}
+    spec:
+      accessModes:
+      - {{ .Values.volumes.accessMode | default "ReadWriteOnce" }}
+    {{- if ( default $.Values.global.storageClassName $.Values.resources.storageClassName ) }}
+      storageClassName: {{ ( default $.Values.global.storageClassName $.Values.resources.storageClassName ) | quote }}
+    {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.volumes.storage.logs }}
+---

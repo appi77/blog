@@ -1,0 +1,74 @@
+{{- if .Values.global.otcs.enabled }}
+{{- if .Values.otcs.csPersist.logStorageClassName }}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: otcs-log-upgrade
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-4"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+data:
+  pre-upgrade.sh: |
+    #!/bin/bash
+    echo "Starting otcs-log-deletion"
+    current_storage_class=$(kubectl get pvc --no-headers=true | grep logs-otcs-admin-0 | awk '{ print $6 }')
+    admin_pod_alive=$(kubectl get pods --no-headers=true | grep otcs-admin-0 | awk '{ print $1 }')
+    if [[ $admin_pod_alive == 'otcs-admin-0' ]]; then
+      echo "To update log pvc storage class on patch upgrade .Values.preUpgradeJob.otxecm.forceRestart must be true"
+    elif [[ $current_storage_class != $LOG_STORAGE_CLASS ]]; then 
+      kubectl get pvc | awk '{ print $1 }' | grep logs-otcs- | xargs kubectl delete pvc
+    fi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: delete-admin-log-pvcs
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-2"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  ttlSecondsAfterFinished: 10
+  template:
+    metadata:
+      annotations:
+        "sidecar.istio.io/inject": "false"
+    spec:
+      serviceAccountName: otxecm-pre-upgrade-job-sa
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      restartPolicy: Never
+      containers:
+      - name:  delete-admin-pvcs
+{{- if not (regexFind "\\/$" (default .Values.global.imageSourcePublic .Values.preUpgradeJob.image.source )) }}
+        image: {{ (default .Values.global.imageSourcePublic .Values.preUpgradeJob.image.source) }}/{{ .Values.preUpgradeJob.image.name }}:{{ .Values.preUpgradeJob.image.tag }}
+{{- else }}
+        image: {{ (default .Values.global.imageSourcePublic .Values.preUpgradeJob.image.source) }}{{ .Values.preUpgradeJob.image.name }}:{{ .Values.preUpgradeJob.image.tag }}
+{{- end }}
+        command: ["sh"]
+        env:
+          - name: LOG_STORAGE_CLASS
+            value: "{{ .Values.otcs.csPersist.logStorageClassName }}"
+        args:
+          - "-c"
+          - "/script/pre-upgrade.sh"
+        securityContext:
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - name: otcs-log-upgrade
+          mountPath: /script/
+      volumes:
+      - name: otcs-log-upgrade
+        configMap:
+          name: otcs-log-upgrade
+          defaultMode: 0010
+---
+{{- end }}
+{{- end }}

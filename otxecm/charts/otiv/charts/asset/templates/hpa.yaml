@@ -1,0 +1,33 @@
+{{- if .Values.global.hpa.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "base.resource.name" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "brava.name" . }}
+    helm.sh/chart: {{ include "brava.chart" . }}
+    app.kubernetes.io/instance: {{ include "base.resource.name" . }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "base.resource.name" . }}
+  minReplicas: {{ .Values.hpa.replicas.min }}
+  maxReplicas: {{ .Values.hpa.replicas.max }}
+  metrics:
+    {{ template "hpa.target" . }}
+  behavior:
+    scaleDown:
+      policies:
+        - periodSeconds: {{ .Values.hpa.scaleDown.periodSeconds }}
+          type: Pods
+          value: 1
+      stabilizationWindowSeconds: {{ .Values.hpa.scaleDown.stabilizationWindowSeconds }}
+    scaleUp:
+      policies:
+        - periodSeconds: {{ .Values.hpa.scaleUp.periodSeconds }}
+          type: Pods
+          value: 1
+      stabilizationWindowSeconds: {{ .Values.hpa.scaleUp.stabilizationWindowSeconds }}
+{{- end }}

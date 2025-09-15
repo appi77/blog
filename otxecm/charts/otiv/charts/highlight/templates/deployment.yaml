@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "base.resource.name" . }}
+  {{- template "metadata.namespace" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "brava.name" . }}
+    helm.sh/chart: {{ include "brava.chart" . }}
+    app.kubernetes.io/instance: {{ include "base.resource.name" . }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  {{- if not .Values.global.hpa.enabled }}
+  replicas: {{ .Values.replicas }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ include "base.resource.name" . }}
+      app.kubernetes.io/name: {{ include "brava.name" . }}
+      app.kubernetes.io/instance: {{ include "base.resource.name" . }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include "config.secret.checksum" . }}
+      labels:
+        app: {{ include "base.resource.name" . }}
+        app.kubernetes.io/name: {{ include "brava.name" . }}
+        app.kubernetes.io/instance: {{ include "base.resource.name" . }}
+      {{- if (include "is.ocp" .) }}
+        opentext.com/chart-hash: '{{ printf "%063d" 0 }}'
+      {{- end }}
+        {{- include "otiv.custom.labels" . }}
+    spec:
+      volumes:
+      {{- template "otiv.cert.volume" . }}
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      {{- template "topology.spread" . }}
+      {{- template "ocp.service.account" . }}
+    {{- if (include "is.iv" .) }}
+      serviceAccountName: {{ .Values.global.serviceAccountName }}
+    {{- end }}
+      {{- template "dev-qa.node.pool" . }}
+      containers:
+        - name: {{ include "base.resource.name" . }}
+          image: {{ include "image.source.path" . }}
+          imagePullPolicy: {{ include "image.pull.policy" . }}
+          volumeMounts:
+          {{- template "otiv.cert.volume.mount" . }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          ports:
+          - name: http
+            containerPort: {{ .Values.service.targetPort }}
+            protocol: TCP
+          {{- template "resources.cpu.memory" . }}
+          {{- template "cvt.probes" . }}
+          env:
+          {{ include "env.secrets" . }}
+          {{ template "env.resource" . }}
+          envFrom:
+          - configMapRef:
+              name: {{ include "iv-cvt.product.prefix" . }}-configmap
+          - configMapRef:
+              name: {{ include "base.resource.name" . }}-configmap
+        {{- if .Values.command }}
+          command: {{ .Values.command }}
+        {{- end }}
+        {{- template "secretlink.container" . }}
+    {{- if .Values.global.imagePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.global.imagePullSecret }}
+    {{- end }}

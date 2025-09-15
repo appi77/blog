@@ -1,0 +1,81 @@
+{{- if eq .Values.global.otxecmctrl.enabled true }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  otxecm-ctrl
+  labels:
+    app:  otxecm-ctrl
+spec:
+  selector:
+    matchLabels:
+      app: otxecm-ctrl
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  otxecm-ctrl
+    spec:
+      automountServiceAccountToken: true
+      securityContext:
+        fsGroup: 1001
+        runAsGroup: 1001
+        runAsNonRoot: true
+        runAsUser: 1001
+      containers:
+      - name:  otxecm-ctrl
+      {{- if ( regexFind "\\/$" ( default .Values.global.imageSource .Values.otxecmctrl.image.source )) }}
+        image: {{ default .Values.global.imageSource .Values.otxecmctrl.image.source }}{{ .Values.otxecmctrl.image.name }}:{{ .Values.otxecmctrl.image.tag }}
+      {{- else }}
+        image: {{ default .Values.global.imageSource .Values.otxecmctrl.image.source }}/{{ .Values.otxecmctrl.image.name }}:{{ .Values.otxecmctrl.image.tag }}
+      {{- end }}
+        imagePullPolicy: {{ default $.Values.global.imagePullPolicy $.Values.otxecmctrl.image.pullPolicy }}
+        resources:
+          requests:
+            cpu: 10m
+            memory: 100Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+        livenessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+        ports:
+        - containerPort:  8000
+          name:  otxecm-ctrl
+{{- if (.Values.otxecmctrl.customPayload.payloadConfig) }}
+        volumeMounts:
+        - name: otxecm-ctrl-custompayload
+          mountPath: /assets/payload/custompayload/custompayload.yaml
+          subPath: custompayload.yaml
+{{- end }}
+      restartPolicy: Always
+{{- if (.Values.otxecmctrl.customPayload.payloadConfig) }}
+      volumes:
+      - name: otxecm-ctrl-custompayload
+        configMap:
+          name: otxecm-ctrl-configmap 
+{{- end }}
+{{- if or .Values.otxecmctrl.image.pullSecret .Values.global.imagePullSecret }}
+      imagePullSecrets:
+      - name: {{ default .Values.global.imagePullSecret .Values.otxecmctrl.image.pullSecret }}
+{{- end }}
+{{- end }}

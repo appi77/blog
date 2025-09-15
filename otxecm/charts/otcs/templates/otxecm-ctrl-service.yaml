@@ -1,0 +1,14 @@
+{{- if eq .Values.global.otxecmctrl.enabled true }}
+kind: Service
+apiVersion: v1
+metadata:
+  name:  otxecm-ctrl
+spec:
+  selector:
+    app:  otxecm-ctrl
+  type:  ClusterIP
+  ports:
+  - name:  http
+    port:  8000
+    targetPort:  8000
+{{- end }}

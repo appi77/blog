@@ -1,0 +1,31 @@
+apiVersion: v2
+appVersion: "15.0"
+dependencies:
+- condition: amqp.enabled
+  name: amqp
+  repository: ""
+- condition: asset.enabled
+  name: asset
+  repository: ""
+- condition: config.enabled
+  name: config
+  repository: ""
+- condition: highlight.enabled
+  name: highlight
+  repository: ""
+- condition: markup.enabled
+  name: markup
+  repository: ""
+- condition: publication.enabled
+  name: publication
+  repository: ""
+- condition: publisher.enabled
+  name: publisher
+  repository: ""
+- condition: viewer.enabled
+  name: viewer
+  repository: ""
+description: Intelligent Viewing micro-services
+name: otiv
+type: application
+version: 25.3.0-otxecm

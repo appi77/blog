@@ -1,0 +1,94 @@
+{{- if and .Values.otcs (not .Values.global.otdsMigration) }}
+{{- if not .Values.otcs.skipVatUpdate }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: otiv-cs-vat-job
+  labels:
+    app.kubernetes.io/name: {{ include "brava.name" . }}
+    helm.sh/chart: {{ include "brava.chart" . }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: otiv-cs-vat-job
+    {{- if .Values.global.usingServiceMesh }}
+      annotations:
+        traffic.sidecar.istio.io/excludeOutboundIPRanges: {{ .Values.global.k8sApiIPRanges }}
+    {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "brava.name" . }}
+        helm.sh/chart: {{ include "brava.chart" . }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      restartPolicy: Never
+      serviceAccountName: {{ .Values.global.serviceAccountName }}
+    {{- if .Values.global.imagePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.global.imagePullSecret }}
+    {{- end }}
+      containers:
+        - name: update-cs-vat-settings
+          image: {{ include "otiv.init.image.path" . }}
+          imagePullPolicy: {{ include "image.pull.policy" . }}
+          securityContext:
+            allowPrivilegeEscalation: false
+          envFrom:
+          - configMapRef:
+              name: {{ include "iv-cvt.product.prefix" . }}-configmap
+          env:
+          {{- if and .Values.otcs.inCluster .Values.otcs.publicationServiceUrl }}
+            - name: PUBLICATION_URL
+              value: {{ .Values.otcs.publicationServiceUrl }}
+          {{- end }}
+          {{- if and .Values.otcs.inCluster .Values.otcs.viewerServiceUrl }}
+            - name: VIEWER_URL
+              value: {{ .Values.otcs.viewerServiceUrl }}
+          {{- end }}
+          {{- if and .Values.otcs.inCluster .Values.otcs.highlightServiceUrl }}
+            - name: HIGHLIGHT_URL
+              value: {{ .Values.otcs.highlightServiceUrl }}
+          {{- end }}
+          {{- if and .Values.otcs.inCluster .Values.otcs.markupServiceUrl }}
+            - name: MARKUP_URL
+              value: {{ .Values.otcs.markupServiceUrl }}
+          {{- end }}
+          {{- if and .Values.otcs.inCluster .Values.otcs.assetServiceUrl }}
+            - name: ASSET_URL
+              value: {{ .Values.otcs.assetServiceUrl }}
+          {{- end }}
+            - name: IV_INGRESS_SUFFIX
+              value: {{ template "ingress.suffix" .}}
+            - name: IV_WEB_PROTOCOL
+              value: {{ .Values.global.publicWebProtocol }}
+          {{- if .Values.global.timeZone }}
+            - name: TZ
+              value: '{{ .Values.global.timeZone }}'
+          {{- end }}
+          command:
+            - sh
+            - -c
+            - |
+              sleep 15;
+              {{- if .Values.global.usingServiceMesh }}
+              {{- if not .Values.global.skipIstioSidecarCalls }}
+              until curl -fsI http://localhost:15021/healthz/ready; do echo Waiting for Sidecar...; sleep 3; done;
+              {{- end }}
+              {{- end }}
+              python ./scripts/csIvAuth.py;
+              {{- if .Values.global.usingServiceMesh }}
+              {{- if not .Values.global.skipIstioSidecarCalls }}
+              x=$(echo $?); curl -fsI -X POST http://localhost:15020/quitquitquit && exit $x
+              {{- end }}
+              {{- end }}
+              {{- if .Values.global.secretlink.enabled }}
+              x=$(echo $?); curl -fsI -X POST http://127.0.0.1:8000/quitquitquit?ShutdownKey=ShutDownKey && exit $x
+              {{- end }}
+        {{- template "secretlink.container" . }}
+{{- end }}
+{{- end }}

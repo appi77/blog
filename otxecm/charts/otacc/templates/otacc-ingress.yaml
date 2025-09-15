@@ -1,0 +1,57 @@
+{{- if and (eq .Values.global.ingressEnabled false) (eq .Values.ingressEnabled true) }}
+########################################################################
+# Kubernetes Ingress for Core Archive Connector
+# External Interface to provide a Fully Qualified Domain Name (FQDN)
+# and enable secure HTTPS communication (if global.ingressSSLSecret is provided)
+# 
+# This config only applies if otacc chart is deployed independently of otxecm.
+# If deployed as part of the otxecm chart and global.ingressEnabled is set
+# to true otacc ingress is configured in otxecm-ingress config instead
+########################################################################
+{{- if not (regexFind "^http(s?)://" .Values.global.otaccPublicUrl ) }}
+{{- fail "A valid global.otaccPublicUrl value with http(s)://domain is required" }}
+{{- end }}
+{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" }}
+apiVersion: networking.k8s.io/v1
+{{- else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" }}
+apiVersion: networking.k8s.io/v1beta1
+{{- else if .Capabilities.APIVersions.Has "extensions/v1beta1/Ingress" }}
+apiVersion: extensions/v1beta1
+{{- else }}
+{{- fail "kubernetes cluster does not support networking.k8s.io/v1, extensions/v1beta1 or networking.k8s.io/v1beta1" }}
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ .Chart.Name }}-ingress
+  annotations:
+{{- if .Values.global.ingressClass }}
+    kubernetes.io/ingress.class: {{ .Values.global.ingressClass }}
+{{- end }}
+{{- range $key, $value := .Values.global.ingressAnnotations }}
+    {{ $key }}: {{ $value | squote }}
+{{- end }}
+spec:
+{{- if .Values.global.ingressSSLSecret }}
+  tls:
+    - hosts:
+      - {{ regexReplaceAllLiteral "^http(s?)://" .Values.global.otaccPublicUrl "" }}
+      secretName: {{ .Values.global.ingressSSLSecret }}
+{{- end }}
+  rules:
+  - host: {{ regexReplaceAllLiteral "^http(s?)://" .Values.global.otaccPublicUrl "" }}
+    http:
+      paths:
+      - backend:
+        {{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" }}
+          service:
+            name: otacc
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix
+        {{- else }}
+          serviceName: otacc
+          servicePort: 8080
+        {{- end }}
+---
+{{- end }}

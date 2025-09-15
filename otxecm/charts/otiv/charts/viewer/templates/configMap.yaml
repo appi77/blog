@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "base.resource.name" . }}-configmap
+  {{- template "metadata.namespace" . }}
+data:
+    CORS_ADDITIONAL_HEADERS_LIST: '{{ .Values.global.customHttpHeaders }}'
+    COUNTER: '{{ .Values.global.counter }}'
+    {{ template "cors.config" . }}
+    {{ template "forwarded.config" . }}
+    DOC_ROOT: 'https://developer.opentext.com/apis/69f18c6b-0b58-4509-8117-6bf022fd2e44/aa064dbd-8954-4d0f-8892-65fe2de124bb/08f4af59-5119-4894-9efc-07941c67c2c1'
+    {{ template "node.forwarding" . }}
+    LOG_LEVEL: '{{ .Values.loglevel }}'
+    {{- template "new.relic.viewing.config" . }}
+{{- if or .Values.global.enableOtivCustomizedTruststore .Values.global.otivSecretProviderClassCerts.enabled }}
+    NODE_EXTRA_CA_CERTS: /opt/certs/combined_crt_file.crt
+{{- end }}
+{{- if .Values.nodeOptions }}
+    NODE_OPTIONS: '{{ .Values.nodeOptions }}'
+{{- end }}
+    OTDS_CERT_UPDATE_INTERVAL: '{{ .Values.global.otdsCertUpdateInterval }}'
+    PORT: '{{ .Values.service.targetPort }}'
+    {{- template "timezone" . }}
+    VIEWER_AUTHORITY: {{ $.Values.global.publicWebProtocol }}://{{ include "ingress.fqdn.viewer" .}}
+    __VERSION__: '{{ template "version.stamp" . }}'

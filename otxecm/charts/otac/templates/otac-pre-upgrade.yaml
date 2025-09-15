@@ -1,0 +1,212 @@
+# Service Account required for the pre-upgrade job
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: otac-pre-upgrade-job-sa
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-4"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+---
+# RBAC role to be assigned to service account for the pre-upgrade cleanup job
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: otac-pre-upgrade-job-role
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-4"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+rules:
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims", "configmaps"]
+  verbs: ["get", "list", "watch", "delete"]
+---
+# Binding the role with the service account for the pre-upgrade cleanup job
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: otac-pre-upgrade-job-rbac
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-3"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: otac-pre-upgrade-job-role
+subjects:
+- kind: ServiceAccount
+  name: otac-pre-upgrade-job-sa
+---
+# Pre-upgrade job definition for OTAC Container
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $.Chart.Name }}-pre-upgrade-job
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-2"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    spec:
+      securityContext:
+        ## The fsGroup field specifies that group ID {{ .Values.fsGroup }} is associated
+        ## with all Containers in the Pod. Group ID {{ .Values.fsGroup }} is also
+        ## associated with the mounted volumes and with any files created
+        ## in that volume.
+        ## This will make volumes be mounted with {{ .Values.fsGroup }} group permissions.
+        fsGroup: {{ .Values.fsGroup }}
+        runAsNonRoot: true
+        runAsUser: 1000
+      ## serviceAccountName defines the name of the service account the
+      ## pods are running under. Normally that is 'default'
+      serviceAccountName: otac-pre-upgrade-job-sa
+      containers:
+      - name:  {{ $.Chart.Name }}-pre-upgrade-container
+{{- if not (regexFind "\\/$" (default .Values.global.imageSource .Values.image.source ) ) }}
+        image: {{ required "A valid image.source is required!" (default .Values.global.imageSource .Values.image.source ) }}/{{ required "A valid image.name is required!" .Values.image.name }}:{{ required "A valid image.tag is required!" .Values.image.tag }}
+{{- else }}
+        image: {{ required "A valid image.source is required!" (default .Values.global.imageSource .Values.image.source ) }}{{ required "A valid image.name is required!" .Values.image.name }}:{{ required "A valid image.tag is required!" .Values.image.tag }}
+{{- end }}
+        imagePullPolicy: {{ default .Values.global.imagePullPolicy .Values.image.pullPolicy }}
+        command: ["/bin/bash"]
+        args: ["-c", '/opt/opentext/shell_scripts/update_script.sh > /opt/opentext/archive_center/ac_config/upgrade_{{ .Chart.Version }}_{{ now | date "20060102150405" }}.log']
+{{- if eq (len (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "otac-otac-0")) 0 }}
+        volumeMounts:
+        - mountPath: /opt/opentext/archive_center/ac_config
+          name: config
+          readOnly: false
+        securityContext:
+          allowPrivilegeEscalation: false
+      restartPolicy: Never
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ $.Chart.Name }}-config
+{{- else }}
+        volumeMounts:
+        - mountPath: /opt/opentext/archive_center/ac_config
+          name: config
+          readOnly: false
+        - mountPath: /opt/opentext/ac
+          name: {{ $.Chart.Name }}-old
+          readOnly: false
+      restartPolicy: Never
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ $.Chart.Name }}-config
+        - name: {{ $.Chart.Name }}-old
+          persistentVolumeClaim:
+            claimName: {{ $.Chart.Name }}-{{ $.Chart.Name }}-0
+{{- end }}
+{{- if .Values.global.imagePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.global.imagePullSecret }}
+{{- end }}
+---
+# Pre-upgrade cleanup job definition for OTAC Container
+{{- $existingCM := lookup "v1" "ConfigMap" .Release.Namespace "otac-pre-upgrade-configmap" }}
+{{- $existingPVC1 := lookup "v1" "PersistentVolumeClaim" .Release.Namespace "otac-opentext-landscape-otac-0" }}
+{{- $existingPVC2 := lookup "v1" "PersistentVolumeClaim" .Release.Namespace "otac-tomcat-logs-otac-0" }}
+{{- if or $existingCM $existingPVC1 $existingPVC2 }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $.Chart.Name }}-cleanup-job
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    spec:
+      securityContext:
+        ## The fsGroup field specifies that group ID {{ .Values.fsGroup }} is associated with all Containers in the Pod. Group ID {{ .Values.fsGroup }} is also associated with the mounted volumes and with any files created in that volume.This will make volumes be mounted with {{ .Values.fsGroup }} group permissions.
+        fsGroup: {{ .Values.fsGroup }}
+        runAsNonRoot: true
+        runAsUser: 1000
+      ## serviceAccountName defines the name of the service account the pods are running under.'
+      serviceAccountName: otac-pre-upgrade-job-sa
+      containers:
+      # a container for otac-pre-upgrade-configmap cleanup
+      - name:  {{ $.Chart.Name }}-cleaner
+{{- if not (regexFind "\\/$" (default .Values.global.imageSourcePublic .Values.preUpgradeJob.image.source )) }}
+        image: {{ (default .Values.global.imageSourcePublic .Values.preUpgradeJob.image.source) }}/{{ .Values.preUpgradeJob.image.name }}:{{ .Values.preUpgradeJob.image.tag }}
+{{- else }}
+        image: {{ (default .Values.global.imageSourcePublic .Values.preUpgradeJob.image.source) }}{{ .Values.preUpgradeJob.image.name }}:{{ .Values.preUpgradeJob.image.tag }}
+{{- end }}
+        imagePullPolicy: {{ default .Values.global.imagePullPolicy .Values.image.pullPolicy }}
+        command: ["/bin/bash", "-c"]
+        args: 
+        - |
+          /script/otac-delete-old-pvc.sh
+          /script/otac-delete-old-cm.sh
+        securityContext:
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - name: otac-cleaner-cm
+          mountPath: /script/
+      restartPolicy: Never
+      volumes:
+      - name: otac-cleaner-cm
+        configMap:
+          name: otac-cleaner-cm
+          defaultMode: 0010
+{{- if .Values.global.imagePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.global.imagePullSecret }}
+{{- end }}
+{{- end }}
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: otac-cleaner-cm
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-2"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded    
+data:
+  otac-delete-old-pvc.sh: |
+    #!/bin/bash
+    upgrade="{{ .Chart.Version }}"
+    upgradeRelease=$(awk -F. '{print $1"."$2}' <<< $upgrade)
+    echo "Upgrade to ${upgrade} - Release ${upgradeRelease}"
+    echo "Starting otac-pvc-cleaner"
+    PVC_LIST=("otac-opentext-landscape-otac-0" "otac-tomcat-logs-otac-0")
+    for PVC_NAME in "${PVC_LIST[@]}"; do
+      if kubectl get pvc "$PVC_NAME" >/dev/null 2>&1; then
+        echo "PVC $PVC_NAME found. Deleting..."
+        kubectl delete pvc $PVC_NAME
+      else
+        echo "PVC $PVC_NAME does not exist. Skipping."
+      fi
+    done
+  otac-delete-old-cm.sh: |
+    #!/bin/bash
+    echo "Starting otac-cm-cleaner"
+    if kubectl get cm otac-pre-upgrade-configmap >/dev/null 2>&1; then
+      echo "configMap - otac-pre-upgrade-configmap found. Deleting..."
+      kubectl delete cm otac-pre-upgrade-configmap
+    else
+      echo "otac-pre-upgrade-configmap does not exist. Skipping."
+    fi

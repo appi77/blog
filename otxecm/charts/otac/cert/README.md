@@ -1,0 +1,1 @@
+Place the custom certificates in this folder and specify their respective file names in values.yaml
