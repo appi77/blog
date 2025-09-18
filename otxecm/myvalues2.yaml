@@ -3,20 +3,17 @@ global:
     admin: "postgres"
     hostname: "ecmsvr25"
     ivName: otiv
-    password: "SystemAdmin@1234"                # 변경한 패스워드
+    password: "SystemAdmin@1234"
     port: 5432
   imagePullPolicy: "IfNotPresent"
   imagePullSecret: "regcred"
   imageSource: "registry.opentext.com"
   ingressAnnotations:
-    kubernetes.io/ingress.allow-http:               false
-    nginx.ingress.kubernetes.io/affinity:           cookie
-    
-    nginx.ingress.kubernetes.io/proxy-body-size:    "0"
-    nginx.ingress.kubernetes.io/proxy-buffer-size:  "16k"
+    kubernetes.io/ingress.allow-http: false
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
-#    nginx.ingress.kubernetes.io/configuration-snippet: |
-#      if ($http_origin) {more_set_headers "Access-Control-Allow-Headers: $sent_http_access_control_allow_headers, X-XHR-Logon, X-Requested-With";}
   ingressClass: nginx
   ingressDomainName: "ecmsvr25.pentasystem.kr"
   ingressEnabled: true
@@ -83,6 +80,46 @@ otcs:
       adminPassword: "SystemAdmin@1234"
     scenarioOwnerPassword: "SystemAdmin@1234"
 
+#  initContainers:
+#    - name: copy-config
+#      image:
+#        source: docker.io
+#        name: busybox
+#        tag: "latest"
+#        pullPolicy: IfNotPresent
+#      command: ['sh', '-c', 'cp /config/opentext.ini /opt/opentext/cs/config/opentext.ini; cp /config/setenv.sh /opt/tomcat/bin/setenv.sh']
+#      volumeMounts:
+#        - name: config-volume
+#          mountPath: /config
+#        - name: target-volume
+#          mountPath: /opt/opentext/cs/config
+#        - name: target-volume
+#          mountPath: /opt/tomcat/bin    
+#
+#  additionalVolumes:
+#    - name: extshared-storage
+#      volumeOptions:
+#        persistentVolumeClaim:
+#          claimName: otmm-nfs-pvc 
+#    - name: config-volume
+#      volumeOptions:
+#        configMap:
+#          name: reconfig
+#    - name: target-volume
+#      volumeOptions:
+#        emptyDir: {}
+#
+#  mainContainer:
+#    volumeMounts:
+#      - name: config-volume
+#        mountPath: /config
+#      - name: target-volume
+#        mountPath: /opt/opentext/cs/config
+#      - name: target-volume
+#        mountPath: /opt/tomcat/bin
+#      - name: extshared-storage
+#        mountPath: /mnt/extshared
+#
 otds:
   otdsws:
     cryptKey: "Z2hkN2hyNDBkbWNGcVQ0TA=="
@@ -92,7 +129,7 @@ otds:
         enabled: false
       password: "SystemAdmin@1234"
       url: "jdbc:postgresql://ecmsvr25:5432/otdsdb"
-      username: "otdsuser"            # 여기 수정됨
+      username: "otdsuser"
 
 otiv:
   amqp:
